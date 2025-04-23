@@ -96,6 +96,18 @@ public:
         decorator.decorate(os);
         return os;
     }
+
+    /**
+     * @brief Gets the string representation of the tag.
+     *
+     * @return The string representation of the tag
+     */
+    std::string str() const
+    {
+        std::ostringstream oss;
+        decorate(oss);
+        return std::move(oss).str();
+    }
 };
 
 /**
