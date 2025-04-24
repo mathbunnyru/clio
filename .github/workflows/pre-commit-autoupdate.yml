@@ -28,9 +28,12 @@ jobs:
 
       - uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         if: always()
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           branch: update/pre-commit-hooks
           title: Update pre-commit hooks
-          commit-message: "chore: update pre-commit hooks"
+          commit-message: "style: update pre-commit hooks"
           body: Update versions of pre-commit hooks to latest version.
+          reviewers: "godexsoft,kuznetsss,PeterChen13579,mathbunnyru"
