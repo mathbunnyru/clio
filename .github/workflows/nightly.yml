@@ -121,6 +121,8 @@ jobs:
         run: |
           cp ${{ github.workspace }}/.github/workflows/nightly_notes.md "${RUNNER_TEMP}/nightly_notes.md"
           cd nightly_release
+          echo '' >> "${RUNNER_TEMP}/nightly_notes.md"
+          echo '```' >> "${RUNNER_TEMP}/nightly_notes.md"
           for d in $(ls); do
             archive_name=$(ls $d)
             mv ${d}/${archive_name} ./
