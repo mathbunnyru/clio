@@ -63,4 +63,3 @@ runs:
           repository: ${{ inputs.image_name }}
           short-description: ${{ inputs.description }}
           readme-filepath: ${{ inputs.directory }}/README.md
-
