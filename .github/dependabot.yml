@@ -191,19 +191,3 @@ updates:
     commit-message:
       prefix: "ci: [DEPENDABOT] "
     target-branch: develop
-
-  - package-ecosystem: github-actions
-    directory: .github/actions/test/
-    schedule:
-      interval: weekly
-      day: monday
-      time: "04:00"
-      timezone: Etc/GMT
-    reviewers:
-      - godexsoft
-      - kuznetsss
-      - PeterChen13579
-      - mathbunnyru
-    commit-message:
-      prefix: "ci: [DEPENDABOT] "
-    target-branch: develop
