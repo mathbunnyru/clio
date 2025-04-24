@@ -102,7 +102,8 @@ public:
      *
      * @return The string representation of the tag
      */
-    std::string str() const
+    std::string
+    toString() const
     {
         std::ostringstream oss;
         decorate(oss);

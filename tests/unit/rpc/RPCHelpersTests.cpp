@@ -1210,7 +1210,7 @@ TEST_P(RPCHelpersLogDurationTest, LogDuration)
     std::string const output = getLoggerString();
 
     EXPECT_NE(output.find(GetParam().expectedLogLevel), std::string::npos) << output;
-    EXPECT_NE(output.find(tag.str()), std::string::npos);
+    EXPECT_NE(output.find(tag.toString()), std::string::npos);
 
     if (GetParam().expectDuration) {
         std::string const durationStr = std::to_string(GetParam().duration.count()) + " milliseconds";
