@@ -182,12 +182,12 @@ In each new ledger version with sequence `n`, a ledger object `v` can either be 
 
 For all three of these operations, the procedure to update the successor table can be broken down into two steps:
 
-1.  Trace through the Linked List of the previous sequence to find the ledger object `e` with the greatest object index smaller or equal than the `v`'s index. Save `e`'s `next` value (the index of the next ledger object) as `w`.
+1. Trace through the Linked List of the previous sequence to find the ledger object `e` with the greatest object index smaller or equal than the `v`'s index. Save `e`'s `next` value (the index of the next ledger object) as `w`.
 
-2.  If `v` is...
-    1. Being **created**, add two new records of `seq=n` with one being `e` pointing to `v`, and `v` pointing to `w` (Linked List insertion operation).
-    2. Being **modified**, do nothing.
-    3. Being **deleted**, add a record of `seq=n` with `e` pointing to `v`'s `next` value (Linked List deletion operation).
+2. If `v` is...
+   1. Being **created**, add two new records of `seq=n` with one being `e` pointing to `v`, and `v` pointing to `w` (Linked List insertion operation).
+   2. Being **modified**, do nothing.
+   3. Being **deleted**, add a record of `seq=n` with `e` pointing to `v`'s `next` value (Linked List deletion operation).
 
 ## NFT data model
 

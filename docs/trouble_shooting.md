@@ -9,7 +9,8 @@ If you see the error log message `Could not connect to Cassandra: No hosts avail
 - Make sure the database is running at the specified address and port.
 - Make sure the database is accessible from the machine where Clio is running.
   You can use [cqlsh](https://pypi.org/project/cqlsh/) to check the connection to the database.
-  If you would like to run a local ScyllaDB, you can call:
+
+If you would like to run a local ScyllaDB, you can call:
 
 ```sh
 docker run --rm -p 9042:9042 --name clio-scylla -d scylladb/scylla
