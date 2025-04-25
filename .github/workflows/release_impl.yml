@@ -45,7 +45,7 @@ jobs:
         shell: bash
         working-directory: release_artifacts
         run: |
-          cp ${{ github.workspace }}/.github/workflows/${{ inputs.notes_header_file }}.md "${RUNNER_TEMP}/release_notes.md"
+          cp ${{ github.workspace }}/.github/workflows/${{ inputs.notes_header_file }} "${RUNNER_TEMP}/release_notes.md"
           echo '' >> "${RUNNER_TEMP}/release_notes.md"
           echo '```' >> "${RUNNER_TEMP}/release_notes.md"
 
