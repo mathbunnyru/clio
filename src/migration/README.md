@@ -8,7 +8,7 @@ Clio provides a migration command-line tool to migrate data in database.
 
 > Note: We need a **configuration file** to run the migration tool. This configuration file has the same format as the configuration file of the Clio server, ensuring consistency and ease of use. It reads the database configuration from the same session as the server's configuration, eliminating the need for separate setup or additional configuration files. Be aware that migration-specific configuration is under `.migration` session.
 
-### To query migration status
+### Query migration status
 
     ./clio_server --migrate status  ~/config/migrator.json
 
@@ -17,7 +17,7 @@ This command returns the current migration status of each migrator. The example 
     Current Migration Status:
     Migrator: ExampleMigrator - Feature v1, Clio v3 - not migrated
 
-### To start a migration
+### Start a migration
 
     ./clio_server --migrate ExampleMigrator  ~/config/migrator.json
 
