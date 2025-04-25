@@ -8,7 +8,7 @@ Clio provides a migration command-line tool to migrate data in database.
 
 > Note: We need a **configuration file** to run the migration tool. This configuration file has the same format as the configuration file of the Clio server, ensuring consistency and ease of use. It reads the database configuration from the same session as the server's configuration, eliminating the need for separate setup or additional configuration files. Be aware that migration-specific configuration is under `.migration` session.
 
-### To query migration status:
+### To query migration status
 
     ./clio_server --migrate status  ~/config/migrator.json
 
@@ -17,7 +17,7 @@ This command returns the current migration status of each migrator. The example 
     Current Migration Status:
     Migrator: ExampleMigrator - Feature v1, Clio v3 - not migrated
 
-### To start a migration:
+### To start a migration
 
     ./clio_server --migrate ExampleMigrator  ~/config/migrator.json
 
@@ -51,7 +51,7 @@ Sometimes migrator isn't able to query the historical data by table's partition 
 
 Most indexes are based on either ledger states or transactions. We provide the `objects` and `transactions` scanner. Developers only need to implement the callback function to receive the historical data. Please find the examples in `tests/integration/migration/cassandra/ExampleTransactionsMigrator.cpp` and `tests/integration/migration/cassandra/ExampleObjectsMigrator.cpp`.
 
-> **Note** The full table scanner splits the table into multiple ranges by token(https://opensource.docs.scylladb.com/stable/cql/functions.html#token). A few of rows maybe read 2 times if its token happens to be at the edge of ranges. **Deduplication is needed** in the callback function.
+> **Note** The full table scanner splits the table into multiple ranges by token(<https://opensource.docs.scylladb.com/stable/cql/functions.html#token>). A few of rows maybe read 2 times if its token happens to be at the edge of ranges. **Deduplication is needed** in the callback function.
 
 ## How to write a full table scan adapter (Only for Cassandra/ScyllaDB)
 
@@ -68,7 +68,7 @@ If you need to do full scan against other table, you can follow below steps:
 
 Please take ObjectsAdapter/TransactionsAdapter as example.
 
-## Examples:
+## Examples
 
 We have some example migrators under `tests/integration/migration/cassandra` folder.
 
