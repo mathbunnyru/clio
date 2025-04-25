@@ -30,3 +30,8 @@ repos:
     hooks:
       - id: prettier
         exclude: ^docs/doxygen-awesome-theme/
+
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.31.1
+    hooks:
+      - id: typos
