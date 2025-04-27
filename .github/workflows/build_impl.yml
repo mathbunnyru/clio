@@ -6,13 +6,11 @@ on:
         description: Runner to run the job on
         required: true
         type: string
-        default: heavy
 
       container:
         description: "The container object as a JSON string (leave empty to run natively)"
         required: true
         type: string
-        default: ""
 
       conan_profile:
         description: Conan profile to use
@@ -46,19 +44,16 @@ on:
         description: Whether to run unit tests
         required: true
         type: boolean
-        default: false
 
       integration_tests:
         description: Whether to run integration tests
         required: true
         type: boolean
-        default: false
 
       clio_server:
         description: Whether to build clio_server
         required: true
         type: boolean
-        default: true
 
       target:
         description: Build target name
