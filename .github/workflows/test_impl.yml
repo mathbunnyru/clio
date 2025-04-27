@@ -1,4 +1,5 @@
 name: Reusable test
+
 on:
   workflow_call:
     inputs:

@@ -1,4 +1,5 @@
 name: Reusable build
+
 on:
   workflow_call:
     inputs:
