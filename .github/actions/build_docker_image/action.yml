@@ -1,5 +1,6 @@
 name: Build and push Docker image
 description: Build and push Docker image to DockerHub and GitHub Container Registry
+
 inputs:
   image_name:
     description: Name of the image to build
@@ -19,6 +20,7 @@ inputs:
   description:
     description: Short description of the image
     required: true
+
 runs:
   using: composite
   steps:
@@ -48,7 +50,7 @@ runs:
         images: ${{ inputs.image_name }}
         tags: ${{ inputs.tags }}
 
-    - name: Build and push
+    - name: Build and push to DockerHub and GitHub Container Registry
       uses: docker/build-push-action@14487ce63c7a62a4a324b0bfb37086795e31c6c1 #v6.16.0
       with:
         context: ${{ inputs.directory }}
