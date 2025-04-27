@@ -18,11 +18,6 @@ on:
         required: true
         type: string
 
-      compiler:
-        description: Compiler
-        required: true
-        type: string
-
       build_type:
         description: Build type
         required: true
@@ -100,5 +95,4 @@ jobs:
       build_type: ${{ inputs.build_type }}
       unit_tests: ${{ inputs.unit_tests }}
       integration_tests: ${{ inputs.integration_tests }}
-      compiler: ${{ inputs.compiler }}
       sanitizer: ${{ inputs.sanitizer }}

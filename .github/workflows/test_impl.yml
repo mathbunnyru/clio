@@ -32,11 +32,6 @@ on:
         required: true
         type: boolean
 
-      compiler:
-        description: Compiler
-        required: true
-        type: string
-
       sanitizer:
         description: Sanitizer to use
         required: false
@@ -80,7 +75,7 @@ jobs:
         if: ${{ steps.check_report.outputs.found_report == 'true' }}
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.compiler }}_${{ inputs.sanitizer }}_report
+          name: ${{ inputs.conan_profile }}_report
           path: .sanitizer-report/*
           include-hidden-files: true
 
@@ -92,9 +87,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         with:
           labels: "bug"
-          title: "[${{ inputs.sanitizer }}/${{ inputs.compiler }}] reported issues"
+          title: "[${{ inputs.conan_profile }}] reported issues"
           body: >
-            Clio tests failed one or more sanitizer checks when built with ${{ inputs.compiler }}`.
+            Clio tests failed one or more sanitizer checks when built with ${{ inputs.conan_profile }}`.
 
             Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/
             Reports are available as artifacts.

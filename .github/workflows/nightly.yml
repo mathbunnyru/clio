@@ -33,7 +33,6 @@ jobs:
       runs_on: ${{ matrix.os }}
       container: ${{ matrix.container }}
       conan_profile: gcc
-      compiler: gcc
       build_type: ${{ matrix.build_type }}
       code_coverage: false
       static: ${{ matrix.static }}
