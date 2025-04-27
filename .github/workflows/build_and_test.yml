@@ -91,6 +91,7 @@ jobs:
       sanitizer: ${{ inputs.sanitizer }}
 
   test:
+    needs: build
     uses: ./.github/workflows/test_impl.yml
     with:
       runs_on: ${{ inputs.runs_on }}
