@@ -105,9 +105,11 @@ jobs:
     runs-on: ${{ inputs.runs_on }}
     container: ${{ inputs.container != '' && fromJson(inputs.container) || null }}
 
+    if: inputs.integration_tests
+
     services:
       scylladb:
-        image: ${{ (inputs.integration_tests) && 'scylladb/scylla' || '' }}
+        image: "scylladb/scylla"
         options: >-
           --health-cmd "cqlsh -e 'describe cluster'"
           --health-interval 10s
@@ -126,7 +128,6 @@ jobs:
       # To be enabled back once docker in mac runner arrives
       # https://github.com/XRPLF/clio/issues/1400
       - name: Run clio_integration_tests
-        if: inputs.integration_tests
         run: |
           chmod +x ./clio_integration_tests
           ./clio_integration_tests --backend_host=scylladb
