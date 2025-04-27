@@ -1,0 +1,103 @@
+name: Reusable build and test
+
+on:
+  workflow_call:
+    inputs:
+      runs_on:
+        description: Runner to run the job on
+        required: true
+        type: string
+
+      container:
+        description: "The container object as a JSON string (leave empty to run natively)"
+        required: true
+        type: string
+
+      conan_profile:
+        description: Conan profile to use
+        required: true
+        type: string
+
+      compiler:
+        description: Compiler
+        required: true
+        type: string
+
+      build_type:
+        description: Build type
+        required: true
+        type: string
+
+      disable_cache:
+        description: Whether ccache and conan cache should be disabled
+        required: false
+        type: boolean
+        default: false
+
+      code_coverage:
+        description: Whether to enable code coverage
+        required: true
+        type: boolean
+        default: false
+
+      static:
+        description: Whether to build static binaries
+        required: true
+        type: boolean
+        default: true
+
+      unit_tests:
+        description: Whether to run unit tests
+        required: true
+        type: boolean
+
+      integration_tests:
+        description: Whether to run integration tests
+        required: true
+        type: boolean
+
+      clio_server:
+        description: Whether to build clio_server
+        required: true
+        type: boolean
+
+      target:
+        description: Build target name
+        required: false
+        type: string
+        default: all
+
+      sanitizer:
+        description: Sanitizer to use
+        required: false
+        type: string
+        default: "false"
+
+jobs:
+  build:
+    uses: ./.github/workflows/build_impl.yml
+    with:
+      runs_on: ${{ inputs.runs_on }}
+      container: ${{ inputs.container }}
+      conan_profile: ${{ inputs.conan_profile }}
+      build_type: ${{ inputs.build_type }}
+      disable_cache: ${{ inputs.disable_cache }}
+      code_coverage: ${{ inputs.code_coverage }}
+      static: ${{ inputs.static }}
+      unit_tests: ${{ inputs.unit_tests }}
+      integration_tests: ${{ inputs.integration_tests }}
+      clio_server: ${{ inputs.clio_server }}
+      target: ${{ inputs.target }}
+      sanitizer: ${{ inputs.sanitizer }}
+
+  test:
+    uses: ./.github/workflows/test_impl.yml
+    with:
+      runs_on: ${{ inputs.runs_on }}
+      container: ${{ inputs.container }}
+      conan_profile: ${{ inputs.conan_profile }}
+      build_type: ${{ inputs.build_type }}
+      unit_tests: ${{ inputs.unit_tests }}
+      integration_tests: ${{ inputs.integration_tests }}
+      compiler: ${{ inputs.compiler }}
+      sanitizer: ${{ inputs.sanitizer }}

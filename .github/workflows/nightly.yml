@@ -11,7 +11,6 @@ on:
 jobs:
   build-and-test:
     name: Build and Test
-    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
@@ -29,32 +28,19 @@ jobs:
             static: true
             container: '{ "image": "rippleci/clio_ci:latest" }'
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build
-        uses: ./.github/workflows/build_impl.yml
-        with:
-          runs_on: ${{ matrix.os }}
-          container: ${{ matrix.container }}
-          conan_profile: gcc
-          build_type: ${{ matrix.build_type }}
-          code_coverage: false
-          static: ${{ matrix.static }}
-          unit_tests: true
-          integration_tests: true
-          clio_server: true
-          disable_cache: true
-
-      - name: Test
-        uses: ./.github/workflows/test_impl.yml
-        with:
-          runs_on: ${{ matrix.os }}
-          container: ${{ matrix.container }}
-          conan_profile: gcc
-          build_type: ${{ matrix.build_type }}
-          unit_tests: true
-          integration_tests: true
+    uses: ./.github/workflows/build_and_test.yml
+    with:
+      runs_on: ${{ matrix.os }}
+      container: ${{ matrix.container }}
+      conan_profile: gcc
+      compiler: gcc
+      build_type: ${{ matrix.build_type }}
+      code_coverage: false
+      static: ${{ matrix.static }}
+      unit_tests: true
+      integration_tests: true
+      clio_server: true
+      disable_cache: true
 
   nightly_release:
     if: ${{ github.event_name != 'pull_request' }}

@@ -41,7 +41,6 @@ on:
         description: Sanitizer to use
         required: false
         type: string
-        default: "false"
 
 jobs:
   test:

@@ -10,7 +10,6 @@ on:
 jobs:
   build-and-test:
     name: Build and Test
-    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
@@ -23,33 +22,18 @@ jobs:
           # - sanitizer: ubsan # todo: enable when heavy runners are available
           #   compiler: gcc
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build
-        uses: ./.github/workflows/build_impl.yml
-        with:
-          runs_on: ubuntu-latest # todo: change to heavy
-          container: '{ "image": "rippleci/clio_ci:latest" }'
-          disable_cache: true
-          conan_profile: ${{ matrix.compiler }}.${{ matrix.sanitizer }}
-          build_type: Release
-          code_coverage: false
-          static: false
-          unit_tests: true
-          integration_tests: false
-          clio_server: false
-          target: clio_tests
-          sanitizer: ${{ matrix.sanitizer }}
-
-      - name: Test
-        uses: ./.github/workflows/test_impl.yml
-        with:
-          runs-on: ubuntu-latest # todo: change to heavy
-          container: '{ "image": "rippleci/clio_ci:latest" }'
-          conan_profile: ${{ matrix.compiler }}.${{ matrix.sanitizer }}
-          build_type: Release
-          unit_tests: true
-          integration_tests: false
-          compiler: ${{ matrix.compiler }}
-          run-sanitized: true
+    uses: ./.github/workflows/build_and_test.yml
+    with:
+      runs_on: ubuntu-latest # todo: change to heavy
+      container: '{ "image": "rippleci/clio_ci:latest" }'
+      disable_cache: true
+      conan_profile: ${{ matrix.compiler }}.${{ matrix.sanitizer }}
+      compiler: ${{ matrix.compiler }}
+      build_type: Release
+      code_coverage: false
+      static: false
+      unit_tests: true
+      integration_tests: false
+      clio_server: false
+      target: clio_tests
+      sanitizer: ${{ matrix.sanitizer }}

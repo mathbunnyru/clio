@@ -26,19 +26,16 @@ on:
         description: Whether ccache and conan cache should be disabled
         required: false
         type: boolean
-        default: false
 
       code_coverage:
         description: Whether to enable code coverage
         required: true
         type: boolean
-        default: false
 
       static:
         description: Whether to build static binaries
         required: true
         type: boolean
-        default: true
 
       unit_tests:
         description: Whether to run unit tests
@@ -59,13 +56,11 @@ on:
         description: Build target name
         required: false
         type: string
-        default: all
 
       sanitizer:
         description: Sanitizer to use
         required: false
         type: string
-        default: "false"
 
 jobs:
   build:
