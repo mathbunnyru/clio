@@ -87,6 +87,8 @@ jobs:
 
   test:
     needs: build
+    # TODO: We don't upload tests if code coverage is enabled
+    if: !inputs.code_coverage
     uses: ./.github/workflows/test_impl.yml
     with:
       runs_on: ${{ inputs.runs_on }}
