@@ -50,28 +50,33 @@ jobs:
             container: '{ "image": "rippleci/clio_ci:latest" }'
             code_coverage: false
             static: true
+            integration_tests: true
           - os: heavy
             conan_profile: gcc
             build_type: Debug
             container: '{ "image": "rippleci/clio_ci:latest" }'
             code_coverage: true
             static: true
+            integration_tests: true
           - os: heavy
             conan_profile: clang
             build_type: Release
             container: '{ "image": "rippleci/clio_ci:latest" }'
             code_coverage: false
             static: true
+            integration_tests: true
           - os: heavy
             conan_profile: clang
             build_type: Debug
             container: '{ "image": "rippleci/clio_ci:latest" }'
             code_coverage: false
             static: true
+            integration_tests: true
           - os: macos15
             build_type: Release
             code_coverage: false
             static: false
+            integration_tests: false
 
     uses: ./.github/workflows/build_and_test.yml
     with:
@@ -82,7 +87,7 @@ jobs:
       code_coverage: ${{ matrix.code_coverage }}
       static: ${{ matrix.static }}
       unit_tests: true
-      integration_tests: true
+      integration_tests: ${{ matrix.integration_tests }}
       clio_server: true
 
   check_config:
