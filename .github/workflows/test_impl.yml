@@ -122,7 +122,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: clio_integration_tests_${{ runner.os }}_${{ matrix.build_type }}_${{ matrix.conan_profile }}
+          name: clio_integration_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
 
       # To be enabled back once docker in mac runner arrives
       # https://github.com/XRPLF/clio/issues/1400
