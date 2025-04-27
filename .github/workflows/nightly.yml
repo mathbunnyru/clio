@@ -20,14 +20,17 @@ jobs:
           - os: macos15
             build_type: Release
             static: false
+            integration_tests: false
           - os: heavy
             build_type: Release
             static: true
             container: '{ "image": "rippleci/clio_ci:latest" }'
+            integration_tests: true
           - os: heavy
             build_type: Debug
             static: true
             container: '{ "image": "rippleci/clio_ci:latest" }'
+            integration_tests: true
 
     uses: ./.github/workflows/build_and_test.yml
     with:
@@ -38,7 +41,7 @@ jobs:
       code_coverage: false
       static: ${{ matrix.static }}
       unit_tests: true
-      integration_tests: true
+      integration_tests: ${{ matrix.integration_tests }}
       clio_server: true
       disable_cache: true
 
