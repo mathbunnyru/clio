@@ -1,4 +1,4 @@
-name: Reusable build
+name: Reusable test
 on:
   workflow_call:
     inputs:
@@ -38,8 +38,8 @@ on:
         type: string
 
 jobs:
-  test:
-    name: Test ${{ inputs.container != '' && 'in container' || 'natively' }}
+  unit_tests:
+    name: Unit testing ${{ inputs.container != '' && 'in container' || 'natively' }}
     runs-on: ${{ inputs.runs_on }}
     container: ${{ inputs.container != '' && fromJson(inputs.container) || null }}
 
@@ -95,7 +95,7 @@ jobs:
             Reports are available as artifacts.
 
   integration_tests:
-    name: Integration test ${{ inputs.container != '' && 'in container' || 'natively' }}
+    name: Integration testing ${{ inputs.container != '' && 'in container' || 'natively' }}
     runs-on: ${{ inputs.runs_on }}
     container: ${{ inputs.container != '' && fromJson(inputs.container) || null }}
 
