@@ -74,6 +74,8 @@ jobs:
             code_coverage: false
             static: false
     steps:
+      - uses: actions/checkout@v4
+
       - name: Build
         uses: ./.github/workflows/build_impl.yml
         with:

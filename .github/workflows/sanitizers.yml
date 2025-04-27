@@ -24,6 +24,8 @@ jobs:
           #   compiler: gcc
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Build
         uses: ./.github/workflows/build_impl.yml
         with:
