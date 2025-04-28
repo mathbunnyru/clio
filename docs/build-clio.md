@@ -23,7 +23,7 @@ Clio does not require anything other than `compiler.cppstd=20` in your (`~/.cona
 > [!NOTE]
 > Although Clio is built using C++23, it's required to set `compiler.cppstd=20` for the time being as some of Clio's dependencies are not yet capable of building under C++23.
 
-Mac example:
+**Mac example**:
 
 ```text
 [settings]
@@ -40,7 +40,7 @@ compiler.cppstd=20
 tools.build:cxxflags+=["-DBOOST_ASIO_DISABLE_CONCEPTS"]
 ```
 
-Linux example:
+**Linux example**:
 
 ```text
 [settings]
