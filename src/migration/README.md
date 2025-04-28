@@ -6,7 +6,8 @@ Clio maintains the off-chain data of XRPL and multiple indexes tables to powerin
 
 Clio provides a migration command-line tool to migrate data in database.
 
-> Note: We need a **configuration file** to run the migration tool. This configuration file has the same format as the configuration file of the Clio server, ensuring consistency and ease of use. It reads the database configuration from the same session as the server's configuration, eliminating the need for separate setup or additional configuration files. Be aware that migration-specific configuration is under `.migration` session.
+> [!NOTE]
+> We need a **configuration file** to run the migration tool. This configuration file has the same format as the configuration file of the Clio server, ensuring consistency and ease of use. It reads the database configuration from the same session as the server's configuration, eliminating the need for separate setup or additional configuration files. Be aware that migration-specific configuration is under `.migration` session.
 
 ### Query migration status
 
