@@ -34,5 +34,5 @@ jobs:
       unit_tests: true
       integration_tests: false
       clio_server: false
-      target: clio_tests
+      targets: clio_tests clio_integration_tests
       sanitizer: ${{ matrix.sanitizer }}

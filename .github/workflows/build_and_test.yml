@@ -57,8 +57,8 @@ on:
         required: true
         type: boolean
 
-      target:
-        description: Build target name
+      targets:
+        description: Space-separated build target names
         required: false
         type: string
         default: all
@@ -80,10 +80,8 @@ jobs:
       disable_cache: ${{ inputs.disable_cache }}
       code_coverage: ${{ inputs.code_coverage }}
       static: ${{ inputs.static }}
-      unit_tests: ${{ inputs.unit_tests }}
-      integration_tests: ${{ inputs.integration_tests }}
       clio_server: ${{ inputs.clio_server }}
-      target: ${{ inputs.target }}
+      targets: ${{ inputs.targets }}
       sanitizer: ${{ inputs.sanitizer }}
 
   test:

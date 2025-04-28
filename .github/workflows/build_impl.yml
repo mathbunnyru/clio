@@ -38,23 +38,13 @@ on:
         required: true
         type: boolean
 
-      unit_tests:
-        description: Whether to run unit tests
-        required: true
-        type: boolean
-
-      integration_tests:
-        description: Whether to run integration tests
-        required: true
-        type: boolean
-
       clio_server:
         description: Whether to build clio_server
         required: true
         type: boolean
 
-      target:
-        description: Build target name
+      targets:
+        description: Space-separated build target names
         required: false
         type: string
 
@@ -113,7 +103,7 @@ jobs:
       - name: Build Clio
         uses: ./.github/actions/build_clio
         with:
-          target: ${{ inputs.target }}
+          targets: ${{ inputs.targets }}
 
       - name: Show ccache's statistics
         if: ${{ !inputs.disable_cache }}
@@ -126,11 +116,11 @@ jobs:
           cat /tmp/ccache.stats
 
       - name: Strip unit_tests
-        if: ${{ inputs.unit_tests && !inputs.code_coverage && inputs.sanitizer == 'false' }}
+        if: ${{ !inputs.code_coverage && inputs.sanitizer == 'false' }}
         run: strip build/clio_tests
 
       - name: Strip integration_tests
-        if: ${{ inputs.integration_tests && !inputs.code_coverage }}
+        if: ${{ !inputs.code_coverage }}
         run: strip build/clio_integration_tests
 
       - name: Upload clio_server
@@ -141,14 +131,14 @@ jobs:
           path: build/clio_server
 
       - name: Upload clio_tests
-        if: ${{ inputs.unit_tests && !inputs.code_coverage }}
+        if: ${{ !inputs.code_coverage }}
         uses: actions/upload-artifact@v4
         with:
           name: clio_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
           path: build/clio_tests
 
       - name: Upload clio_integration_tests
-        if: ${{ inputs.integration_tests && !inputs.code_coverage }}
+        if: ${{ !inputs.code_coverage }}
         uses: actions/upload-artifact@v4
         with:
           name: clio_integration_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
