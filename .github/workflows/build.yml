@@ -86,7 +86,8 @@ jobs:
       build_type: ${{ matrix.build_type }}
       code_coverage: ${{ matrix.code_coverage }}
       static: ${{ matrix.static }}
-      unit_tests: true
+      run_unit_tests: true
+      run_integration_tests: false
       clio_server: true
 
   check_config:

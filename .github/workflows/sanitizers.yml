@@ -31,8 +31,8 @@ jobs:
       build_type: Release
       code_coverage: false
       static: false
-      unit_tests: true
-      integration_tests: false
+      run_unit_tests: true
+      run_integration_tests: false
       clio_server: false
       targets: clio_tests clio_integration_tests
       sanitizer: ${{ matrix.sanitizer }}

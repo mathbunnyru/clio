@@ -23,12 +23,12 @@ on:
         required: true
         type: string
 
-      unit_tests:
+      run_unit_tests:
         description: Whether to run unit tests
         required: true
         type: boolean
 
-      integration_tests:
+      run_integration_tests:
         description: Whether to run integration tests
         required: true
         type: boolean
@@ -43,6 +43,8 @@ jobs:
     name: Unit testing ${{ inputs.container != '' && 'in container' || 'natively' }}
     runs-on: ${{ inputs.runs_on }}
     container: ${{ inputs.container != '' && fromJson(inputs.container) || null }}
+
+    if: inputs.run_unit_tests
 
     steps:
       - name: Clean workdir
@@ -100,7 +102,7 @@ jobs:
     runs-on: ${{ inputs.runs_on }}
     container: ${{ inputs.container != '' && fromJson(inputs.container) || null }}
 
-    if: inputs.integration_tests
+    if: inputs.run_integration_tests
 
     services:
       scylladb:
