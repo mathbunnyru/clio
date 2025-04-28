@@ -42,12 +42,12 @@ jobs:
         with:
           conan_dir: ${{ env.CONAN_USER_HOME }}/.conan
           ccache_dir: ${{ env.CCACHE_DIR }}
-          conan_profile: ${{ steps.conan.outputs.conan_profile }}
+          conan_profile: clang
 
       - name: Run conan and cmake
         uses: ./.github/actions/generate
         with:
-          conan_profile: ${{ steps.conan.outputs.conan_profile }}
+          conan_profile: clang
           conan_cache_hit: ${{ steps.restore_cache.outputs.conan_cache_hit }}
           build_type: Release
 

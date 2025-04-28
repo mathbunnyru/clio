@@ -34,7 +34,7 @@ jobs:
       - name: Run conan and cmake
         uses: ./.github/actions/generate
         with:
-          conan_profile: ${{ steps.conan.outputs.conan_profile }}
+          conan_profile: gcc
           conan_cache_hit: ${{ steps.restore_cache.outputs.conan_cache_hit }}
           build_type: Release
 
