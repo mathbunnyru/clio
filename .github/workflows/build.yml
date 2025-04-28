@@ -40,6 +40,9 @@ jobs:
 
   build-and-test:
     name: Build and Test
+    needs:
+      - check_format
+      - check_docs
 
     strategy:
       fail-fast: false
