@@ -52,7 +52,8 @@ Sometimes migrator isn't able to query the historical data by table's partition 
 
 Most indexes are based on either ledger states or transactions. We provide the `objects` and `transactions` scanner. Developers only need to implement the callback function to receive the historical data. Please find the examples in `tests/integration/migration/cassandra/ExampleTransactionsMigrator.cpp` and `tests/integration/migration/cassandra/ExampleObjectsMigrator.cpp`.
 
-> **Note** The full table scanner splits the table into multiple ranges by token(<https://opensource.docs.scylladb.com/stable/cql/functions.html#token>). A few of rows maybe read 2 times if its token happens to be at the edge of ranges. **Deduplication is needed** in the callback function.
+> [!NOTE]
+> The full table scanner splits the table into multiple ranges by token(<https://opensource.docs.scylladb.com/stable/cql/functions.html#token>). A few of rows maybe read 2 times if its token happens to be at the edge of ranges. **Deduplication is needed** in the callback function.
 
 ## How to write a full table scan adapter (Only for Cassandra/ScyllaDB)
 
