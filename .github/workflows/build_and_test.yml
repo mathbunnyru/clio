@@ -50,6 +50,7 @@ on:
         description: Whether to run integration tests
         required: true
         type: boolean
+        default: false
 
       clio_server:
         description: Whether to build clio_server
