@@ -30,3 +30,12 @@ repos:
     hooks:
       - id: prettier
         exclude: ^docs/doxygen-awesome-theme/
+
+  - repo: local
+    hooks:
+      - id: gofmt
+        name: Go Format
+        entry: pre-commit-hooks/run-go-fmt.sh
+        types: [go]
+        language: golang
+        description: "Runs `gofmt`, requires golang"
