@@ -1,14 +1,13 @@
-[default.extend-identifiers]
-rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn = "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"
-rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jp = "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jp"
-BAMMCTEyNy4wLjAuMTELMAkGA1UEBhMCVVMxFjAUBgNVBAcMDVNhbiBGcmFuc2lz = "BAMMCTEyNy4wLjAuMTELMAkGA1UEBhMCVVMxFjAUBgNVBAcMDVNhbiBGcmFuc2lz"
-UzETMBEGA1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5zaXNjbzEN = "UzETMBEGA1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5zaXNjbzEN"
-MAsGA1UECgwEVGVzdDEMMAoGA1UECwwDRGV2MRIwEAYDVQQDDAkxMjcuMC4wLjEw = "MAsGA1UECgwEVGVzdDEMMAoGA1UECwwDRGV2MRIwEAYDVQQDDAkxMjcuMC4wLjEw"
-AgMBAAGjgYYwgYMwUwYDVR0jBEwwSqE9pDswOTESMBAGA1UEAwwJMTI3LjAuMC4x = "AgMBAAGjgYYwgYMwUwYDVR0jBEwwSqE9pDswOTESMBAGA1UEAwwJMTI3LjAuMC4x"
-MQswCQYDVQQGEwJVUzEWMBQGA1UEBwwNU2FuIEZyYW5zaXNjb4IJAKu2wr50Pfbq = "MQswCQYDVQQGEwJVUzEWMBQGA1UEBwwNU2FuIEZyYW5zaXNjb4IJAKu2wr50Pfbq"
-BgkqhkiG9w0BAQsFAAOCAQEArEjC1DmJ6q0735PxGkOmjWNsfnw8c2Zl1Z4idKfn = "BgkqhkiG9w0BAQsFAAOCAQEArEjC1DmJ6q0735PxGkOmjWNsfnw8c2Zl1Z4idKfn"
-ZBjlCedfpE8F7R6F8unx8xTozaRr4ZbOVnqB8YWjyuIDUnujsxKdKFASZJAEzRjh = "ZBjlCedfpE8F7R6F8unx8xTozaRr4ZbOVnqB8YWjyuIDUnujsxKdKFASZJAEzRjh"
+[default]
+# This allows to ignore account ids in tests and private keys
+# More info: https://github.com/crate-ci/typos/issues/415
+extend-ignore-re = [
+    "[a-z-A-Z0-9]{33}",
+    "[a-z-A-Z0-9]{34}",
+    "[a-z-A-Z0-9]{64}",
+]
 
+[default.extend-identifiers]
 # (S)tring
 tring = "tring"
 trings = "trings"
