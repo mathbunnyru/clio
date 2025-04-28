@@ -5,6 +5,7 @@ on:
       - "docker/ci/**"
       - "docker/compilers/**"
       - .github/workflows/update_docker_ci.yml
+      - ".github/actions/build_docker_image/**"
   push:
     branches: [develop]
     paths:
@@ -13,6 +14,7 @@ on:
       - "docker/ci/**"
       - "docker/compilers/**"
       - .github/workflows/update_docker_ci.yml
+      - ".github/actions/build_docker_image/**"
   workflow_dispatch:
 
 jobs:
