@@ -74,6 +74,7 @@ jobs:
             static: true
             integration_tests: true
           - os: macos15
+            conan_profile: default_apple_clang
             build_type: Release
             code_coverage: false
             static: false
