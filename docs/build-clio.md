@@ -25,7 +25,7 @@ Clio does not require anything other than `compiler.cppstd=20` in your (`~/.cona
 
 Mac example:
 
-```toml
+```text
 [settings]
 os=Macos
 os_build=Macos
@@ -42,7 +42,7 @@ tools.build:cxxflags+=["-DBOOST_ASIO_DISABLE_CONCEPTS"]
 
 Linux example:
 
-```toml
+```text
 [settings]
 os=Linux
 os_build=Linux
