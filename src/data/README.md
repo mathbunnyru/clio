@@ -162,7 +162,7 @@ This table stores the list of transactions affecting a given account. This inclu
 ```sql
 CREATE TABLE clio.successor (
  key blob,    # Object index
- seq bigint,  # The sequnce that this ledger object's predecessor and successor was updated
+ seq bigint,  # The sequence that this ledger object's predecessor and successor was updated
  next blob,   # Index of the next object that existed in this sequence
  PRIMARY KEY (key, seq)
 ) WITH CLUSTERING ORDER BY (seq ASC) ...

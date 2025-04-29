@@ -117,7 +117,7 @@ func (ws *WebSocketClient) SendMessage(message string) (*ResponseData, error) {
 	var response JsonMap
 	err = json.Unmarshal(msg, &response)
 	if err != nil {
-		return nil, errors.New("Error unmarshaling message: " + err.Error())
+		return nil, errors.New("Error unmarshalling message: " + err.Error())
 	}
 	return &ResponseData{response, StatusCode(200), "WS Ok", requestDuration}, nil
 }
