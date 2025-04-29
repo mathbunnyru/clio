@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -o pipefail
+
+TEST_BINARY="${1}"
+test_name="${2}"
+output_file="${3}"
+
+echo "Started running test: $test_name"
+
+output_file="$OUTPUT_DIR/${test_name//\//_}"
+
+export TSAN_OPTIONS="log_path=\"$output_file\" die_after_fork=0"
+export ASAN_OPTIONS="log_path=\"$output_file\""
+export UBSAN_OPTIONS="log_path=\"$output_file\""
+export MallocNanoZone='0' # for MacOSX
+
+$TEST_BINARY --gtest_filter="$test_name" > /dev/null 2>&1
+
+sleep 10
+
+if [ $? -ne 0 ]; then
+    echo "'$test_name' failed a sanitizer check."
+fi
