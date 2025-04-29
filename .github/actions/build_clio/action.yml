@@ -5,7 +5,7 @@ inputs:
   targets:
     description: Space-separated build target names
     default: all
-  substract_threads:
+  subtract_threads:
     description: An option for the action get_number_of_threads. See get_number_of_threads
     required: true
     default: "0"
@@ -17,7 +17,7 @@ runs:
       uses: ./.github/actions/get_number_of_threads
       id: number_of_threads
       with:
-        substract_threads: ${{ inputs.substract_threads }}
+        subtract_threads: ${{ inputs.subtract_threads }}
 
     - name: Build targets
       shell: bash
