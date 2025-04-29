@@ -1,4 +1,5 @@
 name: Build and publish Clio docker image
+
 on:
   workflow_call:
     inputs:
@@ -41,6 +42,7 @@ jobs:
   build_and_publish_image:
     name: Build and publish image
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 

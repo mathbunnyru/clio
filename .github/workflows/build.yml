@@ -63,11 +63,14 @@ jobs:
     runs-on: heavy
     container:
       image: ghcr.io/xrplf/clio-ci:latest
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v4
         with:
           name: clio_server_Linux_Release_gcc
+
       - name: Compare Config Description
         shell: bash
         run: |

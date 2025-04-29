@@ -23,4 +23,7 @@ runs:
       shell: bash
       run: |
         cd build
-        cmake --build . --parallel ${{ steps.number_of_threads.outputs.threads_number }} --target ${{ inputs.targets }}
+        cmake \
+          --build . \
+          --parallel ${{ steps.number_of_threads.outputs.threads_number }} \
+          --target ${{ inputs.targets }}
