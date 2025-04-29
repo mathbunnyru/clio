@@ -17,20 +17,21 @@ To contribute, please:
 
 > **Note:** Please read the [Style guide](#style-guide).
 
-### Install git hooks
+### Install `pre-commit` hooks
 
-Please run the following command in order to use git hooks that are helpful for `clio` development.
+To ensure code quality and style, we use [`pre-commit`](https://pre-commit.com/).
+
+Please run the following command in order to use `pre-commit` hooks that are helpful for `clio` development:
 
 ```bash
-git config --local core.hooksPath .githooks
+pip3 install pre-commit
+pre-commit install
 ```
 
-### Git hooks dependencies
+`pre-commit` takes care of running each tool in [`.pre-commit-config.yaml`](https://github.com/XRPLF/clio/blob/develop/.pre-commit-config.yaml) in a separate environment.
 
-The pre-commit hook requires `clang-format >= 19.0.0` and `cmake-format` to be installed on your machine.
-`clang-format` can be installed using `brew` on macOS and default package manager on Linux.
-`cmake-format` can be installed using `pip`.
-The hook will also attempt to automatically use `doxygen` to verify that everything public in the codebase is covered by doc comments. If `doxygen` is not installed, the hook will raise a warning suggesting to install `doxygen` for future commits.
+`pre-commit` will also attempt to automatically use `doxygen` to verify that everything public in the codebase is covered by doc comments.
+If `doxygen` is not installed, the hook will raise a warning suggesting to install `doxygen` for future commits.
 
 ### Git commands
 
