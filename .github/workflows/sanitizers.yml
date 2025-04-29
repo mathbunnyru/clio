@@ -1,4 +1,5 @@
 name: Run tests with sanitizers
+
 on:
   schedule:
     - cron: "0 4 * * 1-5"
@@ -19,12 +20,12 @@ jobs:
             compiler: gcc
           - sanitizer: asan
             compiler: gcc
-          # - sanitizer: ubsan # todo: enable when heavy runners are available
-          #   compiler: gcc
+          - sanitizer: ubsan
+            compiler: gcc
 
     uses: ./.github/workflows/build_and_test.yml
     with:
-      runs_on: ubuntu-latest # todo: change to heavy
+      runs_on: heavy
       container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
       disable_cache: true
       conan_profile: ${{ matrix.compiler }}.${{ matrix.sanitizer }}
