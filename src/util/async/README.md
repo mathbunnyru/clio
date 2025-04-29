@@ -85,7 +85,7 @@ Scheduled operations can be aborted by calling
 
 - `cancel` - will only cancel the timer. If the timer already fired this will have no effect
 - `requestStop` - will stop the operation if it's already running or as soon as the timer runs out
-- `abort` - will call `cancel` immediatelly followed by `requestStop`
+- `abort` - will call `cancel` immediately followed by `requestStop`
 
 ### Error handling
 
@@ -150,7 +150,7 @@ auto res = ctx.execute([](auto stopToken) {
 res.requestStop();
 ```
 
-Alternatively, the stop token is implicity convertible to `bool` so you can also use it like so:
+Alternatively, the stop token is implicitly convertible to `bool` so you can also use it like so:
 
 ```cpp
 auto res = ctx.execute([](auto stopRequested) {
