@@ -59,10 +59,21 @@ jobs:
         with:
           name: clio_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
 
-      - name: Run clio_tests
+      - name: Make clio_tests executable
+        run: chmod +x ./clio_tests
+
+      - name: Run clio_tests without sanitizer
+        if: ${{ inputs.sanitizer == 'false' }}
+        run: ./clio_tests
+
+      - name: Get number of threads
+        uses: ./.github/actions/get_number_of_threads
+        id: number_of_threads
+
+      - name: Run clio_tests with sanitizer
+        if: ${{ inputs.sanitizer != 'false' }}
         run: |
-          chmod +x ./clio_tests
-          ${{ inputs.sanitizer != 'false' && './.github/scripts/execute-tests-under-sanitizer' || '' }} ./clio_tests
+          ./.github/scripts/execute-tests-under-sanitizer ./clio_tests ${{ steps.number_of_threads.outputs.threads_number }}
 
       - name: Check for sanitizer report
         shell: bash
