@@ -1,4 +1,5 @@
 name: Run tests with sanitizers
+
 on:
   schedule:
     - cron: "0 4 * * 1-5"
