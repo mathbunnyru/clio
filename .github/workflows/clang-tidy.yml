@@ -65,12 +65,6 @@ jobs:
         run: |
           run-clang-tidy-19 -p build -j ${{ steps.number_of_threads.outputs.threads_number }} -fix -quiet 1>output.txt
 
-      - name: Check format
-        if: ${{ steps.run_clang_tidy.outcome != 'success' }}
-        continue-on-error: true
-        shell: bash
-        run: ./.githooks/check-format
-
       - name: Print issues found
         if: ${{ steps.run_clang_tidy.outcome != 'success' }}
         shell: bash
