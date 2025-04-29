@@ -14,7 +14,7 @@ jobs:
   clang_tidy:
     runs-on: heavy
     container:
-      image: rippleci/clio_ci:latest
+      image: ghcr.io/xrplf/clio-ci:latest
     permissions:
       contents: write
       issues: write
