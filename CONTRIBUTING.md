@@ -21,7 +21,7 @@ To contribute, please:
 
 To ensure code quality and style, we use [`pre-commit`](https://pre-commit.com/).
 
-Please run the following command in order to use `pre-commit` hooks that are helpful for `clio` development:
+Run the following command to enable `pre-commit` hooks that help with Clio development:
 
 ```bash
 pip3 install pre-commit
@@ -30,8 +30,8 @@ pre-commit install
 
 `pre-commit` takes care of running each tool in [`.pre-commit-config.yaml`](https://github.com/XRPLF/clio/blob/develop/.pre-commit-config.yaml) in a separate environment.
 
-`pre-commit` will also attempt to automatically use `doxygen` to verify that everything public in the codebase is covered by doc comments.
-If `doxygen` is not installed, the hook will raise a warning suggesting to install `doxygen` for future commits.
+`pre-commit` also attempts to automatically use Doxygen to verify that everything public in the codebase has doc comments.
+If Doxygen is not installed, the hook issues a warning and recommends installing Doxygen for future commits.
 
 ### Git commands
 
@@ -121,8 +121,8 @@ This is a non-exhaustive list of recommended style guidelines. These are not alw
 
 ### Formatting
 
-Code must conform to `clang-format`, unless the result would be unreasonably difficult to read or maintain.
-In most cases the `pre-commit` hook will take care of formatting and will fix any issues automatically.
+Code must conform to `clang-format`, unless the result is unreasonably difficult to read or maintain.
+In most cases the `pre-commit` hook takes care of formatting and fixes any issues automatically.
 To manually format your code, use `pre-commit run clang-format --files <your changed files>` for C++ files and `pre-commit run cmake-format --files <your changed files>` for CMake files.
 
 ### Documentation
