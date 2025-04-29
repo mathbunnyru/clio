@@ -11,13 +11,13 @@ To contribute, please:
 3. Write and test your code.
 4. Ensure that your code compiles with the provided build engine and update the provided build engine as part of your PR where needed and where appropriate.
 5. Where applicable, write test cases for your code and include those in the relevant subfolder under `tests`.
-6. Ensure your code passes automated checks (e.g. clang-format)
+6. Ensure your code passes [automated checks](#pre-commit-hooks)
 7. Squash your commits (i.e. rebase) into as few commits as is reasonable to describe your changes at a high level (typically a single commit for a small change). See below for more details.
 8. Open a PR to the main repository onto the _develop_ branch, and follow the provided template.
 
 > **Note:** Please read the [Style guide](#style-guide).
 
-### Install `pre-commit` hooks
+### `pre-commit` hooks
 
 To ensure code quality and style, we use [`pre-commit`](https://pre-commit.com/).
 
@@ -121,9 +121,9 @@ This is a non-exhaustive list of recommended style guidelines. These are not alw
 
 ### Formatting
 
-Code must conform to `clang-format` version 19, unless the result would be unreasonably difficult to read or maintain.
-In most cases the pre-commit hook will take care of formatting and will fix any issues automatically.
-To manually format your code, use `clang-format -i <your changed files>` for C++ files and `cmake-format -i <your changed files>` for CMake files.
+Code must conform to `clang-format`, unless the result would be unreasonably difficult to read or maintain.
+In most cases the `pre-commit` hook will take care of formatting and will fix any issues automatically.
+To manually format your code, use `pre-commit run clang-format --files <your changed files>` for C++ files and `pre-commit run clang-format --files <your changed files>` for CMake files.
 
 ### Documentation
 
