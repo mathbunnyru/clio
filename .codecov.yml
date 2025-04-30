@@ -9,3 +9,9 @@ coverage:
       default:
         target: 20% # Need to bump this number https://docs.codecov.com/docs/commit-status#patch-status
         threshold: 2%
+
+ignore:
+  - "tests"
+  - "src/data/cassandra/"
+  - "src/data/CassandraBackend.hpp"
+  - "src/data/BackendFactory.*"

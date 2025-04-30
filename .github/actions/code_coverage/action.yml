@@ -12,7 +12,8 @@ runs:
     - name: Run gcovr
       shell: bash
       run: |
-        gcovr -e tests \
+        gcovr \
+          -e tests \
           -e src/data/cassandra \
           -e src/data/CassandraBackend.hpp \
           -e 'src/data/BackendFactory.*' \
