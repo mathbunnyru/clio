@@ -27,6 +27,7 @@ jobs:
   build_and_push:
     name: Build and push docker image
     runs-on: [self-hosted, heavy]
+
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/build_docker_image

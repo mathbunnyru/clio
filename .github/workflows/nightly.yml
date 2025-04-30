@@ -75,9 +75,11 @@ jobs:
     needs: [build-and-test, nightly_release, build_and_publish_docker_image]
     if: ${{ always() && contains(needs.*.result, 'failure') && github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
       issues: write
+
     steps:
       - uses: actions/checkout@v4
 
