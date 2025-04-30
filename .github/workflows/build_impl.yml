@@ -177,3 +177,5 @@ jobs:
     name: Codecov
     needs: build
     uses: ./.github/workflows/upload_coverage_report.yml
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
