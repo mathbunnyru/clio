@@ -10,8 +10,9 @@ coverage:
         target: 20% # Need to bump this number https://docs.codecov.com/docs/commit-status#patch-status
         threshold: 2%
 
-# This is not currently used, but it is a good idea to have it in place.
-# If `codecov/codecov-action` is run with build files present, it reruns `gcov`.
+# `codecov/codecov-action` reruns `gcovr` if build files present
+# That's why we run it in a separate workflow
+# This ignore list is not currently used
 #
 # More info: https://github.com/XRPLF/clio/pull/2066
 ignore:

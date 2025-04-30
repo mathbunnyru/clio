@@ -10,6 +10,7 @@ runs:
       run: |
         build/clio_tests
 
+    # Please keep exclude list in sync with .codecov.yml
     - name: Run gcovr
       shell: bash
       run: |
