@@ -7,6 +7,11 @@ on:
     branches: [master, release/*, develop]
   workflow_dispatch:
 
+concurrency:
+  # Only cancel in-progress jobs or runs for the current workflow - matches against branch & tags
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-test:
     name: Build and Test
@@ -63,11 +68,14 @@ jobs:
     runs-on: heavy
     container:
       image: ghcr.io/xrplf/clio-ci:latest
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v4
         with:
           name: clio_server_Linux_Release_gcc
+
       - name: Compare Config Description
         shell: bash
         run: |
