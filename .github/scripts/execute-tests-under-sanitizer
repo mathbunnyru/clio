@@ -34,4 +34,4 @@ TESTS=$($TEST_BINARY --gtest_list_tests | awk '/^  / {print suite $1} !/^  / {su
 OUTPUT_DIR="./.sanitizer-report"
 mkdir -p "$OUTPUT_DIR"
 
-echo ${TESTS} | xargs -n 1 -P "${PROCESSES_NUM}" -I {} "${CURRENT_FILE_DIR}"/run-one-test-under-sanitizer "${TEST_BINARY}" "{}" "${OUTPUT_DIR}"
+printf "%s\n" ${TESTS} | xargs -n 1 -P "${PROCESSES_NUM}" -I {} "${CURRENT_FILE_DIR}"/run-one-test-under-sanitizer "${TEST_BINARY}" "{}" "${OUTPUT_DIR}"
