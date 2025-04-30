@@ -168,6 +168,10 @@ jobs:
         if: ${{ inputs.code_coverage }}
         uses: ./.github/actions/code_coverage
 
+  # `codecov/codecov-action` will rerun `gcov` if it's available and build directory is present
+  # To prevent this from happening, we run this action in a separate workflow
+  #
+  # More info: https://github.com/XRPLF/clio/pull/2066
   upload_coverage_report:
     if: ${{ inputs.code_coverage }}
     name: Codecov
