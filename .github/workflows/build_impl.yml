@@ -129,12 +129,12 @@ jobs:
           name: clio_server_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
           path: build/clio_server
 
-      - name: Upload build directory for code coverage
+      - name: Upload .gcno files for code coverage
         if: inputs.code_coverage
         uses: actions/upload-artifact@v4
         with:
           name: clio_codecov_build_dir_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
-          path: build
+          path: build/**/*.gcno
 
       - name: Upload clio_tests
         if: ${{ !inputs.code_coverage }}
