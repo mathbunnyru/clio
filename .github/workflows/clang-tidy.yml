@@ -11,6 +11,11 @@ on:
       - .github/workflows/clang-tidy.yml
   workflow_call:
 
+concurrency:
+  # Only cancel in-progress jobs or runs for the current workflow - matches against branch & tags
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   CONAN_PROFILE: clang
 
