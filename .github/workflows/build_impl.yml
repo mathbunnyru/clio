@@ -167,13 +167,9 @@ jobs:
       - name: Run code coverage
         if: ${{ inputs.code_coverage }}
         uses: ./.github/actions/code_coverage
-        with:
-          codecov_token: ${{ secrets.CODECOV_TOKEN }}
 
   upload_coverage_report:
     if: ${{ inputs.code_coverage }}
     name: Codecov
     needs: build
     uses: ./.github/workflows/upload_coverage_report.yml
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
