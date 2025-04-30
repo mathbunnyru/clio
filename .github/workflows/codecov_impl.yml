@@ -1,0 +1,94 @@
+name: Run code coverage
+
+on:
+  workflow_call:
+    inputs:
+      runs_on:
+        description: OS to run on
+        required: true
+        type: string
+
+      container:
+        description: Container to run in
+        required: false
+        type: string
+
+      conan_profile:
+        description: Conan profile to use
+        required: true
+        type: string
+
+      build_type:
+        description: Build type
+        required: true
+        type: string
+
+jobs:
+  run-codecov:
+    name: Run code coverage ${{ inputs.container != '' && 'in container' || 'natively' }}
+    runs-on: ${{ inputs.runs_on }}
+    container: ${{ inputs.container != '' && fromJson(inputs.container) || null }}
+
+    steps:
+      - name: Clean workdir
+        if: ${{ runner.os == 'macOS' }}
+        uses: kuznetsss/workspace-cleanup@80b9863b45562c148927c3d53621ef354e5ae7ce # v1.0
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prepare runner
+        uses: ./.github/actions/prepare_runner
+
+      - name: Setup conan
+        uses: ./.github/actions/setup_conan
+        with:
+          conan_profile: ${{ inputs.conan_profile }}
+
+      - name: Restore cache
+        uses: ./.github/actions/restore_cache
+        id: restore_cache
+        with:
+          conan_dir: ${{ env.CONAN_USER_HOME }}/.conan
+          conan_profile: ${{ inputs.conan_profile }}
+          ccache_dir: ${{ env.CCACHE_DIR }}
+          build_type: ${{ inputs.build_type }}
+          code_coverage: ${{ inputs.code_coverage }}
+
+      - name: Download build directory (code coverage)
+        uses: actions/download-artifact@v4
+        with:
+          name: clio_codecov_build_dir_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
+          path: build
+
+      - name: Run tests
+        shell: bash
+        run: |
+          chmod +x ./build/clio_tests
+          build/clio_tests
+
+      - name: Run gcovr
+        shell: bash
+        run: |
+          gcovr -e tests \
+            -e src/data/cassandra \
+            -e src/data/CassandraBackend.hpp \
+            -e 'src/data/BackendFactory.*' \
+            --xml build/coverage_report.xml -j8 --exclude-throw-branches
+
+      - name: Archive coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report.xml
+          path: build/coverage_report.xml
+          retention-days: 30
+
+      - name: Upload coverage report
+        if: ${{ hashFiles('build/coverage_report.xml') != '' }}
+        uses: codecov/codecov-action@ad3126e916f78f00edff4ed0317cf185271ccc2d # v5.4.2
+        with:
+          files: build/coverage_report.xml
+          fail_ci_if_error: false
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}

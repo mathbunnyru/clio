@@ -23,11 +23,6 @@ on:
         required: true
         type: string
 
-      code_coverage:
-        description: Whether to enable code coverage
-        required: true
-        type: boolean
-
       run_unit_tests:
         description: Whether to run unit tests
         required: true
@@ -61,33 +56,20 @@ jobs:
           fetch-depth: 0
 
       - uses: actions/download-artifact@v4
-        if: ${{ !inputs.code_coverage }}
         with:
           name: clio_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
 
       - name: Make clio_tests executable
-        if: ${{ !inputs.code_coverage }}
         shell: bash
         run: chmod +x ./clio_tests
 
       - name: Run clio_tests (regular)
-        if: inputs.sanitizer == 'false' && !inputs.code_coverage
+        if: inputs.sanitizer == 'false'
         run: ./clio_tests
 
       - name: Run clio_tests (sanitizer)
         if: inputs.sanitizer != 'false'
         run: ./.github/scripts/execute-tests-under-sanitizer ./clio_tests
-
-      - name: Download build directory (code coverage)
-        if: inputs.code_coverage
-        uses: actions/download-artifact@v4
-        with:
-          name: clio_codecov_build_dir_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
-          path: build
-
-      - name: Run clio_tests and generate report (code coverage)
-        if: inputs.code_coverage
-        uses: ./.github/actions/code_coverage
 
       - name: Check for sanitizer report
         if: inputs.sanitizer != 'false'
@@ -123,13 +105,6 @@ jobs:
             Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/
             Reports are available as artifacts.
 
-  upload_code_coverage:
-    name: Upload code coverage report
-    if: inputs.code_coverage
-    needs: unit_tests
-
-    uses: ./.github/workflows/upload_coverage_report.yml
-
   integration_tests:
     name: Integration testing ${{ inputs.container != '' && 'in container' || 'natively' }}
     runs-on: ${{ inputs.runs_on }}
@@ -153,7 +128,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: clio_integration_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}${{ inputs.code_coverage && '_codecov' || '' }}
+          name: clio_integration_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
 
       # To be enabled back once docker in mac runner arrives
       # https://github.com/XRPLF/clio/issues/1400

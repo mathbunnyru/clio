@@ -96,3 +96,12 @@ jobs:
       run_unit_tests: ${{ inputs.run_unit_tests }}
       run_integration_tests: ${{ inputs.run_integration_tests }}
       sanitizer: ${{ inputs.sanitizer }}
+
+  codecov:
+    needs: build
+    uses: ./.github/workflows/codecov_impl.yml
+    with:
+      runs_on: ${{ inputs.runs_on }}
+      container: ${{ inputs.container }}
+      conan_profile: ${{ inputs.conan_profile }}
+      build_type: ${{ inputs.build_type }}
