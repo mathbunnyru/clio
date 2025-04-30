@@ -23,6 +23,12 @@ on:
         required: true
         type: string
 
+      disable_cache:
+        description: Whether ccache and conan cache should be disabled
+        required: false
+        type: boolean
+        default: false
+
 jobs:
   run-codecov:
     name: Run code coverage ${{ inputs.container != '' && 'in container' || 'natively' }}
@@ -40,6 +46,8 @@ jobs:
 
       - name: Prepare runner
         uses: ./.github/actions/prepare_runner
+        with:
+          disable_ccache: ${{ inputs.disable_cache }}
 
       - name: Setup conan
         uses: ./.github/actions/setup_conan
@@ -47,6 +55,7 @@ jobs:
           conan_profile: ${{ inputs.conan_profile }}
 
       - name: Restore cache
+        if: ${{ !inputs.disable_cache }}
         uses: ./.github/actions/restore_cache
         id: restore_cache
         with:
@@ -55,6 +64,16 @@ jobs:
           ccache_dir: ${{ env.CCACHE_DIR }}
           build_type: ${{ inputs.build_type }}
           code_coverage: ${{ inputs.code_coverage }}
+
+      - name: Run conan and cmake
+        uses: ./.github/actions/generate
+        with:
+          conan_profile: ${{ inputs.conan_profile }}
+          conan_cache_hit: ${{ !inputs.disable_cache && steps.restore_cache.outputs.conan_cache_hit }}
+          build_type: ${{ inputs.build_type }}
+          code_coverage: true
+          static: ${{ inputs.static }}
+          sanitizer: ${{ inputs.sanitizer }}
 
       - name: Download build directory (code coverage)
         uses: actions/download-artifact@v4
