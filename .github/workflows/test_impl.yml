@@ -83,6 +83,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: clio_codecov_build_dir_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
+          path: build
 
       - name: Run clio_tests and generate report (code coverage)
         if: inputs.code_coverage
