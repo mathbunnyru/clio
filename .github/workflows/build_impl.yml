@@ -123,22 +123,31 @@ jobs:
         run: strip build/clio_integration_tests
 
       - name: Upload clio_server
-        if: ${{ inputs.upload_clio_server }}
+        if: inputs.upload_clio_server && !inputs.code_coverage
         uses: actions/upload-artifact@v4
         with:
           name: clio_server_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
           path: build/clio_server
 
-      - name: Upload clio_tests
+      - name: Upload build directory for code coverage
+        if: inputs.code_coverage
         uses: actions/upload-artifact@v4
         with:
-          name: clio_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}${{ inputs.code_coverage && '_codecov' || '' }}
+          name: clio_codecov_build_dir_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
+          path: build
+
+      - name: Upload clio_tests
+        if: ${{ !inputs.code_coverage }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: clio_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
           path: build/clio_tests
 
       - name: Upload clio_integration_tests
+        if: ${{ !inputs.code_coverage }}
         uses: actions/upload-artifact@v4
         with:
-          name: clio_integration_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}${{ inputs.code_coverage && '_codecov' || '' }}
+          name: clio_integration_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
           path: build/clio_integration_tests
 
       - name: Save cache

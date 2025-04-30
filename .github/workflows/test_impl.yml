@@ -61,10 +61,12 @@ jobs:
           fetch-depth: 0
 
       - uses: actions/download-artifact@v4
+        if: ${{ !inputs.code_coverage }}
         with:
-          name: clio_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}${{ inputs.code_coverage && '_codecov' || '' }}
+          name: clio_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
 
       - name: Make clio_tests executable
+        if: ${{ !inputs.code_coverage }}
         shell: bash
         run: chmod +x ./clio_tests
 
@@ -76,19 +78,25 @@ jobs:
         if: inputs.sanitizer != 'false'
         run: ./.github/scripts/execute-tests-under-sanitizer ./clio_tests
 
+      - name: Download build directory (code coverage)
+        if: inputs.code_coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: clio_codecov_build_dir_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
+
       - name: Run clio_tests (code coverage)
         if: inputs.code_coverage
-        run: ./clio_tests
+        run: ./build/clio_tests
 
       - name: Run gcovr
         if: inputs.code_coverage
         shell: bash
         run: |
-          gcovr -e tests \
+          gcovr -e build/tests \
             -e src/data/cassandra \
             -e src/data/CassandraBackend.hpp \
             -e 'src/data/BackendFactory.*' \
-            --xml ./coverage_report.xml \
+            --xml ./build/coverage_report.xml \
             -j8 \
             --exclude-throw-branches
 
@@ -97,7 +105,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report.xml
-          path: ./coverage_report.xml
+          path: ./build/coverage_report.xml
           retention-days: 30
 
       - name: Check for sanitizer report
@@ -164,7 +172,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: clio_integration_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
+          name: clio_integration_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}${{ inputs.code_coverage && '_codecov' || '' }}
 
       # To be enabled back once docker in mac runner arrives
       # https://github.com/XRPLF/clio/issues/1400
