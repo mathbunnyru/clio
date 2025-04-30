@@ -129,15 +129,6 @@ jobs:
           name: clio_server_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
           path: build/clio_server
 
-      - name: Upload .gcno files for code coverage
-        if: inputs.code_coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: clio_codecov_build_dir_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
-          path: |
-            build/**/*.gcno
-            build/clio_tests
-
       - name: Upload clio_tests
         if: ${{ !inputs.code_coverage }}
         uses: actions/upload-artifact@v4
@@ -165,3 +156,14 @@ jobs:
           build_type: ${{ inputs.build_type }}
           code_coverage: ${{ inputs.code_coverage }}
           conan_profile: ${{ inputs.conan_profile }}
+
+      # This is run as part of the build job, because it requires the following:
+      # - source code
+      # - generated source code (Build.cpp)
+      # - conan packages
+      # - .gcno files in build directory
+      #
+      # It's all available in the build job, but not in the test job
+      - name: Run code coverage
+        if: ${{ inputs.code_coverage }}
+        uses: ./.github/actions/code_coverage
