@@ -115,11 +115,11 @@ jobs:
           cat /tmp/ccache.stats
 
       - name: Strip unit_tests
-        if: ${{ !inputs.code_coverage && inputs.sanitizer == 'false' }}
+        if: inputs.sanitizer == 'false' && !inputs.code_coverage
         run: strip build/clio_tests
 
       - name: Strip integration_tests
-        if: ${{ !inputs.code_coverage }}
+        if: inputs.sanitizer == 'false' && !inputs.code_coverage
         run: strip build/clio_integration_tests
 
       - name: Upload clio_server
@@ -154,11 +154,3 @@ jobs:
           build_type: ${{ inputs.build_type }}
           code_coverage: ${{ inputs.code_coverage }}
           conan_profile: ${{ inputs.conan_profile }}
-
-  upload_coverage_report:
-    if: ${{ inputs.code_coverage }}
-    name: Codecov
-    needs: build
-    uses: ./.github/workflows/upload_coverage_report.yml
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

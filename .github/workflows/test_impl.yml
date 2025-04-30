@@ -2,6 +2,10 @@ name: Reusable test
 
 on:
   workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        required: true
+
     inputs:
       runs_on:
         description: Runner to run the job on
@@ -133,6 +137,15 @@ jobs:
 
             Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/
             Reports are available as artifacts.
+
+  upload_code_coverage:
+    name: Upload code coverage report
+    if: inputs.code_coverage
+    needs: unit_tests
+
+    uses: ./.github/workflows/upload_coverage_report.yml
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   integration_tests:
     name: Integration testing ${{ inputs.container != '' && 'in container' || 'natively' }}
