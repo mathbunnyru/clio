@@ -23,6 +23,11 @@ on:
         required: true
         type: string
 
+      code_coverage:
+        description: Whether to enable code coverage
+        required: true
+        type: boolean
+
       run_unit_tests:
         description: Whether to run unit tests
         required: true
@@ -57,14 +62,46 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: clio_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
+          name: clio_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}${{ inputs.code_coverage && '_codecov' || '' }}
 
-      - name: Run clio_tests
+      - name: Make clio_tests executable
+        shell: bash
+        run: chmod +x ./clio_tests
+
+      - name: Run clio_tests (regular)
+        if: inputs.sanitizer == 'false' && !inputs.code_coverage
+        run: ./clio_tests
+
+      - name: Run clio_tests (sanitizer)
+        if: inputs.sanitizer != 'false'
+        run: ./.github/scripts/execute-tests-under-sanitizer ./clio_tests
+
+      - name: Run clio_tests (code coverage)
+        if: inputs.code_coverage
+        run: ./clio_tests
+
+      - name: Run gcovr
+        if: inputs.code_coverage
+        shell: bash
         run: |
-          chmod +x ./clio_tests
-          ${{ inputs.sanitizer != 'false' && './.github/scripts/execute-tests-under-sanitizer' || '' }} ./clio_tests
+          gcovr -e tests \
+            -e src/data/cassandra \
+            -e src/data/CassandraBackend.hpp \
+            -e 'src/data/BackendFactory.*' \
+            --xml ./coverage_report.xml \
+            -j8 \
+            --exclude-throw-branches
+
+      - name: Archive coverage report
+        if: inputs.code_coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report.xml
+          path: ./coverage_report.xml
+          retention-days: 30
 
       - name: Check for sanitizer report
+        if: inputs.sanitizer != 'false'
         shell: bash
         id: check_report
         run: |
@@ -75,7 +112,7 @@ jobs:
           fi
 
       - name: Upload sanitizer report
-        if: ${{ steps.check_report.outputs.found_report == 'true' }}
+        if: inputs.sanitizer != 'false' && steps.check_report.outputs.found_report == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.conan_profile }}_report
@@ -84,7 +121,7 @@ jobs:
 
       # TODO: enable when we have fixed all currently existing issues from sanitizers
       - name: Create an issue
-        if: ${{ false && steps.check_report.outputs.found_report == 'true' }}
+        if: false && inputs.sanitizer != 'false' && steps.check_report.outputs.found_report == 'true'
         uses: ./.github/actions/create_issue
         env:
           GH_TOKEN: ${{ github.token }}

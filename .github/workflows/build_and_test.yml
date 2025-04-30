@@ -52,8 +52,8 @@ on:
         type: boolean
         default: false
 
-      clio_server:
-        description: Whether to build clio_server
+      upload_clio_server:
+        description: Whether to upload clio_server
         required: true
         type: boolean
 
@@ -80,20 +80,19 @@ jobs:
       disable_cache: ${{ inputs.disable_cache }}
       code_coverage: ${{ inputs.code_coverage }}
       static: ${{ inputs.static }}
-      clio_server: ${{ inputs.clio_server }}
+      upload_clio_server: ${{ inputs.upload_clio_server }}
       targets: ${{ inputs.targets }}
       sanitizer: ${{ inputs.sanitizer }}
 
   test:
     needs: build
-    # TODO: We don't upload tests if code coverage is enabled
-    if: ${{ !inputs.code_coverage }}
     uses: ./.github/workflows/test_impl.yml
     with:
       runs_on: ${{ inputs.runs_on }}
       container: ${{ inputs.container }}
       conan_profile: ${{ inputs.conan_profile }}
       build_type: ${{ inputs.build_type }}
+      code_coverage: ${{ inputs.code_coverage }}
       run_unit_tests: ${{ inputs.run_unit_tests }}
       run_integration_tests: ${{ inputs.run_integration_tests }}
       sanitizer: ${{ inputs.sanitizer }}
