@@ -24,7 +24,7 @@ jobs:
         build_type: [Release, Debug]
         container: ['{ "image": "ghcr.io/xrplf/clio-ci:latest" }']
         code_coverage: [false]
-        static: [false]
+        static: [true]
 
         include:
           - os: heavy
