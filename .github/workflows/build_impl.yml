@@ -167,3 +167,5 @@ jobs:
       - name: Run code coverage
         if: ${{ inputs.code_coverage }}
         uses: ./.github/actions/code_coverage
+        with:
+          codecov_token: ${{ secrets.CODECOV_TOKEN }}

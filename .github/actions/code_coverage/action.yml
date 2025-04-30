@@ -1,6 +1,11 @@
 name: Generate code coverage report
 description: Run tests, generate code coverage report and upload it to codecov.io
 
+inputs:
+  codecov_token:
+    description: Codecov token for uploading coverage report
+    required: true
+
 runs:
   using: composite
 
@@ -26,4 +31,4 @@ runs:
         files: build/coverage_report.xml
         fail_ci_if_error: false
         verbose: true
-        token: ${{ secrets.CODECOV_TOKEN }}
+        token: ${{ inputs.codecov_token }}
