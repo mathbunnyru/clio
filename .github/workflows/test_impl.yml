@@ -2,10 +2,6 @@ name: Reusable test
 
 on:
   workflow_call:
-    secrets:
-      CODECOV_TOKEN:
-        required: true
-
     inputs:
       runs_on:
         description: Runner to run the job on
