@@ -140,8 +140,6 @@ jobs:
     needs: unit_tests
 
     uses: ./.github/workflows/upload_coverage_report.yml
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   integration_tests:
     name: Integration testing ${{ inputs.container != '' && 'in container' || 'natively' }}
