@@ -69,7 +69,7 @@ jobs:
       matrix:
         include:
           - os: heavy
-            conan_profile: gcc
+            conan_profile: clang
             container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
             static: true
           - os: macos15
