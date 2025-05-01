@@ -23,22 +23,15 @@ jobs:
         conan_profile: [gcc, clang]
         build_type: [Release, Debug]
         container: ['{ "image": "ghcr.io/xrplf/clio-ci:latest" }']
-        code_coverage: [false]
         static: [true]
 
         include:
-          - os: heavy
-            conan_profile: gcc
-            build_type: Debug
-            container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
-            code_coverage: true
-            static: true
           - os: macos15
             conan_profile: default_apple_clang
             build_type: Release
             container: ""
-            code_coverage: false
             static: false
+          - os: heavy
 
     uses: ./.github/workflows/build_and_test.yml
     with:
@@ -46,11 +39,56 @@ jobs:
       container: ${{ matrix.container }}
       conan_profile: ${{ matrix.conan_profile }}
       build_type: ${{ matrix.build_type }}
-      code_coverage: ${{ matrix.code_coverage }}
       static: ${{ matrix.static }}
       run_unit_tests: true
       run_integration_tests: false
       upload_clio_server: true
+
+  code_coverage:
+    name: Run Code Coverage
+
+    uses: ./.github/workflows/build_impl.yml
+    with:
+      runs_on: heavy
+      container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
+      conan_profile: gcc
+      build_type: Debug
+      disable_cache: false
+      code_coverage: true
+      static: true
+      upload_clio_server: false
+      targets: all
+      sanitizer: "false"
+      build_time_analyze: false
+
+  build_time_analyze:
+    name: Build Time Analyze
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: heavy
+            conan_profile: gcc
+            container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
+            static: true
+          - os: macos15
+            conan_profile: default_apple_clang
+            container: ""
+            static: false
+    uses: ./.github/workflows/build_impl.yml
+    with:
+      runs_on: ${{ matrix.os }}
+      container: ${{ matrix.container }}
+      conan_profile: ${{ matrix.conan_profile }}
+      build_type: Release
+      disable_cache: false
+      code_coverage: false
+      static: ${{ matrix.static }}
+      upload_clio_server: false
+      targets: all
+      sanitizer: "false"
+      build_time_analyze: true
 
   check_config:
     name: Check Config Description
