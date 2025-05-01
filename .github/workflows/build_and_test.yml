@@ -77,7 +77,7 @@ jobs:
       upload_clio_server: ${{ inputs.upload_clio_server }}
       targets: ${{ inputs.targets }}
       sanitizer: ${{ inputs.sanitizer }}
-      build_time_analyze: false
+      analyze_build_time: false
 
   test:
     needs: build

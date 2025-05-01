@@ -53,7 +53,7 @@ on:
         required: true
         type: string
 
-      build_time_analyze:
+      analyze_build_time:
         description: Whether to enable build time analysis
         required: true
         type: boolean
@@ -103,7 +103,7 @@ jobs:
           code_coverage: ${{ inputs.code_coverage }}
           static: ${{ inputs.static }}
           sanitizer: ${{ inputs.sanitizer }}
-          time_trace: ${{ inputs.build_time_analyze }}
+          time_trace: ${{ inputs.analyze_build_time }}
 
       - name: Build Clio
         uses: ./.github/actions/build_clio
@@ -111,7 +111,7 @@ jobs:
           targets: ${{ inputs.targets }}
 
       - name: Show build time analyze report
-        if: ${{ inputs.build_time_analyze }}
+        if: ${{ inputs.analyze_build_time }}
         run: |
           ClangBuildAnalyzer --all build/ build_time_report.bin
           ClangBuildAnalyzer --analyze build_time_report.bin > build_time_report.txt
@@ -120,7 +120,7 @@ jobs:
         shell: bash
 
       - name: Upload build time analyze report
-        if: ${{ inputs.build_time_analyze }}
+        if: ${{ inputs.analyze_build_time }}
         uses: actions/upload-artifact@v4
         with:
           name: build_time_report_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
@@ -137,29 +137,29 @@ jobs:
           cat /tmp/ccache.stats
 
       - name: Strip unit_tests
-        if: inputs.sanitizer == 'false' && !inputs.code_coverage && !inputs.build_time_analyze
+        if: inputs.sanitizer == 'false' && !inputs.code_coverage && !inputs.analyze_build_time
         run: strip build/clio_tests
 
       - name: Strip integration_tests
-        if: inputs.sanitizer == 'false' && !inputs.code_coverage && !inputs.build_time_analyze
+        if: inputs.sanitizer == 'false' && !inputs.code_coverage && !inputs.analyze_build_time
         run: strip build/clio_integration_tests
 
       - name: Upload clio_server
-        if: inputs.upload_clio_server && !inputs.code_coverage && !inputs.build_time_analyze
+        if: inputs.upload_clio_server && !inputs.code_coverage && !inputs.analyze_build_time
         uses: actions/upload-artifact@v4
         with:
           name: clio_server_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
           path: build/clio_server
 
       - name: Upload clio_tests
-        if: ${{ !inputs.code_coverage && !inputs.build_time_analyze }}
+        if: ${{ !inputs.code_coverage && !inputs.analyze_build_time }}
         uses: actions/upload-artifact@v4
         with:
           name: clio_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
           path: build/clio_tests
 
       - name: Upload clio_integration_tests
-        if: ${{ !inputs.code_coverage && !inputs.build_time_analyze }}
+        if: ${{ !inputs.code_coverage && !inputs.analyze_build_time }}
         uses: actions/upload-artifact@v4
         with:
           name: clio_integration_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}

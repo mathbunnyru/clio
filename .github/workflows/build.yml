@@ -59,10 +59,10 @@ jobs:
       upload_clio_server: false
       targets: all
       sanitizer: "false"
-      build_time_analyze: false
+      analyze_build_time: false
 
-  build_time_analyze:
-    name: Build Time Analyze
+  analyze_build_time:
+    name: Analyze Build Time
 
     strategy:
       fail-fast: false
@@ -88,7 +88,7 @@ jobs:
       upload_clio_server: false
       targets: all
       sanitizer: "false"
-      build_time_analyze: true
+      analyze_build_time: true
 
   check_config:
     name: Check Config Description
