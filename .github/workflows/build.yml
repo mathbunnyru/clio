@@ -31,7 +31,6 @@ jobs:
             build_type: Release
             container: ""
             static: false
-          - os: heavy
 
     uses: ./.github/workflows/build_and_test.yml
     with:
