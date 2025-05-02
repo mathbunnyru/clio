@@ -59,6 +59,8 @@ jobs:
       targets: all
       sanitizer: "false"
       analyze_build_time: false
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   check_config:
     name: Check Config Description

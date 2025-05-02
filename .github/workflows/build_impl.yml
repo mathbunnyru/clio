@@ -58,6 +58,10 @@ on:
         required: true
         type: boolean
 
+    secrets:
+      CODECOV_TOKEN:
+        required: false
+
 jobs:
   build:
     name: Build ${{ inputs.container != '' && 'in container' || 'natively' }}
