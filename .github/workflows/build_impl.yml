@@ -115,8 +115,7 @@ jobs:
         run: |
           ClangBuildAnalyzer --all build/ build_time_report.bin
           ClangBuildAnalyzer --analyze build_time_report.bin > build_time_report.txt
-          # Running again to have colorized output
-          ClangBuildAnalyzer --analyze build_time_report.bin
+          cat build_time_report.txt
         shell: bash
 
       - name: Upload build time analyze report
