@@ -84,7 +84,7 @@ jobs:
       container: ${{ matrix.container }}
       conan_profile: ${{ matrix.conan_profile }}
       build_type: Release
-      disable_cache: false
+      disable_cache: true
       code_coverage: false
       static: ${{ matrix.static }}
       upload_clio_server: false
