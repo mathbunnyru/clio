@@ -44,7 +44,7 @@ jobs:
       upload_clio_server: true
 
   code_coverage:
-    name: Run Code Coverage
+    name: Run Code Coverage trigger
 
     uses: ./.github/workflows/build_impl.yml
     with:
