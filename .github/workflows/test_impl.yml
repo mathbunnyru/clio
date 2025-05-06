@@ -130,8 +130,6 @@ jobs:
         with:
           name: clio_integration_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
 
-      # To be enabled back once docker in mac runner arrives
-      # https://github.com/XRPLF/clio/issues/1400
       - name: Run clio_integration_tests
         run: |
           chmod +x ./clio_integration_tests
