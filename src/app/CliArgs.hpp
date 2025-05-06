@@ -27,6 +27,9 @@
 
 namespace app {
 
+/**
+ * @brief Parsed command line arguments representation.
+ */
 class CliArgs {
 public:
     /**
