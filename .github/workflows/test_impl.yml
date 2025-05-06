@@ -128,6 +128,7 @@ jobs:
 
       - name: Spin up scylladb
         if: ${{ runner.os == 'macOS' }}
+        timeout-minutes: 3
         run: |
           docker rm --force scylladb || true
           docker run \
@@ -140,7 +141,10 @@ jobs:
             --publish 9042:9042 \
             --memory 16G \
             scylladb/scylla
-          sleep 10
+
+          until [ "$(docker inspect -f '{{.State.Health.Status}}' scylladb)" == "healthy" ]; do
+            sleep 5
+          done
 
       - uses: actions/download-artifact@v4
         with:
