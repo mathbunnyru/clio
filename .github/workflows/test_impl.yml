@@ -137,6 +137,7 @@ jobs:
             --health-retries 5 \
             --publish 9042:9042 \
             scylladb/scylla
+          sleep 10
 
       - uses: actions/download-artifact@v4
         with:
