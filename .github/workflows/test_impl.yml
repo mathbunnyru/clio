@@ -129,7 +129,7 @@ jobs:
       - name: Spin up scylladb
         if: ${{ runner.os == 'macOS' }}
         run: |
-          docker kill scylladb || true
+          docker rm --force scylladb || true
           docker run -d --name scylladb \
             --health-cmd "cqlsh -e 'describe cluster'" \
             --health-interval 10s \
