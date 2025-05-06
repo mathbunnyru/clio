@@ -130,7 +130,8 @@ jobs:
         if: ${{ runner.os == 'macOS' }}
         run: |
           docker rm --force scylladb || true
-          docker run -d --name scylladb \
+          docker run \
+            --name scylladb \
             --health-cmd "cqlsh -e 'describe cluster'" \
             --health-interval 10s \
             --health-timeout 5s \
