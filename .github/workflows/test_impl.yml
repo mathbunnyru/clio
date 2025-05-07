@@ -150,14 +150,10 @@ jobs:
         with:
           name: clio_integration_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
 
-      - name: Show docker ps
-        if: ${{ always() && runner.os == 'macOS' }}
-        run: docker ps -a
-
       - name: Run clio_integration_tests
         run: |
           chmod +x ./clio_integration_tests
-          ./clio_integration_tests --backend_host=scylladb
+          ./clio_integration_tests ${{ runner.os == 'macOS' && '' || '--backend_host=scylladb' }}
 
       - name: Show docker logs and stop scylladb
         if: ${{ always() && runner.os == 'macOS' }}
