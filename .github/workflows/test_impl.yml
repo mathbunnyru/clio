@@ -150,6 +150,10 @@ jobs:
         with:
           name: clio_integration_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ inputs.conan_profile }}
 
+      - name: Show docker ps
+        if: ${{ always() && runner.os == 'macOS' }}
+        run: docker ps -a
+
       - name: Run clio_integration_tests
         run: |
           chmod +x ./clio_integration_tests
