@@ -142,17 +142,18 @@ protected:
     std::shared_ptr<migration::MigrationManagerInterface> testMigrationManager_;
     std::shared_ptr<CassandraMigrationTestBackend> testMigrationBackend_;
 
+    void
+    SetUp() override
+    {
+        setupDatabase();
+    }
+
+public:
     MigrationCassandraSimpleTest()
     {
         auto const testBundle = makeMigrationTestManagerAndBackend(cfg_);
         testMigrationManager_ = testBundle.first;
         testMigrationBackend_ = testBundle.second;
-    }
-
-    void
-    SetUp() override
-    {
-        setupDatabase();
     }
 
     ~MigrationCassandraSimpleTest()

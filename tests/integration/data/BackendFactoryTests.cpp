@@ -84,7 +84,7 @@ protected:
 };
 
 class BackendCassandraFactoryTestWithDB : public BackendCassandraFactoryTest {
-protected:
+public:
     ~BackendCassandraFactoryTestWithDB()
     {
         // drop the keyspace for next test
