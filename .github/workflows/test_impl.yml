@@ -155,7 +155,8 @@ jobs:
           chmod +x ./clio_integration_tests
           ./clio_integration_tests --backend_host=scylladb
 
-      - name: Stop scylladb
+      - name: Show docker logs and stop scylladb
         if: ${{ always() && runner.os == 'macOS' }}
         run: |
+          docker logs scylladb
           docker rm --force scylladb || true
