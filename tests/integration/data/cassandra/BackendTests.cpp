@@ -115,6 +115,7 @@ protected:
 
     std::default_random_engine randomEngine_{0};
 
+public:
     ~BackendCassandraTest()
     {
         // drop the keyspace for next test
