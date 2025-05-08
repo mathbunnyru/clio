@@ -150,7 +150,8 @@ If you wish to develop against a `rippled` instance running in standalone mode t
 
 Sometimes, during development, you need to build against a custom version of `libxrpl`. (For example, you may be developing compatibility for a proposed amendment that is not yet merged to the main `rippled` codebase.) To build Clio with compatibility for a custom fork or branch of `rippled`, follow these steps:
 
-1. First, pull/clone the appropriate `rippled` fork and switch to the branch you want to build. The following example uses an in-development build with [XLS-33d Multi-Purpose Tokens](https://github.com/XRPLF/XRPL-Standards/tree/master/XLS-0033d-multi-purpose-tokens):
+1. First, pull/clone the appropriate `rippled` fork and switch to the branch you want to build.
+   The following example uses an in-development build with [XLS-33d Multi-Purpose Tokens](https://github.com/XRPLF/XRPL-Standards/tree/master/XLS-0033d-multi-purpose-tokens):
 
    ```sh
    git clone https://github.com/shawnxie999/rippled/
