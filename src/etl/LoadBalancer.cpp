@@ -92,11 +92,26 @@ LoadBalancer::LoadBalancer(
     std::shared_ptr<NetworkValidatedLedgersInterface> validatedLedgers,
     SourceFactory sourceFactory
 )
-    : forwardedProcessingHistogram_(PrometheusService::histogramInt(
-          "forwarded_processing_milliseconds_histogram",
+    : forwardedDurationHistogram_(PrometheusService::histogramInt(
+          "lb_forwarded_duration_milliseconds_histogram",
           Labels(),
           kHISTOGRAM_BUCKETS,
           "The duration of processing forwarded requests"
+      ))
+    , forwardedRetryCounter_(PrometheusService::counterInt(
+          "lb_forwarded_retry_counter",
+          Labels(),
+          "The number of retries before a forwarded request was successful"
+      ))
+    , cacheHitCounter_(PrometheusService::counterInt(
+          "lb_cache_hit_counter",
+          Labels(),
+          "The number of requests that were served from the cache"
+      ))
+    , cacheMissCounter_(PrometheusService::counterInt(
+          "lb_cache_miss_counter",
+          Labels(),
+          "The number of requests that were not served from the cache"
       ))
 {
     auto const forwardingCacheTimeout = config.get<float>("forwarding.cache_timeout");
@@ -279,6 +294,7 @@ LoadBalancer::forwardToRippled(
         return std::unexpected{std::get<rpc::ClioError>(combinedError)};
     }
 
+    ++cacheMissCounter_.get();
     return forwardToRippledImpl(request, clientIp, isAdmin, yield);
 }
 
@@ -390,13 +406,13 @@ LoadBalancer::forwardToRippledImpl(
     while (numAttempts < sources_.size()) {
         auto [res, duration] =
             util::timed([&]() { return sources_[sourceIdx]->forwardToRippled(request, clientIp, xUserValue, yield); });
-
-        forwardedProcessingHistogram_.get().observe(duration);
+        forwardedDurationHistogram_.get().observe(duration);
 
         if (res) {
             response = std::move(res).value();
             break;
         }
+        ++forwardedRetryCounter_.get();
         error = std::max(error, res.error());  // Choose the best result between all sources
 
         sourceIdx = (sourceIdx + 1) % sources_.size();
