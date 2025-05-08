@@ -60,6 +60,7 @@
 #include <vector>
 
 using namespace util::config;
+using namespace util::prometheus;
 
 namespace etl {
 
@@ -81,8 +82,6 @@ LoadBalancer::makeLoadBalancer(
         config, ioc, std::move(backend), std::move(subscriptions), std::move(validatedLedgers), std::move(sourceFactory)
     );
 }
-
-using namespace util::prometheus;
 
 LoadBalancer::LoadBalancer(
     ClioConfigDefinition const& config,
