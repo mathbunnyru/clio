@@ -34,6 +34,7 @@
 #include "util/newconfig/ArrayView.hpp"
 #include "util/newconfig/ConfigDefinition.hpp"
 #include "util/newconfig/ObjectView.hpp"
+#include "util/prometheus/Label.hpp"
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/spawn.hpp>
@@ -61,6 +62,10 @@ using namespace util::config;
 
 namespace etl {
 
+namespace {
+std::vector<std::int64_t> const kHISTOGRAM_BUCKETS{1, 2, 5, 10, 20, 50, 100, 200, 500, 700, 1000};
+}
+
 std::shared_ptr<etlng::LoadBalancerInterface>
 LoadBalancer::makeLoadBalancer(
     ClioConfigDefinition const& config,
@@ -76,6 +81,8 @@ LoadBalancer::makeLoadBalancer(
     );
 }
 
+using namespace util::prometheus;
+
 LoadBalancer::LoadBalancer(
     ClioConfigDefinition const& config,
     boost::asio::io_context& ioc,
@@ -84,6 +91,12 @@ LoadBalancer::LoadBalancer(
     std::shared_ptr<NetworkValidatedLedgersInterface> validatedLedgers,
     SourceFactory sourceFactory
 )
+    : forwardedProcessingHistogram_(PrometheusService::histogramInt(
+          "forwarded_processing_milliseconds_histogram",
+          Labels({Label{"operation", "write"}}),
+          kHISTOGRAM_BUCKETS,
+          "The duration of processing forwarded requests"
+      ))
 {
     auto const forwardingCacheTimeout = config.get<float>("forwarding.cache_timeout");
     if (forwardingCacheTimeout > 0.f) {
@@ -168,11 +181,6 @@ LoadBalancer::LoadBalancer(
     for (auto const& source : sources_) {
         source->run();
     }
-}
-
-LoadBalancer::~LoadBalancer()
-{
-    sources_.clear();
 }
 
 std::vector<std::string>
@@ -379,7 +387,12 @@ LoadBalancer::forwardToRippledImpl(
     std::optional<boost::json::object> response;
     rpc::ClioError error = rpc::ClioError::EtlConnectionError;
     while (numAttempts < sources_.size()) {
+        std::chrono::steady_clock::time_point startTime{};
         auto res = sources_[sourceIdx]->forwardToRippled(request, clientIp, xUserValue, yield);
+        auto const duration =
+            std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - startTime).count();
+        forwardedProcessingHistogram_.get().observe(duration);
+
         if (res) {
             response = std::move(res).value();
             break;
