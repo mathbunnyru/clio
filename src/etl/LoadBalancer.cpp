@@ -98,11 +98,6 @@ LoadBalancer::LoadBalancer(
           kHISTOGRAM_BUCKETS,
           "The duration of processing forwarded requests"
       ))
-    , forwardedProcessingRequestCount_(PrometheusService::counterInt(
-          "forwarded_processing_request_count",
-          Labels(),
-          "The number of forwarded requests"
-      ))
 {
     auto const forwardingCacheTimeout = config.get<float>("forwarding.cache_timeout");
     if (forwardingCacheTimeout > 0.f) {
@@ -397,7 +392,6 @@ LoadBalancer::forwardToRippledImpl(
             util::timed([&]() { return sources_[sourceIdx]->forwardToRippled(request, clientIp, xUserValue, yield); });
 
         forwardedProcessingHistogram_.get().observe(duration);
-        ++forwardedProcessingRequestCount_.get();
 
         if (res) {
             response = std::move(res).value();

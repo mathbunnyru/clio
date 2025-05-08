@@ -95,7 +95,6 @@ private:
         kDEFAULT_DOWNLOAD_RANGES; /*< The number of markers to use when downloading initial ledger */
 
     std::reference_wrapper<util::prometheus::HistogramInt> forwardedProcessingHistogram_;
-    std::reference_wrapper<util::prometheus::CounterInt> forwardedProcessingRequestCount_;
 
     // Using mutex instead of atomic_bool because choosing a new source to
     // forward messages should be done with a mutual exclusion otherwise there will be a race condition
