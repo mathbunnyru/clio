@@ -28,6 +28,7 @@
 #include "rpc/Errors.hpp"
 #include "util/Assert.hpp"
 #include "util/CoroutineGroup.hpp"
+#include "util/Profiler.hpp"
 #include "util/Random.hpp"
 #include "util/ResponseExpirationCache.hpp"
 #include "util/log/Logger.hpp"
@@ -93,7 +94,7 @@ LoadBalancer::LoadBalancer(
 )
     : forwardedProcessingHistogram_(PrometheusService::histogramInt(
           "forwarded_processing_milliseconds_histogram",
-          Labels({Label{"operation", "write"}}),
+          Labels(),
           kHISTOGRAM_BUCKETS,
           "The duration of processing forwarded requests"
       ))
@@ -387,10 +388,9 @@ LoadBalancer::forwardToRippledImpl(
     std::optional<boost::json::object> response;
     rpc::ClioError error = rpc::ClioError::EtlConnectionError;
     while (numAttempts < sources_.size()) {
-        std::chrono::steady_clock::time_point startTime{};
-        auto res = sources_[sourceIdx]->forwardToRippled(request, clientIp, xUserValue, yield);
-        auto const duration =
-            std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - startTime).count();
+        auto [res, duration] =
+            util::timed([&]() { return sources_[sourceIdx]->forwardToRippled(request, clientIp, xUserValue, yield); });
+
         forwardedProcessingHistogram_.get().observe(duration);
 
         if (res) {
