@@ -96,7 +96,7 @@ private:
 
     std::reference_wrapper<util::prometheus::HistogramInt> forwardedDurationHistogram_;
     std::reference_wrapper<util::prometheus::CounterInt> forwardedRetryCounter_;
-    std::reference_wrapper<util::prometheus::CounterInt> cacheHitCounter_;
+    std::reference_wrapper<util::prometheus::CounterInt> cacheTriedCounter_;
     std::reference_wrapper<util::prometheus::CounterInt> cacheMissCounter_;
 
     // Using mutex instead of atomic_bool because choosing a new source to

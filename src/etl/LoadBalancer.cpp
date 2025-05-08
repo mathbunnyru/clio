@@ -103,10 +103,10 @@ LoadBalancer::LoadBalancer(
           Labels(),
           "The number of retries before a forwarded request was successful"
       ))
-    , cacheHitCounter_(PrometheusService::counterInt(
-          "lb_cache_hit_counter",
+    , cacheTriedCounter_(PrometheusService::counterInt(
+          "lb_cache_tried_counter",
           Labels(),
-          "The number of requests that were served from the cache"
+          "The number of requests that we tried to serve from the cache"
       ))
     , cacheMissCounter_(PrometheusService::counterInt(
           "lb_cache_miss_counter",
@@ -266,6 +266,8 @@ LoadBalancer::forwardToRippled(
     auto const cmd = boost::json::value_to<std::string>(request.at("command"));
 
     if (forwardingCache_ and forwardingCache_->shouldCache(cmd)) {
+        ++cacheTriedCounter_.get();
+
         auto updater =
             [this, &request, &clientIp, isAdmin](boost::asio::yield_context yield
             ) -> std::expected<util::ResponseExpirationCache::EntryData, util::ResponseExpirationCache::Error> {
@@ -294,7 +296,6 @@ LoadBalancer::forwardToRippled(
         return std::unexpected{std::get<rpc::ClioError>(combinedError)};
     }
 
-    ++cacheMissCounter_.get();
     return forwardToRippledImpl(request, clientIp, isAdmin, yield);
 }
 
@@ -394,6 +395,8 @@ LoadBalancer::forwardToRippledImpl(
     boost::asio::yield_context yield
 )
 {
+    ++cacheMissCounter_.get();
+
     ASSERT(not sources_.empty(), "ETL sources must be configured to forward requests.");
     std::size_t sourceIdx = util::Random::uniform(0ul, sources_.size() - 1);
 
