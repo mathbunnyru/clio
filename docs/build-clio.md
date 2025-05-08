@@ -1,6 +1,6 @@
 # How to build Clio
 
-Clio is built with [CMake](https://cmake.org/) and uses [Conan](https://conan.io/) for managing dependencies.
+`Clio` is built with [CMake](https://cmake.org/) and uses [Conan](https://conan.io/) for managing dependencies.
 `Clio` is written in C++23 and therefore requires a modern compiler.
 
 ## Minimum Requirements
