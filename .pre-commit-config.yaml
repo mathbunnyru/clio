@@ -42,6 +42,15 @@ repos:
     hooks:
       - id: typos
 
+  # Running fix-local-includes before clang-format
+  # to ensure that the include order is correct.
+  - repo: local
+    hooks:
+      - id: fix-local-includes
+        name: Fix Local Includes
+        entry: pre-commit-hooks/fix-local-includes.sh
+        types: [c++]
+        language: system
   - repo: https://github.com/pre-commit/mirrors-clang-format
     rev: v19.1.7
     hooks:
@@ -77,11 +86,6 @@ repos:
         types: [text]
         language: system
         pass_filenames: false
-      - id: fix-local-includes
-        name: Fix Local Includes
-        entry: pre-commit-hooks/fix-local-includes.sh
-        types: [c++]
-        language: system
       - id: verify-commits
         name: Verify Commits
         entry: pre-commit-hooks/verify-commits.sh
