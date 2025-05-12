@@ -100,7 +100,7 @@ LoadBalancer::LoadBalancer(
     , forwardedRetryCounter_(PrometheusService::counterInt(
           "lb_forwarded_retry_counter",
           Labels(),
-          "The number of retries before a forwarded request was successful"
+          "The number of retries before a forwarded request was successful. Initial attempt excluded"
       ))
     , cacheTriedCounter_(PrometheusService::counterInt(
           "lb_cache_tried_counter",
