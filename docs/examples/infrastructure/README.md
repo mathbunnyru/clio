@@ -22,7 +22,7 @@ The structure of the directory:
 
 ## How to try
 
-1. Make sure you have `docker` (with `Docker Compose`) installed.
+1. Make sure you have Docker (with `Docker Compose`) installed.
 2. Run `docker compose up -d` from this directory. It will start docker containers with Prometheus and Grafana.
 3. Open [http://localhost:3000/dashboards](http://localhost:3000/dashboards). Grafana login `admin`, password `grafana`.
    There will be pre-configured Clio dashboard.

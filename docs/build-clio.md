@@ -19,7 +19,7 @@
 
 ### Conan Configuration
 
-Clio requires `compiler.cppstd=20` in your (`~/.conan/profiles/default`) Conan profile.
+Clio requires `compiler.cppstd=20` in your Conan profile (`~/.conan/profiles/default`).
 
 > [!NOTE]
 > Although Clio is built using C++23, it's required to set `compiler.cppstd=20` for the time being as some of Clio's dependencies are not yet capable of building under C++23.
