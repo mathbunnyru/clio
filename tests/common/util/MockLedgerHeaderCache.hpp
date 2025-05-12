@@ -19,36 +19,17 @@
 
 #pragma once
 
-#include "cluster/ClioNode.hpp"
+#include "data/LedgerHeaderCache.hpp"
 
-#include <expected>
-#include <string>
-#include <vector>
+#include <gmock/gmock.h>
+#include <xrpl/protocol/LedgerHeader.h>
 
-namespace cluster {
+#include <optional>
 
-/**
- * @brief Interface for the cluster communication service.
- */
-class ClusterCommunicationServiceInterface {
-public:
-    virtual ~ClusterCommunicationServiceInterface() = default;
+struct MockLedgerHeaderCache {
+    MockLedgerHeaderCache() = default;
+    using CacheEntry = data::FetchLedgerCache::CacheEntry;
 
-    /**
-     * @brief Get the data of the current node.
-     *
-     * @return The data of the current node.
-     */
-    [[nodiscard]] virtual ClioNode
-    selfData() const = 0;
-
-    /**
-     * @brief Get the data of all nodes in the cluster (including self).
-     *
-     * @return The data of all nodes in the cluster or error if the service is not healthy.
-     */
-    [[nodiscard]] virtual std::expected<std::vector<ClioNode>, std::string>
-    clusterData() const = 0;
+    MOCK_METHOD(void, put, (CacheEntry), ());
+    MOCK_METHOD(std::optional<CacheEntry>, get, (), (const));
 };
-
-}  // namespace cluster

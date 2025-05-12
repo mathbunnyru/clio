@@ -17,38 +17,30 @@
 */
 //==============================================================================
 
-#pragma once
+#include "data/LedgerHeaderCache.hpp"
 
-#include "cluster/ClioNode.hpp"
+#include "util/Mutex.hpp"
 
-#include <expected>
-#include <string>
-#include <vector>
+#include <mutex>
+#include <optional>
+#include <shared_mutex>
 
-namespace cluster {
+namespace data {
 
-/**
- * @brief Interface for the cluster communication service.
- */
-class ClusterCommunicationServiceInterface {
-public:
-    virtual ~ClusterCommunicationServiceInterface() = default;
+FetchLedgerCache::FetchLedgerCache() = default;
 
-    /**
-     * @brief Get the data of the current node.
-     *
-     * @return The data of the current node.
-     */
-    [[nodiscard]] virtual ClioNode
-    selfData() const = 0;
+void
+FetchLedgerCache::put(CacheEntry const& cacheEntry)
+{
+    auto lock = mutex_.lock<std::unique_lock>();
+    *lock = cacheEntry;
+}
 
-    /**
-     * @brief Get the data of all nodes in the cluster (including self).
-     *
-     * @return The data of all nodes in the cluster or error if the service is not healthy.
-     */
-    [[nodiscard]] virtual std::expected<std::vector<ClioNode>, std::string>
-    clusterData() const = 0;
-};
+std::optional<FetchLedgerCache::CacheEntry>
+FetchLedgerCache::get() const
+{
+    auto const lock = mutex_.lock<std::shared_lock>();
+    return lock.get();
+}
 
-}  // namespace cluster
+}  // namespace data
