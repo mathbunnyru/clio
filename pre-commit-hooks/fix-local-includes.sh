@@ -2,7 +2,12 @@
 
 # Note: This script is intended to be run from the root of the repository.
 #
-# This script checks will fix local includes in the C++ code.
+# This script will fix local includes in the C++ code for a given file.
+
+if [[ $# -ne 1 ]]; then
+    echo "Usage: $0 <file_path>"
+    exit 1
+fi
 
 file_path="$1"
 
