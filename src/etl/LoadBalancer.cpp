@@ -416,11 +416,11 @@ LoadBalancer::forwardToRippledImpl(
             util::timed([&]() { return sources_[sourceIdx]->forwardToRippled(request, clientIp, xUserValue, yield); });
 
         if (res) {
-            ++forwardingCounters_.successDuration.get() += duration;
+            forwardingCounters_.successDuration.get() += duration;
             response = std::move(res).value();
             break;
         }
-        ++forwardingCounters_.failDuration.get() += duration;
+        forwardingCounters_.failDuration.get() += duration;
         ++forwardingCounters_.retries.get();
         error = std::max(error, res.error());  // Choose the best result between all sources
 
