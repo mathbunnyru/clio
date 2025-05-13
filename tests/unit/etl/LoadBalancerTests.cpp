@@ -59,6 +59,7 @@
 using namespace etl;
 using namespace util::config;
 using testing::Return;
+using namespace util::prometheus;
 
 constexpr static auto const kTWO_SOURCES_LEDGER_RESPONSE = R"({
     "etl_sources": [
@@ -638,6 +639,37 @@ TEST_F(LoadBalancerForwardToRippledTests, source0Fails)
 
     runSpawn([&](boost::asio::yield_context yield) {
         EXPECT_EQ(loadBalancer->forwardToRippled(request_, clientIP_, false, yield), response_);
+    });
+}
+
+struct LoadBalancerForwardToRippledPrometheusTests : LoadBalancerForwardToRippledTests, WithMockPrometheus {};
+
+TEST_F(LoadBalancerForwardToRippledPrometheusTests, forwardingCacheEnabled)
+{
+    configJson_.as_object()["forwarding"] = boost::json::object{{"cache_timeout", 10.}};
+    EXPECT_CALL(sourceFactory_, makeSource).Times(2);
+    auto loadBalancer = makeLoadBalancer();
+
+    auto const request = boost::json::object{{"command", "server_info"}};
+
+    auto& cacheHitCounter = makeMock<CounterInt>("forwarding_cache_hit_counter", "");
+    auto& cacheMissCounter = makeMock<CounterInt>("forwarding_cache_miss_counter", "");
+    auto& successDurationCounter =
+        makeMock<CounterInt>("forwarding_duration_milliseconds_counter", "{status=\"success\"}");
+
+    EXPECT_CALL(cacheMissCounter, add(1));
+    EXPECT_CALL(cacheHitCounter, add(1));
+    EXPECT_CALL(successDurationCounter, add(testing::_));
+
+    EXPECT_CALL(
+        sourceFactory_.sourceAt(0),
+        forwardToRippled(request, clientIP_, LoadBalancer::kUSER_FORWARDING_X_USER_VALUE, testing::_)
+    )
+        .WillOnce(Return(response_));
+
+    runSpawn([&](boost::asio::yield_context yield) {
+        EXPECT_EQ(loadBalancer->forwardToRippled(request, clientIP_, false, yield), response_);
+        EXPECT_EQ(loadBalancer->forwardToRippled(request, clientIP_, false, yield), response_);
     });
 }
 
