@@ -88,31 +88,33 @@ LoadBalancer::LoadBalancer(
     std::shared_ptr<NetworkValidatedLedgersInterface> validatedLedgers,
     SourceFactory sourceFactory
 )
-    : forwardingDurationSuccessCounter_(PrometheusService::counterInt(
-          "forwarding_duration_milliseconds_counter",
-          Labels({{"status", "success"}}),
-          "The duration of processing successful forwarded requests"
-      ))
-    , forwardingDurationFailCounter_(PrometheusService::counterInt(
-          "forwarding_duration_milliseconds_counter",
-          Labels({{"status", "fail"}}),
-          "The duration of processing failed forwarded requests"
-      ))
-    , forwardingRetryCounter_(PrometheusService::counterInt(
-          "forwarding_retry_counter",
-          Labels(),
-          "The number of retries before a forwarded request was successful. Initial attempt excluded"
-      ))
-    , forwardingCacheHitCounter_(PrometheusService::counterInt(
-          "forwarding_cache_hit_counter",
-          Labels(),
-          "The number of requests that we served from the cache"
-      ))
-    , forwardingCacheMissCounter_(PrometheusService::counterInt(
-          "forwarding_cache_miss_counter",
-          Labels(),
-          "The number of requests that were not served from the cache"
-      ))
+    : forwardingCounters_{
+          .SuccessDuration = PrometheusService::counterInt(
+              "forwarding_duration_milliseconds_counter",
+              Labels({{"status", "success"}}),
+              "The duration of processing successful forwarded requests"
+          ),
+          .FailDuration = PrometheusService::counterInt(
+              "forwarding_duration_milliseconds_counter",
+              Labels({{"status", "fail"}}),
+              "The duration of processing failed forwarded requests"
+          ),
+          .Retries = PrometheusService::counterInt(
+              "forwarding_retries_counter",
+              Labels(),
+              "The number of retries before a forwarded request was successful. Initial attempt excluded"
+          ),
+          .CacheHit = PrometheusService::counterInt(
+              "forwarding_cache_hit_counter",
+              Labels(),
+              "The number of requests that we served from the cache"
+          ),
+          .CacheMiss = PrometheusService::counterInt(
+              "forwarding_cache_miss_counter",
+              Labels(),
+              "The number of requests that were not served from the cache"
+          )
+      }
 {
     auto const forwardingCacheTimeout = config.get<float>("forwarding.cache_timeout");
     if (forwardingCacheTimeout > 0.f) {
@@ -289,7 +291,7 @@ LoadBalancer::forwardToRippled(
             [](util::ResponseExpirationCache::EntryData const& entry) { return not entry.response.contains("error"); }
         );
         if (servedFromCache) {
-            ++forwardingCacheHitCounter_.get();
+            ++forwardingCounters_.CacheHit.get();
         }
         if (result.has_value()) {
             return std::move(result).value();
@@ -398,7 +400,7 @@ LoadBalancer::forwardToRippledImpl(
     boost::asio::yield_context yield
 )
 {
-    ++forwardingCacheMissCounter_.get();
+    ++forwardingCounters_.CacheMiss.get();
 
     ASSERT(not sources_.empty(), "ETL sources must be configured to forward requests.");
     std::size_t sourceIdx = util::Random::uniform(0ul, sources_.size() - 1);
@@ -414,12 +416,12 @@ LoadBalancer::forwardToRippledImpl(
             util::timed([&]() { return sources_[sourceIdx]->forwardToRippled(request, clientIp, xUserValue, yield); });
 
         if (res) {
-            forwardingDurationSuccessCounter_.get() += duration;
+            ++forwardingCounters_.SuccessDuration.get() += duration;
             response = std::move(res).value();
             break;
         }
-        forwardingDurationFailCounter_.get() += duration;
-        ++forwardingRetryCounter_.get();
+        ++forwardingCounters_.FailDuration.get() += duration;
+        ++forwardingCounters_.Retries.get();
         error = std::max(error, res.error());  // Choose the best result between all sources
 
         sourceIdx = (sourceIdx + 1) % sources_.size();
