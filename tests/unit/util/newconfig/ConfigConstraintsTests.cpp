@@ -17,38 +17,34 @@
 */
 //==============================================================================
 
-#pragma once
+#include "util/newconfig/ConfigConstraints.hpp"
+#include "util/newconfig/Types.hpp"
 
-#include "cluster/ClioNode.hpp"
+#include <gtest/gtest.h>
 
-#include <expected>
-#include <string>
-#include <vector>
+using namespace util::config;
 
-namespace cluster {
+struct RpcNameConstraintTest : testing::Test {};
 
-/**
- * @brief Interface for the cluster communication service.
- */
-class ClusterCommunicationServiceInterface {
-public:
-    virtual ~ClusterCommunicationServiceInterface() = default;
+TEST_F(RpcNameConstraintTest, WrongType)
+{
+    Value value{1};
+    auto const maybeError = gRpcNameConstraint.checkConstraint(value);
+    ASSERT_TRUE(maybeError.has_value());
+    EXPECT_EQ(maybeError->error, "RPC command name must be a string");
+}
 
-    /**
-     * @brief Get the data of the current node.
-     *
-     * @return The data of the current node.
-     */
-    [[nodiscard]] virtual ClioNode
-    selfData() const = 0;
+TEST_F(RpcNameConstraintTest, WrongValue)
+{
+    Value value{"non_existing_rpc"};
+    auto const maybeError = gRpcNameConstraint.checkConstraint(value);
+    ASSERT_TRUE(maybeError.has_value());
+    EXPECT_EQ(maybeError->error, "Invalid RPC command name");
+}
 
-    /**
-     * @brief Get the data of all nodes in the cluster (including self).
-     *
-     * @return The data of all nodes in the cluster or error if the service is not healthy.
-     */
-    [[nodiscard]] virtual std::expected<std::vector<ClioNode>, std::string>
-    clusterData() const = 0;
-};
-
-}  // namespace cluster
+TEST_F(RpcNameConstraintTest, CorrectValue)
+{
+    Value value{"server_info"};
+    auto const maybeError = gRpcNameConstraint.checkConstraint(value);
+    ASSERT_FALSE(maybeError.has_value());
+}

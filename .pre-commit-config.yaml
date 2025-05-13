@@ -37,10 +37,15 @@ repos:
       - id: markdownlint-fix
         exclude: LICENSE.md
 
-  - repo: https://github.com/crate-ci/typos
-    rev: v1.31.2
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
     hooks:
-      - id: typos
+      - id: codespell
+        args:
+          [
+            --write-changes,
+            --ignore-words=pre-commit-hooks/codespell_ignore.txt,
+          ]
 
   # Running fix-local-includes before clang-format
   # to ensure that the include order is correct.

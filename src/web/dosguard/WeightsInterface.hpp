@@ -19,36 +19,30 @@
 
 #pragma once
 
-#include "cluster/ClioNode.hpp"
+#include <boost/json/object.hpp>
 
-#include <expected>
-#include <string>
-#include <vector>
+#include <cstddef>
 
-namespace cluster {
+namespace web::dosguard {
 
 /**
- * @brief Interface for the cluster communication service.
+ * @brief Interface for determining request weights in DOS protection.
+ *
+ * This interface defines the contract for classes that calculate weights for incoming
+ * requests, which is used for DOS protection mechanisms.
  */
-class ClusterCommunicationServiceInterface {
+class WeightsInterface {
 public:
-    virtual ~ClusterCommunicationServiceInterface() = default;
+    virtual ~WeightsInterface() = default;
 
     /**
-     * @brief Get the data of the current node.
+     * @brief Calculate the weight of a request.
      *
-     * @return The data of the current node.
+     * @param request The JSON object representing the request
+     * @return The calculated weight of the request
      */
-    [[nodiscard]] virtual ClioNode
-    selfData() const = 0;
-
-    /**
-     * @brief Get the data of all nodes in the cluster (including self).
-     *
-     * @return The data of all nodes in the cluster or error if the service is not healthy.
-     */
-    [[nodiscard]] virtual std::expected<std::vector<ClioNode>, std::string>
-    clusterData() const = 0;
+    virtual size_t
+    requestWeight(boost::json::object const& request) const = 0;
 };
 
-}  // namespace cluster
+}  // namespace web::dosguard

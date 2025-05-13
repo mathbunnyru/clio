@@ -19,36 +19,43 @@
 
 #pragma once
 
-#include "cluster/ClioNode.hpp"
+#include <string_view>
 
-#include <expected>
-#include <string>
-#include <vector>
-
-namespace cluster {
+namespace rpc {
 
 /**
- * @brief Interface for the cluster communication service.
+ * @brief Registry of RPC commands supported by Clio
+ *
+ * The RPCCenter maintains lists of RPC commands that can be handled locally
+ * and those that need to be forwarded to rippled.
  */
-class ClusterCommunicationServiceInterface {
-public:
-    virtual ~ClusterCommunicationServiceInterface() = default;
+struct RPCCenter {
+    /**
+     * @brief Checks if a string is a valid RPC command name
+     *
+     * @param s The string to check
+     * @return true if the string is a recognized RPC name, false otherwise
+     */
+    static bool
+    isRpcName(std::string_view s);
 
     /**
-     * @brief Get the data of the current node.
+     * @brief Checks if a string is a RPC command handled by Clio without forwarding to rippled
      *
-     * @return The data of the current node.
+     * @param s The string to check
+     * @return true if the string is a handled RPC command, false otherwise
      */
-    [[nodiscard]] virtual ClioNode
-    selfData() const = 0;
+    static bool
+    isHandled(std::string_view s);
 
     /**
-     * @brief Get the data of all nodes in the cluster (including self).
+     * @brief Checks if a string is a RPC command that will be forwarded to rippled
      *
-     * @return The data of all nodes in the cluster or error if the service is not healthy.
+     * @param s The string to check
+     * @return true if the string is a forwarded RPC command, false otherwise
      */
-    [[nodiscard]] virtual std::expected<std::vector<ClioNode>, std::string>
-    clusterData() const = 0;
+    static bool
+    isForwarded(std::string_view s);
 };
 
-}  // namespace cluster
+}  // namespace rpc

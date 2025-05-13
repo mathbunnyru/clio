@@ -14,6 +14,7 @@ target_sources(
           data/LedgerCacheTests.cpp
           data/cassandra/AsyncExecutorTests.cpp
           data/cassandra/ExecutionStrategyTests.cpp
+          data/cassandra/LedgerHeaderCacheTests.cpp
           data/cassandra/RetryPolicyTests.cpp
           data/cassandra/SettingsProviderTests.cpp
           # Cluster
@@ -89,6 +90,7 @@ target_sources(
           rpc/common/CheckersTests.cpp
           rpc/common/SpecsTests.cpp
           rpc/common/TypesTests.cpp
+          rpc/common/impl/HandlerProviderTests.cpp
           rpc/handlers/AccountChannelsTests.cpp
           rpc/handlers/AccountCurrenciesTests.cpp
           rpc/handlers/AccountInfoTests.cpp
@@ -145,6 +147,7 @@ target_sources(
           util/CoroutineGroupTests.cpp
           util/LedgerUtilsTests.cpp
           util/StrandedPriorityQueueTests.cpp
+          util/StringHashTests.cpp
           # Prometheus support
           util/prometheus/BoolTests.cpp
           util/prometheus/CounterTests.cpp
@@ -176,6 +179,7 @@ target_sources(
           web/AdminVerificationTests.cpp
           web/dosguard/DOSGuardTests.cpp
           web/dosguard/IntervalSweepHandlerTests.cpp
+          web/dosguard/WeightsTests.cpp
           web/dosguard/WhitelistHandlerTests.cpp
           web/impl/ErrorHandlingTests.cpp
           web/ng/ResponseTests.cpp
@@ -195,6 +199,7 @@ target_sources(
           util/newconfig/ArrayTests.cpp
           util/newconfig/ArrayViewTests.cpp
           util/newconfig/ClioConfigDefinitionTests.cpp
+          util/newconfig/ConfigConstraintsTests.cpp
           util/newconfig/ConfigValueTests.cpp
           util/newconfig/ObjectViewTests.cpp
           util/newconfig/ConfigFileJsonTests.cpp

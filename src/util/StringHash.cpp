@@ -17,38 +17,30 @@
 */
 //==============================================================================
 
-#pragma once
+#include "util/StringHash.hpp"
 
-#include "cluster/ClioNode.hpp"
-
-#include <expected>
+#include <cstddef>
 #include <string>
-#include <vector>
+#include <string_view>
 
-namespace cluster {
+namespace util {
 
-/**
- * @brief Interface for the cluster communication service.
- */
-class ClusterCommunicationServiceInterface {
-public:
-    virtual ~ClusterCommunicationServiceInterface() = default;
+size_t
+StringHash::operator()(char const* str) const
+{
+    return hash_type{}(str);
+}
 
-    /**
-     * @brief Get the data of the current node.
-     *
-     * @return The data of the current node.
-     */
-    [[nodiscard]] virtual ClioNode
-    selfData() const = 0;
+size_t
+StringHash::operator()(std::string_view str) const
+{
+    return hash_type{}(str);
+}
 
-    /**
-     * @brief Get the data of all nodes in the cluster (including self).
-     *
-     * @return The data of all nodes in the cluster or error if the service is not healthy.
-     */
-    [[nodiscard]] virtual std::expected<std::vector<ClioNode>, std::string>
-    clusterData() const = 0;
-};
+size_t
+StringHash::operator()(std::string const& str) const
+{
+    return hash_type{}(str);
+}
 
-}  // namespace cluster
+}  // namespace util
