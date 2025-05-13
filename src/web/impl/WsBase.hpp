@@ -236,7 +236,7 @@ public:
     }
 
     /**
-     * @brief Accept the session asynchroniously
+     * @brief Accept the session asynchronously
      */
     void
     run(http::request<http::string_body> req)
