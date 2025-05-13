@@ -33,7 +33,6 @@
 #include "util/log/Logger.hpp"
 #include "util/newconfig/ConfigDefinition.hpp"
 #include "util/prometheus/Counter.hpp"
-#include "util/prometheus/Histogram.hpp"
 
 #include <boost/asio.hpp>
 #include <boost/asio/io_context.hpp>
@@ -94,7 +93,8 @@ private:
     std::uint32_t downloadRanges_ =
         kDEFAULT_DOWNLOAD_RANGES; /*< The number of markers to use when downloading initial ledger */
 
-    std::reference_wrapper<util::prometheus::HistogramInt> forwardingDurationHistogram_;
+    std::reference_wrapper<util::prometheus::CounterInt> forwardingDurationSuccessCounter_;
+    std::reference_wrapper<util::prometheus::CounterInt> forwardingDurationFailCounter_;
     std::reference_wrapper<util::prometheus::CounterInt> forwardingRetryCounter_;
     std::reference_wrapper<util::prometheus::CounterInt> forwardingCacheHitCounter_;
     std::reference_wrapper<util::prometheus::CounterInt> forwardingCacheMissCounter_;

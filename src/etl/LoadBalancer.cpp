@@ -65,10 +65,6 @@ using namespace util::prometheus;
 
 namespace etl {
 
-namespace {
-std::vector<std::int64_t> const kHISTOGRAM_BUCKETS{1, 2, 5, 10, 20, 50, 100, 200, 500, 700, 1000};
-}  // namespace
-
 std::shared_ptr<etlng::LoadBalancerInterface>
 LoadBalancer::makeLoadBalancer(
     ClioConfigDefinition const& config,
@@ -92,11 +88,15 @@ LoadBalancer::LoadBalancer(
     std::shared_ptr<NetworkValidatedLedgersInterface> validatedLedgers,
     SourceFactory sourceFactory
 )
-    : forwardingDurationHistogram_(PrometheusService::histogramInt(
-          "forwarding_duration_milliseconds_histogram",
-          Labels(),
-          kHISTOGRAM_BUCKETS,
-          "The duration of processing forwarded requests"
+    : forwardingDurationSuccessCounter_(PrometheusService::counterInt(
+          "forwarding_duration_milliseconds_counter",
+          Labels({{"status", "success"}}),
+          "The duration of processing successful forwarded requests"
+      ))
+    , forwardingDurationFailCounter_(PrometheusService::counterInt(
+          "forwarding_duration_milliseconds_counter",
+          Labels({{"status", "fail"}}),
+          "The duration of processing failed forwarded requests"
       ))
     , forwardingRetryCounter_(PrometheusService::counterInt(
           "forwarding_retry_counter",
@@ -412,12 +412,13 @@ LoadBalancer::forwardToRippledImpl(
     while (numAttempts < sources_.size()) {
         auto [res, duration] =
             util::timed([&]() { return sources_[sourceIdx]->forwardToRippled(request, clientIp, xUserValue, yield); });
-        forwardingDurationHistogram_.get().observe(duration);
 
         if (res) {
+            forwardingDurationSuccessCounter_.get() += duration;
             response = std::move(res).value();
             break;
         }
+        forwardingDurationFailCounter_.get() += duration;
         ++forwardingRetryCounter_.get();
         error = std::max(error, res.error());  // Choose the best result between all sources
 
