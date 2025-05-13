@@ -94,11 +94,11 @@ private:
         kDEFAULT_DOWNLOAD_RANGES; /*< The number of markers to use when downloading initial ledger */
 
     struct ForwardingCounters {
-        std::reference_wrapper<util::prometheus::CounterInt> SuccessDuration;
-        std::reference_wrapper<util::prometheus::CounterInt> FailDuration;
-        std::reference_wrapper<util::prometheus::CounterInt> Retries;
-        std::reference_wrapper<util::prometheus::CounterInt> CacheHit;
-        std::reference_wrapper<util::prometheus::CounterInt> CacheMiss;
+        std::reference_wrapper<util::prometheus::CounterInt> successDuration;
+        std::reference_wrapper<util::prometheus::CounterInt> failDuration;
+        std::reference_wrapper<util::prometheus::CounterInt> retries;
+        std::reference_wrapper<util::prometheus::CounterInt> cacheHit;
+        std::reference_wrapper<util::prometheus::CounterInt> cacheMiss;
     } forwardingCounters_;
 
     // Using mutex instead of atomic_bool because choosing a new source to

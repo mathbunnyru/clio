@@ -89,27 +89,27 @@ LoadBalancer::LoadBalancer(
     SourceFactory sourceFactory
 )
     : forwardingCounters_{
-          .SuccessDuration = PrometheusService::counterInt(
+          .successDuration = PrometheusService::counterInt(
               "forwarding_duration_milliseconds_counter",
               Labels({util::prometheus::Label{"status", "success"}}),
               "The duration of processing successful forwarded requests"
           ),
-          .FailDuration = PrometheusService::counterInt(
+          .failDuration = PrometheusService::counterInt(
               "forwarding_duration_milliseconds_counter",
               Labels({util::prometheus::Label{"status", "fail"}}),
               "The duration of processing failed forwarded requests"
           ),
-          .Retries = PrometheusService::counterInt(
+          .retries = PrometheusService::counterInt(
               "forwarding_retries_counter",
               Labels(),
               "The number of retries before a forwarded request was successful. Initial attempt excluded"
           ),
-          .CacheHit = PrometheusService::counterInt(
+          .cacheHit = PrometheusService::counterInt(
               "forwarding_cache_hit_counter",
               Labels(),
               "The number of requests that we served from the cache"
           ),
-          .CacheMiss = PrometheusService::counterInt(
+          .cacheMiss = PrometheusService::counterInt(
               "forwarding_cache_miss_counter",
               Labels(),
               "The number of requests that were not served from the cache"
@@ -291,7 +291,7 @@ LoadBalancer::forwardToRippled(
             [](util::ResponseExpirationCache::EntryData const& entry) { return not entry.response.contains("error"); }
         );
         if (servedFromCache) {
-            ++forwardingCounters_.CacheHit.get();
+            ++forwardingCounters_.cacheHit.get();
         }
         if (result.has_value()) {
             return std::move(result).value();
@@ -400,7 +400,7 @@ LoadBalancer::forwardToRippledImpl(
     boost::asio::yield_context yield
 )
 {
-    ++forwardingCounters_.CacheMiss.get();
+    ++forwardingCounters_.cacheMiss.get();
 
     ASSERT(not sources_.empty(), "ETL sources must be configured to forward requests.");
     std::size_t sourceIdx = util::Random::uniform(0ul, sources_.size() - 1);
@@ -416,12 +416,12 @@ LoadBalancer::forwardToRippledImpl(
             util::timed([&]() { return sources_[sourceIdx]->forwardToRippled(request, clientIp, xUserValue, yield); });
 
         if (res) {
-            ++forwardingCounters_.SuccessDuration.get() += duration;
+            ++forwardingCounters_.successDuration.get() += duration;
             response = std::move(res).value();
             break;
         }
-        ++forwardingCounters_.FailDuration.get() += duration;
-        ++forwardingCounters_.Retries.get();
+        ++forwardingCounters_.failDuration.get() += duration;
+        ++forwardingCounters_.retries.get();
         error = std::max(error, res.error());  // Choose the best result between all sources
 
         sourceIdx = (sourceIdx + 1) % sources_.size();
