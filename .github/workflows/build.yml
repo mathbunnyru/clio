@@ -5,6 +5,25 @@ on:
     branches: [master, release/*, develop]
   pull_request:
     branches: [master, release/*, develop]
+    paths:
+      - .github/workflows/build.yml
+
+      - .github/workflows/build_and_test.yml
+      - .github/workflows/build_impl.yml
+      - .github/workflows/test_impl.yml
+      - .github/workflows/upload_coverage_report.yml
+
+      - ".github/actions/**"
+
+      - CMakeLists.txt
+      - "cmake/**"
+      - "src/**"
+      - "tests/**"
+
+      - docs/config-description.md
+    paths-ignore:
+      - ".github/actions/build_docker_image/**"
+      - ".github/actions/create_issue/**"
   workflow_dispatch:
 
 concurrency:
