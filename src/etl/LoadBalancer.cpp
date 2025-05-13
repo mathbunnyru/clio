@@ -61,7 +61,7 @@
 #include <vector>
 
 using namespace util::config;
-using namespace util::prometheus;
+using util::prometheus::Labels;
 
 namespace etl {
 
@@ -91,12 +91,12 @@ LoadBalancer::LoadBalancer(
     : forwardingCounters_{
           .SuccessDuration = PrometheusService::counterInt(
               "forwarding_duration_milliseconds_counter",
-              Labels({{"status", "success"}}),
+              Labels({util::prometheus::Label{"status", "success"}}),
               "The duration of processing successful forwarded requests"
           ),
           .FailDuration = PrometheusService::counterInt(
               "forwarding_duration_milliseconds_counter",
-              Labels({{"status", "fail"}}),
+              Labels({util::prometheus::Label{"status", "fail"}}),
               "The duration of processing failed forwarded requests"
           ),
           .Retries = PrometheusService::counterInt(
