@@ -658,7 +658,7 @@ TEST_F(LoadBalancerForwardToRippledPrometheusTests, forwardingCacheEnabled)
         makeMock<CounterInt>("forwarding_duration_milliseconds_counter", "{status=\"success\"}");
 
     EXPECT_CALL(cacheMissCounter, add(1));
-    EXPECT_CALL(cacheHitCounter, add(1));
+    EXPECT_CALL(cacheHitCounter, add(1)).Times(3);
     EXPECT_CALL(successDurationCounter, add(testing::_));
 
     EXPECT_CALL(
@@ -668,6 +668,8 @@ TEST_F(LoadBalancerForwardToRippledPrometheusTests, forwardingCacheEnabled)
         .WillOnce(Return(response_));
 
     runSpawn([&](boost::asio::yield_context yield) {
+        EXPECT_EQ(loadBalancer->forwardToRippled(request, clientIP_, false, yield), response_);
+        EXPECT_EQ(loadBalancer->forwardToRippled(request, clientIP_, false, yield), response_);
         EXPECT_EQ(loadBalancer->forwardToRippled(request, clientIP_, false, yield), response_);
         EXPECT_EQ(loadBalancer->forwardToRippled(request, clientIP_, false, yield), response_);
     });
