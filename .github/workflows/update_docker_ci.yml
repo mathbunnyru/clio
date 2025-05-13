@@ -12,12 +12,12 @@ on:
   push:
     branches: [develop]
     paths:
-      # CI image must update when either its Dockerfile changes
-      # or any compilers changed and were pushed by hand
       - .github/workflows/update_docker_ci.yml
 
       - ".github/actions/build_docker_image/**"
 
+      # CI image must update when either its Dockerfile changes
+      # or any compilers changed and were pushed by hand
       - "docker/ci/**"
       - "docker/compilers/**"
   workflow_dispatch:
