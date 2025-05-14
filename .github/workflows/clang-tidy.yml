@@ -120,7 +120,7 @@ jobs:
           delete-branch: true
           title: "style: clang-tidy auto fixes"
           body: "Fixes #${{ steps.create_issue.outputs.created_issue_id }}. Please review and commit clang-tidy fixes."
-          team-reviewers: XRPLF/clio-dev-team
+          reviewers: "godexsoft,kuznetsss,PeterChen13579,mathbunnyru"
 
       - name: Fail the job
         if: ${{ steps.run_clang_tidy.outcome != 'success' }}
