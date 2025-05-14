@@ -20,7 +20,7 @@ RUN apt-get -qq update \
 
 # Install packages
 RUN apt update -qq \
-    && apt install -y --no-install-recommends --no-install-suggests python3 python3-pip git git-lfs make ninja-build flex bison jq graphviz \
+    && apt install -y --no-install-recommends --no-install-suggests python3 python3-pip git git-lfs make ninja-build flex bison jq graphviz xz-utils \
     clang-tidy-${LLVM_TOOLS_VERSION} clang-tools-${LLVM_TOOLS_VERSION} \
     && pip3 install -q --upgrade --no-cache-dir pip && pip3 install -q --no-cache-dir conan==1.62 gcovr cmake==3.31.6 pre-commit \
     && apt-get clean && apt remove -y software-properties-common
@@ -44,22 +44,18 @@ RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100 \
 
 WORKDIR /tmp
 
-# Install ccache from source
-RUN wget "https://github.com/ccache/ccache/releases/download/v${CCACHE_VERSION}/ccache-${CCACHE_VERSION}.tar.gz" \
-    && tar xf "ccache-${CCACHE_VERSION}.tar.gz" \
-    && cd "ccache-${CCACHE_VERSION}" \
-    && mkdir build && cd build \
-    && cmake -GNinja -DCMAKE_BUILD_TYPE=Release .. \
-    && cmake --build . --target install \
+# Install ccache
+RUN wget "https://github.com/ccache/ccache/releases/download/v${CCACHE_VERSION}/ccache-${CCACHE_VERSION}-linux-x86_64.tar.xz" \
+    && tar xf "ccache-${CCACHE_VERSION}-linux-x86_64.tar.xz" \
+    && cd "ccache-${CCACHE_VERSION}-linux-x86_64" \
+    && make install \
     && rm -rf /tmp/* /var/tmp/*
 
-# Install doxygen from source
-RUN wget "https://github.com/doxygen/doxygen/releases/download/Release_${DOXYGEN_VERSION//./_}/doxygen-${DOXYGEN_VERSION}.src.tar.gz" \
-    && tar xf "doxygen-${DOXYGEN_VERSION}.src.tar.gz" \
+# Install doxygen
+RUN wget "https://github.com/doxygen/doxygen/releases/download/Release_${DOXYGEN_VERSION//./_}/doxygen-${DOXYGEN_VERSION}.linux.bin.tar.gz" \
+    && tar xf "doxygen-${DOXYGEN_VERSION}.linux.bin.tar.gz" \
     && cd "doxygen-${DOXYGEN_VERSION}" \
-    && mkdir build && cd build \
-    && cmake -GNinja -DCMAKE_BUILD_TYPE=Release .. \
-    && cmake --build . --target install \
+    && make install \
     && rm -rf /tmp/* /var/tmp/*
 
 # Install ClangBuildAnalyzer
