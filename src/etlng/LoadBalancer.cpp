@@ -405,6 +405,7 @@ LoadBalancer::forwardToRippledImpl(
 )
 {
     ++forwardingCounters_.cacheMiss.get();
+
     ASSERT(not sources_.empty(), "ETL sources must be configured to forward requests.");
     std::size_t sourceIdx = util::Random::uniform(0ul, sources_.size() - 1);
 
@@ -417,6 +418,7 @@ LoadBalancer::forwardToRippledImpl(
     while (numAttempts < sources_.size()) {
         auto [res, duration] =
             util::timed([&]() { return sources_[sourceIdx]->forwardToRippled(request, clientIp, xUserValue, yield); });
+
         if (res) {
             forwardingCounters_.successDuration.get() += duration;
             response = std::move(res).value();
