@@ -14,6 +14,8 @@ on:
       - .github/workflows/upload_coverage_report.yml
 
       - ".github/actions/**"
+      - "!.github/actions/build_docker_image/**"
+      - "!.github/actions/create_issue/**"
 
       - CMakeLists.txt
       - "cmake/**"
@@ -21,9 +23,6 @@ on:
       - "tests/**"
 
       - docs/config-description.md
-    paths-ignore:
-      - ".github/actions/build_docker_image/**"
-      - ".github/actions/create_issue/**"
   workflow_dispatch:
 
 concurrency:
