@@ -21,8 +21,8 @@
 
 #include "rpc/JS.hpp"
 #include "util/Assert.hpp"
-#include "util/newconfig/ArrayView.hpp"
-#include "util/newconfig/ConfigDefinition.hpp"
+#include "util/config/ArrayView.hpp"
+#include "util/config/ConfigDefinition.hpp"
 
 #include <boost/json/object.hpp>
 #include <xrpl/protocol/jss.h>
