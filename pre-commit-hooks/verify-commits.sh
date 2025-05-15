@@ -39,7 +39,19 @@ verify_tag_signed() {
     fi
 }
 
+echo $PRE_COMMIT_FROM_REF > file.txt
+echo $PRE_COMMIT_TO_REF >> file.txt
+echo $PRE_COMMIT_REMOTE_NAME >> file.txt
+echo $PRE_COMMIT_REMOTE_URL >> file.txt
+echo $PRE_COMMIT_REMOTE_BRANCH >> file.txt
+echo $PRE_COMMIT_LOCAL_BRANCH >> file.txt
+
 while read local_ref local_oid remote_ref remote_oid; do
+    echo $local_ref > file2.txt
+    echo $local_oid >> file2.txt
+    echo $remote_ref >> file2.txt
+    echo $remote_oid >> file2.txt
+
     # Check some things if we're pushing a branch called "release/"
     if echo "$remote_ref" | grep ^refs\/heads\/release\/ &> /dev/null ; then
         version=$(git tag --points-at HEAD)

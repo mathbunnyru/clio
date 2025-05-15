@@ -94,33 +94,7 @@ repos:
       - id: verify-commits
         name: Verify Commits
         entry: pre-commit-hooks/verify-commits.sh
-        types: [text]
-        language: script
-        pass_filenames: false
-
-  - repo: local
-    hooks:
-      - id: lfs-post-checkout
-        name: LFS Post Checkout
-        entry: pre-commit-hooks/lfs/post-checkout
-        types: [text]
-        stages: [post-checkout]
-        language: script
-      - id: lfs-post-commit
-        name: LFS Post Commit
-        entry: pre-commit-hooks/lfs/post-commit
-        types: [text]
-        stages: [post-commit]
-        language: script
-      - id: lfs-post-merge
-        name: LFS Post Merge
-        entry: pre-commit-hooks/lfs/post-merge
-        types: [text]
-        stages: [post-merge]
-        language: script
-      - id: lfs-pre-push
-        name: LFS Pre Push
-        entry: pre-commit-hooks/lfs/pre-push
-        types: [text]
+        always_run: true
         stages: [pre-push]
         language: script
+        pass_filenames: false
