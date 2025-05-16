@@ -38,7 +38,7 @@ repos:
         exclude: LICENSE.md
 
   - repo: https://github.com/hadolint/hadolint
-    rev: 4ab5d7809325c8de23956a44ca5a1f3c25907faf # frozen: v2.13.1-beta
+    rev: c3dc18df7a501f02a560a2cc7ba3c69a85ca01d3 # frozen: v2.13.1-beta
     hooks:
       - id: hadolint-docker
         # hadolint-docker is a special hook that runs hadolint in a Docker container
