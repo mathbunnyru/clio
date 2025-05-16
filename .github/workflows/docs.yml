@@ -3,12 +3,16 @@ name: Documentation
 on:
   push:
     branches: [develop]
-  workflow_dispatch:
+  pull_request:
+    branches: [master, release/*, develop]
+    paths:
+      - .github/workflows/docs.yml
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+      - "docs/**"
+      - "cmake/**"
+      - "src/**"
+      - "tests/**"
+  workflow_dispatch:
 
 concurrency:
   # Only cancel in-progress jobs or runs for the current workflow - matches against branch & tags
@@ -16,12 +20,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
-    continue-on-error: true
     container:
       image: ghcr.io/xrplf/clio-ci:latest
 
@@ -31,10 +31,16 @@ jobs:
         with:
           lfs: true
 
-      - name: Build docs
-        run: |
-          mkdir -p build_docs && cd build_docs
-          cmake ../docs && cmake --build . --target docs
+      - name: Create build directory
+        run: mkdir build_docs
+
+      - name: Configure CMake
+        working-directory: build_docs
+        run: cmake ../docs
+
+      - name: Build
+        working-directory: build_docs
+        run: cmake --build . --target docs
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -45,6 +51,20 @@ jobs:
           path: build_docs/html
           name: docs-develop
 
+  deploy:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/develop'
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
