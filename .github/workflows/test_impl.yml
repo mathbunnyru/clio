@@ -48,7 +48,7 @@ jobs:
 
     env:
       # TODO: remove when we have fixed all currently existing issues from sanitizers
-      SANITIZER_IGNORE_ERRORS: ${{ inputs.sanitizer != 'false' && inputs.sanitizer != 'undefined' }}
+      SANITIZER_IGNORE_ERRORS: ${{ inputs.sanitizer != 'false' && inputs.sanitizer != 'ubsan' }}
 
     steps:
       - name: Clean workdir
