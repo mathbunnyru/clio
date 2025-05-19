@@ -17,7 +17,8 @@ ENV CCACHE_VERSION=4.10.2 \
     LLVM_TOOLS_VERSION=19 \
     GH_VERSION=2.40.0 \
     DOXYGEN_VERSION=1.12.0 \
-    CLANG_BUILD_ANALYZER_VERSION=1.6.0
+    CLANG_BUILD_ANALYZER_VERSION=1.6.0 \
+    GIT_CLIFF_VERSION=2.8.0
 
 # Add repositories
 RUN apt-get -qq update \
@@ -74,6 +75,12 @@ RUN wget "https://github.com/doxygen/doxygen/releases/download/Release_${DOXYGEN
 RUN wget "https://github.com/aras-p/ClangBuildAnalyzer/releases/download/v${CLANG_BUILD_ANALYZER_VERSION}/ClangBuildAnalyzer-linux" \
     && chmod +x ClangBuildAnalyzer-linux \
     && mv ClangBuildAnalyzer-linux /usr/bin/ClangBuildAnalyzer \
+    && rm -rf /tmp/* /var/tmp/*
+
+# Install git-cliff
+RUN wget "https://github.com/orhun/git-cliff/releases/download/v${GIT_CLIFF_VERSION}/git-cliff-${GIT_CLIFF_VERSION}-x86_64-unknown-linux-musl.tar.gz" \
+    && tar xf git-cliff-${GIT_CLIFF_VERSION}-x86_64-unknown-linux-musl.tar.gz \
+    && mv git-cliff-${GIT_CLIFF_VERSION}/git-cliff /usr/bin/git-cliff \
     && rm -rf /tmp/* /var/tmp/*
 
 # Install gh
