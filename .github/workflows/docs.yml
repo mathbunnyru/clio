@@ -3,15 +3,6 @@ name: Documentation
 on:
   push:
     branches: [develop]
-  pull_request:
-    branches: [master, release/*, develop]
-    paths:
-      - .github/workflows/docs.yml
-
-      - "docs/**"
-      - "cmake/**"
-      - "src/**"
-      - "tests/**"
   workflow_dispatch:
 
 concurrency:
