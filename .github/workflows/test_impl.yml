@@ -129,8 +129,41 @@ jobs:
         if: ${{ runner.os == 'macOS' }}
         uses: kuznetsss/workspace-cleanup@80b9863b45562c148927c3d53621ef354e5ae7ce # v1.0
 
-      - name: Show available memory
-        run: TERM=xterm top | grep PhysMem -m 1
+      - name: Get Available RAM
+        id: get_ram
+        run: |
+          echo "--- Detailed Memory Stats (vm_stat) ---"
+          vm_stat
+
+          PAGE_SIZE_BYTES=$(pagesize)
+          echo "Page size: $PAGE_SIZE_BYTES bytes"
+
+          FREE_PAGES=$(vm_stat | awk '/Pages free:/ { print $3 }')
+          INACTIVE_PAGES=$(vm_stat | awk '/Pages inactive:/ { print $3 }')
+          # CACHED_FILES_PAGES=$(vm_stat | awk '/File-backed pages:/ { print $3 }') # macOS Sonoma and later might use "File-backed pages" for cache
+          # If 'File-backed pages' is not present or for older macOS versions, 'Pages purgeable' or cached data might be elsewhere or implicitly part of inactive.
+          # For a simpler "readily available" RAM, free + inactive is a common measure.
+
+          echo "Free pages: $FREE_PAGES"
+          echo "Inactive pages: $INACTIVE_PAGES"
+
+          # Calculate available RAM in bytes (Free + Inactive)
+          AVAILABLE_RAM_BYTES=$(( (FREE_PAGES + INACTIVE_PAGES) * PAGE_SIZE_BYTES ))
+          # Convert to Megabytes
+          AVAILABLE_RAM_MB=$(( AVAILABLE_RAM_BYTES / 1024 / 1024 ))
+
+          echo "Calculated Available RAM (Free + Inactive): $AVAILABLE_RAM_MB MB"
+          echo "available_ram_mb=${AVAILABLE_RAM_MB}" >> $GITHUB_OUTPUT
+
+      - name: Use Available RAM Value
+        run: |
+          echo "The available RAM is ${{ steps.get_ram.outputs.available_ram_mb }} MB."
+
+      - name: Get Total RAM (for reference)
+        run: |
+          TOTAL_RAM_BYTES=$(sysctl -n hw.memsize)
+          TOTAL_RAM_MB=$(( TOTAL_RAM_BYTES / 1024 / 1024 ))
+          echo "Total Physical RAM: $TOTAL_RAM_MB MB"
 
       - name: Spin up scylladb
         if: ${{ runner.os == 'macOS' }}
@@ -151,9 +184,6 @@ jobs:
           until [ "$(docker inspect -f '{{.State.Health.Status}}' scylladb)" == "healthy" ]; do
             sleep 5
           done
-
-      - name: Show available memory
-        run: TERM=xterm top | grep PhysMem -m 1
 
       - uses: actions/download-artifact@v4
         with:
