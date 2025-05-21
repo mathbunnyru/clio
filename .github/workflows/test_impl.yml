@@ -142,7 +142,7 @@ jobs:
             --health-timeout 5s \
             --health-retries 5 \
             --publish 9042:9042 \
-            --memory 16G \
+            --memory 4G \
             scylladb/scylla
 
           until [ "$(docker inspect -f '{{.State.Health.Status}}' scylladb)" == "healthy" ]; do
