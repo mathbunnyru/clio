@@ -129,6 +129,9 @@ jobs:
         if: ${{ runner.os == 'macOS' }}
         uses: kuznetsss/workspace-cleanup@80b9863b45562c148927c3d53621ef354e5ae7ce # v1.0
 
+      - name: Show available memory
+        run: TERM=xterm top | grep PhysMem -m 1
+
       - name: Spin up scylladb
         if: ${{ runner.os == 'macOS' }}
         timeout-minutes: 3
@@ -148,6 +151,9 @@ jobs:
           until [ "$(docker inspect -f '{{.State.Health.Status}}' scylladb)" == "healthy" ]; do
             sleep 5
           done
+
+      - name: Show available memory
+        run: TERM=xterm top | grep PhysMem -m 1
 
       - uses: actions/download-artifact@v4
         with:
