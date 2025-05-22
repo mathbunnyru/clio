@@ -46,7 +46,7 @@ namespace rpc {
 BookOffersHandler::Result
 BookOffersHandler::process(Input input, Context const& ctx) const
 {
-    auto bookMaybe = parseBook(input.paysCurrency, input.paysID, input.getsCurrency, input.getsID);
+    auto bookMaybe = parseBook(input.paysCurrency, input.paysID, input.getsCurrency, input.getsID, input.domain);
     if (auto const status = std::get_if<Status>(&bookMaybe))
         return Error{*status};
 
@@ -132,6 +132,9 @@ tag_invoke(boost::json::value_to_tag<BookOffersHandler::Input>, boost::json::val
 
     if (jsonObject.contains(JS(taker)))
         input.taker = accountFromStringStrict(boost::json::value_to<std::string>(jv.at(JS(taker))));
+
+    if (jsonObject.contains(JS(domain)))
+        input.domain = boost::json::value_to<std::string>(jv.at(JS(domain)));
 
     if (jsonObject.contains(JS(limit)))
         input.limit = jv.at(JS(limit)).as_int64();

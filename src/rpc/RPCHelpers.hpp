@@ -626,10 +626,17 @@ postProcessOrderBook(
  * @param payIssuer The issuer of the currency to pay
  * @param gets The currency to get
  * @param getIssuer The issuer of the currency to get
+ * @param domain The domain
  * @return The book or an error status
  */
 std::variant<Status, ripple::Book>
-parseBook(ripple::Currency pays, ripple::AccountID payIssuer, ripple::Currency gets, ripple::AccountID getIssuer);
+parseBook(
+    ripple::Currency pays,
+    ripple::AccountID payIssuer,
+    ripple::Currency gets,
+    ripple::AccountID getIssuer,
+    std::optional<std::string> const& domain
+);
 
 /**
  * @brief Parse the book from the request

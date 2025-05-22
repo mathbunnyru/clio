@@ -612,10 +612,10 @@ generateNormalPathBookOffersTestBundles()
     );
 
     auto const getsXRPPaysUSDBook = getBookBase(std::get<ripple::Book>(
-        rpc::parseBook(ripple::to_currency("USD"), account, ripple::xrpCurrency(), ripple::xrpAccount())
+        rpc::parseBook(ripple::to_currency("USD"), account, ripple::xrpCurrency(), ripple::xrpAccount(), std::nullopt)
     ));
     auto const getsUSDPaysXRPBook = getBookBase(std::get<ripple::Book>(
-        rpc::parseBook(ripple::xrpCurrency(), ripple::xrpAccount(), ripple::to_currency("USD"), account)
+        rpc::parseBook(ripple::xrpCurrency(), ripple::xrpAccount(), ripple::to_currency("USD"), account, std::nullopt)
     ));
 
     auto const getsXRPPaysUSDInputJson = fmt::format(
@@ -1451,7 +1451,7 @@ TEST_F(RPCBookOffersHandlerTest, Limit)
     EXPECT_CALL(*backend_, doFetchSuccessorKey).Times(1);
 
     auto const getsXRPPaysUSDBook = getBookBase(std::get<ripple::Book>(
-        rpc::parseBook(ripple::to_currency("USD"), issuer, ripple::xrpCurrency(), ripple::xrpAccount())
+        rpc::parseBook(ripple::to_currency("USD"), issuer, ripple::xrpCurrency(), ripple::xrpAccount(), std::nullopt)
     ));
     ON_CALL(*backend_, doFetchSuccessorKey(getsXRPPaysUSDBook, seq, _))
         .WillByDefault(Return(ripple::uint256{kPAYS20_USD_GETS10_XRP_BOOK_DIR}));
@@ -1524,7 +1524,7 @@ TEST_F(RPCBookOffersHandlerTest, LimitMoreThanMax)
     EXPECT_CALL(*backend_, doFetchSuccessorKey).Times(1);
 
     auto const getsXRPPaysUSDBook = getBookBase(std::get<ripple::Book>(
-        rpc::parseBook(ripple::to_currency("USD"), issuer, ripple::xrpCurrency(), ripple::xrpAccount())
+        rpc::parseBook(ripple::to_currency("USD"), issuer, ripple::xrpCurrency(), ripple::xrpAccount(), std::nullopt)
     ));
     ON_CALL(*backend_, doFetchSuccessorKey(getsXRPPaysUSDBook, seq, _))
         .WillByDefault(Return(ripple::uint256{kPAYS20_USD_GETS10_XRP_BOOK_DIR}));

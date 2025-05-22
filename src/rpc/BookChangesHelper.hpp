@@ -62,6 +62,7 @@ struct BookChange {
     ripple::STAmount lowRate;
     ripple::STAmount openRate;
     ripple::STAmount closeRate;
+    std::optional<ripple::uint256> domain;
 };
 
 /**
