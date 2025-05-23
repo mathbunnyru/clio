@@ -150,6 +150,7 @@ public:
              }},
             {
                 JS(domain),
+                validation::Type<std::string>{},
                 validation::CustomValidators::uint256HexStringValidator,
             },
             {JS(limit),
