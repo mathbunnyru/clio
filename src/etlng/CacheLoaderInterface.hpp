@@ -17,45 +17,37 @@
 */
 //==============================================================================
 
-#include "etlng/impl/ext/Cache.hpp"
-
-#include "etlng/CacheUpdaterInterface.hpp"
-#include "etlng/Models.hpp"
-#include "util/log/Logger.hpp"
+#pragma once
 
 #include <cstdint>
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
 
-namespace etlng::impl {
+namespace etlng {
 
-CacheExt::CacheExt(std::shared_ptr<CacheUpdaterInterface> cacheUpdater) : cacheUpdater_(std::move(cacheUpdater))
-{
-}
+/**
+ * @brief An interface for the Cache Loader
+ */
+struct CacheLoaderInterface {
+    virtual ~CacheLoaderInterface() = default;
 
-void
-CacheExt::onLedgerData(model::LedgerData const& data) const
-{
-    cacheUpdater_->update(data);
-    LOG(log_.trace()) << "got data. objects cnt = " << data.objects.size();
-}
+    /**
+     * @brief Load the cache with the most recent ledger data
+     *
+     * @param seq The sequence number of the ledger to load
+     */
+    virtual void
+    load(uint32_t const seq) = 0;
 
-void
-CacheExt::onInitialData(model::LedgerData const& data) const
-{
-    LOG(log_.trace()) << "got initial data. objects cnt = " << data.objects.size();
-    cacheUpdater_->update(data);
-    cacheUpdater_->setFull();
-}
+    /**
+     * @brief Stop the cache loading process
+     */
+    virtual void
+    stop() noexcept = 0;
 
-void
-CacheExt::onInitialObjects(uint32_t seq, std::vector<model::Object> const& objs, [[maybe_unused]] std::string lastKey)
-    const
-{
-    LOG(log_.trace()) << "got initial objects cnt = " << objs.size();
-    cacheUpdater_->update(seq, objs);
-}
+    /**
+     * @brief Wait for all cache loading tasks to complete
+     */
+    virtual void
+    wait() noexcept = 0;
+};
 
-}  // namespace etlng::impl
+}  // namespace etlng

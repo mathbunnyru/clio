@@ -17,45 +17,53 @@
 */
 //==============================================================================
 
-#include "etlng/impl/ext/Cache.hpp"
+#pragma once
 
+#include "data/LedgerCacheInterface.hpp"
+#include "data/Types.hpp"
 #include "etlng/CacheUpdaterInterface.hpp"
 #include "etlng/Models.hpp"
 #include "util/log/Logger.hpp"
 
 #include <cstdint>
-#include <memory>
-#include <string>
-#include <utility>
+#include <functional>
 #include <vector>
 
 namespace etlng::impl {
 
-CacheExt::CacheExt(std::shared_ptr<CacheUpdaterInterface> cacheUpdater) : cacheUpdater_(std::move(cacheUpdater))
-{
-}
+class CacheUpdater : public CacheUpdaterInterface {
+    std::reference_wrapper<data::LedgerCacheInterface> cache_;
 
-void
-CacheExt::onLedgerData(model::LedgerData const& data) const
-{
-    cacheUpdater_->update(data);
-    LOG(log_.trace()) << "got data. objects cnt = " << data.objects.size();
-}
+    util::Logger log_{"ETL"};
 
-void
-CacheExt::onInitialData(model::LedgerData const& data) const
-{
-    LOG(log_.trace()) << "got initial data. objects cnt = " << data.objects.size();
-    cacheUpdater_->update(data);
-    cacheUpdater_->setFull();
-}
+public:
+    CacheUpdater(data::LedgerCacheInterface& cache) : cache_{cache}
+    {
+    }
 
-void
-CacheExt::onInitialObjects(uint32_t seq, std::vector<model::Object> const& objs, [[maybe_unused]] std::string lastKey)
-    const
-{
-    LOG(log_.trace()) << "got initial objects cnt = " << objs.size();
-    cacheUpdater_->update(seq, objs);
-}
+    void
+    update(model::LedgerData const& data) override
+    {
+        cache_.get().update(data.objects, data.seq);
+    }
+
+    void
+    update(uint32_t seq, std::vector<data::LedgerObject> const& objs) override
+    {
+        cache_.get().update(objs, seq);
+    }
+
+    void
+    update(uint32_t seq, std::vector<model::Object> const& objs) override
+    {
+        cache_.get().update(objs, seq);
+    }
+
+    void
+    setFull() override
+    {
+        cache_.get().setFull();
+    }
+};
 
 }  // namespace etlng::impl

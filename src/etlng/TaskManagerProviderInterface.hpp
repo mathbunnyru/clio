@@ -17,45 +17,35 @@
 */
 //==============================================================================
 
-#include "etlng/impl/ext/Cache.hpp"
+#pragma once
 
-#include "etlng/CacheUpdaterInterface.hpp"
-#include "etlng/Models.hpp"
-#include "util/log/Logger.hpp"
+#include "etlng/MonitorInterface.hpp"
+#include "etlng/TaskManagerInterface.hpp"
+#include "util/async/AnyExecutionContext.hpp"
 
+#include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <memory>
-#include <string>
-#include <utility>
-#include <vector>
 
-namespace etlng::impl {
+namespace etlng {
 
-CacheExt::CacheExt(std::shared_ptr<CacheUpdaterInterface> cacheUpdater) : cacheUpdater_(std::move(cacheUpdater))
-{
-}
+/**
+ * @brief An interface for providing the Task Manager
+ */
+struct TaskManagerProviderInterface {
+    virtual ~TaskManagerProviderInterface() = default;
 
-void
-CacheExt::onLedgerData(model::LedgerData const& data) const
-{
-    cacheUpdater_->update(data);
-    LOG(log_.trace()) << "got data. objects cnt = " << data.objects.size();
-}
+    /**
+     * @brief Make a task manager
+     *
+     * @param ctx The async context to associate the task manager instance with
+     * @param monitor The monitor to notify when ledger is loaded
+     * @param seq The sequence to start at
+     * @return A unique pointer to a TaskManager implementation
+     */
+    virtual std::unique_ptr<TaskManagerInterface>
+    make(util::async::AnyExecutionContext ctx, std::reference_wrapper<MonitorInterface> monitor, uint32_t seq) = 0;
+};
 
-void
-CacheExt::onInitialData(model::LedgerData const& data) const
-{
-    LOG(log_.trace()) << "got initial data. objects cnt = " << data.objects.size();
-    cacheUpdater_->update(data);
-    cacheUpdater_->setFull();
-}
-
-void
-CacheExt::onInitialObjects(uint32_t seq, std::vector<model::Object> const& objs, [[maybe_unused]] std::string lastKey)
-    const
-{
-    LOG(log_.trace()) << "got initial objects cnt = " << objs.size();
-    cacheUpdater_->update(seq, objs);
-}
-
-}  // namespace etlng::impl
+}  // namespace etlng
