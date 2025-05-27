@@ -275,14 +275,10 @@ TransactionFeed::pub(
                 if ((data != nullptr) && data->isFieldPresent(ripple::sfTakerPays) &&
                     data->isFieldPresent(ripple::sfTakerGets)) {
                     // determine the OrderBook
-                    std::optional<ripple::uint256> domainID;
-                    if (data->isFieldPresent(ripple::sfDomainID)) {
-                        domainID = data->getFieldH256(ripple::sfDomainID);
-                    }
                     ripple::Book const book{
                         data->getFieldAmount(ripple::sfTakerGets).issue(),
                         data->getFieldAmount(ripple::sfTakerPays).issue(),
-                        domainID
+                        (*data)[~ripple::sfDomainID]
                     };
                     if (affectedBooks.find(book) == affectedBooks.end()) {
                         affectedBooks.insert(book);
