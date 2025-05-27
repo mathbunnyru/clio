@@ -17,44 +17,41 @@
 */
 //==============================================================================
 
-#include "etlng/impl/ext/Cache.hpp"
+#pragma once
 
-#include "etlng/CacheUpdaterInterface.hpp"
+#include "data/BackendInterface.hpp"
 #include "etlng/Models.hpp"
 #include "util/log/Logger.hpp"
 
+#include <xrpl/basics/strHex.h>
+#include <xrpl/protocol/AccountID.h>
+#include <xrpl/protocol/STTx.h>
+#include <xrpl/protocol/TxMeta.h>
+
 #include <cstdint>
 #include <memory>
-#include <string>
-#include <utility>
-#include <vector>
 
 namespace etlng::impl {
 
-CacheExt::CacheExt(std::shared_ptr<CacheUpdaterInterface> cacheUpdater) : cacheUpdater_(std::move(cacheUpdater))
-{
-}
+class MPTExt {
+    std::shared_ptr<BackendInterface> backend_;
+    util::Logger log_{"ETL"};
 
-void
-CacheExt::onLedgerData(model::LedgerData const& data)
-{
-    LOG(log_.trace()) << "got data. objects cnt = " << data.objects.size();
-    cacheUpdater_->update(data);
-}
+public:
+    explicit MPTExt(std::shared_ptr<BackendInterface> backend);
 
-void
-CacheExt::onInitialData(model::LedgerData const& data)
-{
-    LOG(log_.trace()) << "got initial data. objects cnt = " << data.objects.size();
-    cacheUpdater_->update(data);
-    cacheUpdater_->setFull();
-}
+    void
+    onLedgerData(model::LedgerData const& data);
 
-void
-CacheExt::onInitialObjects(uint32_t seq, std::vector<model::Object> const& objs, [[maybe_unused]] std::string lastKey)
-{
-    LOG(log_.trace()) << "got initial objects cnt = " << objs.size();
-    cacheUpdater_->update(seq, objs);
-}
+    void
+    onInitialObject(uint32_t seq, model::Object const& obj);
+
+    void
+    onInitialData(model::LedgerData const& data);
+
+private:
+    void
+    writeMPTHoldersFromTransactions(model::LedgerData const& data);
+};
 
 }  // namespace etlng::impl

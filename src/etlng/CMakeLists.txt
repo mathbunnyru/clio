@@ -15,6 +15,7 @@ target_sources(
           impl/TaskManager.cpp
           impl/ext/Cache.cpp
           impl/ext/Core.cpp
+          impl/ext/MPT.cpp
           impl/ext/NFT.cpp
           impl/ext/Successor.cpp
 )

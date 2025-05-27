@@ -39,6 +39,11 @@
 #include "etlng/LoadBalancerInterface.hpp"
 #include "etlng/impl/LedgerPublisher.hpp"
 #include "etlng/impl/TaskManagerProvider.hpp"
+#include "etlng/impl/ext/Cache.hpp"
+#include "etlng/impl/ext/Core.hpp"
+#include "etlng/impl/ext/MPT.hpp"
+#include "etlng/impl/ext/NFT.hpp"
+#include "etlng/impl/ext/Successor.hpp"
 #include "feed/SubscriptionManagerInterface.hpp"
 #include "util/Assert.hpp"
 #include "util/Constants.hpp"
@@ -47,11 +52,7 @@
 #include "util/log/Logger.hpp"
 
 #include <boost/asio/io_context.hpp>
-#include <boost/json/object.hpp>
-#include <grpcpp/grpcpp.h>
-#include <org/xrpl/rpc/v1/get_ledger.pb.h>
 #include <xrpl/beast/core/CurrentThreadName.h>
-#include <xrpl/proto/org/xrpl/rpc/v1/xrp_ledger.grpc.pb.h>
 #include <xrpl/protocol/LedgerHeader.h>
 
 #include <chrono>
@@ -100,7 +101,8 @@ ETLService::makeETLService(
                 etlng::impl::CacheExt{cacheUpdater},
                 etlng::impl::CoreExt{backend},
                 etlng::impl::SuccessorExt{backend, backend->cache()},
-                etlng::impl::NFTExt{backend}
+                etlng::impl::NFTExt{backend},
+                etlng::impl::MPTExt{backend}
             ),
             amendmentBlockHandler
         );

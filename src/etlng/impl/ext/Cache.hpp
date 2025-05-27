@@ -40,13 +40,13 @@ public:
     CacheExt(std::shared_ptr<CacheUpdaterInterface> cacheUpdater);
 
     void
-    onLedgerData(model::LedgerData const& data) const;
+    onLedgerData(model::LedgerData const& data);
 
     void
-    onInitialData(model::LedgerData const& data) const;
+    onInitialData(model::LedgerData const& data);
 
     void
-    onInitialObjects(uint32_t seq, std::vector<model::Object> const& objs, [[maybe_unused]] std::string lastKey) const;
+    onInitialObjects(uint32_t seq, std::vector<model::Object> const& objs, [[maybe_unused]] std::string lastKey);
 
     // We want cache updates through ETL if we are a potential writer but currently are not writing to DB
     static bool

@@ -55,6 +55,7 @@ target_sources(
           etlng/SourceImplTests.cpp
           etlng/ext/CoreTests.cpp
           etlng/ext/CacheTests.cpp
+          etlng/ext/MPTTests.cpp
           etlng/ext/NFTTests.cpp
           etlng/ext/SuccessorTests.cpp
           # Feed
