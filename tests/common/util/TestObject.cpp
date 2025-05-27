@@ -502,7 +502,7 @@ createOfferLedgerObject(
     offer.setFieldH256(ripple::sfBookDirectory, ripple::uint256{dirId});
     offer.setFieldH256(ripple::sfPreviousTxnID, ripple::uint256{});
     offer.setFieldU32(ripple::sfPreviousTxnLgrSeq, 0);
-    if (domain) {
+    if (domain.has_value()) {
         offer.setFieldH256(ripple::sfDomainID, ripple::uint256{*domain});
     }
     return offer;
