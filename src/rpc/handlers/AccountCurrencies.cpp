@@ -55,7 +55,7 @@ AccountCurrenciesHandler::process(AccountCurrenciesHandler::Input input, Context
     if (!expectedLgrInfo.has_value())
         return Error{expectedLgrInfo.error()};
 
-    auto const lgrInfo = expectedLgrInfo.value();
+    auto const& lgrInfo = expectedLgrInfo.value();
     auto const accountID = accountFromStringStrict(input.account);
 
     auto const accountLedgerObject =

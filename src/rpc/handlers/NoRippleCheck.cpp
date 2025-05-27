@@ -68,7 +68,7 @@ NoRippleCheckHandler::process(NoRippleCheckHandler::Input input, Context const& 
     if (!expectedLgrInfo.has_value())
         return Error{expectedLgrInfo.error()};
 
-    auto const lgrInfo = expectedLgrInfo.value();
+    auto const& lgrInfo = expectedLgrInfo.value();
     auto const accountID = accountFromStringStrict(input.account);
     auto const keylet = ripple::keylet::account(*accountID).key;
     auto const accountObj = sharedPtrBackend_->fetchLedgerObject(keylet, lgrInfo.seq, ctx.yield);

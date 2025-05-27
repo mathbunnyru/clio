@@ -58,7 +58,7 @@ MPTHoldersHandler::process(MPTHoldersHandler::Input input, Context const& ctx) c
     if (!expectedLgrInfo.has_value())
         return Error{expectedLgrInfo.error()};
 
-    auto const lgrInfo = expectedLgrInfo.value();
+    auto const& lgrInfo = expectedLgrInfo.value();
     auto const limit = input.limit.value_or(MPTHoldersHandler::kLIMIT_DEFAULT);
     auto const mptID = ripple::uint192{input.mptID.c_str()};
 

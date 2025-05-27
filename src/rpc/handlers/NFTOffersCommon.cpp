@@ -100,7 +100,7 @@ NFTOffersHandlerBase::iterateOfferDirectory(
     if (!expectedLgrInfo.has_value())
         return Error{expectedLgrInfo.error()};
 
-    auto const lgrInfo = expectedLgrInfo.value();
+    auto const& lgrInfo = expectedLgrInfo.value();
 
     // TODO: just check for existence without pulling
     if (not sharedPtrBackend_->fetchLedgerObject(directory.key, lgrInfo.seq, yield))

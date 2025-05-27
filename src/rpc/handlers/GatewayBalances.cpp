@@ -70,7 +70,7 @@ GatewayBalancesHandler::process(GatewayBalancesHandler::Input input, Context con
         return Error{expectedLgrInfo.error()};
 
     // check account
-    auto const lgrInfo = expectedLgrInfo.value();
+    auto const& lgrInfo = expectedLgrInfo.value();
     auto const accountID = accountFromStringStrict(input.account);
     auto const accountLedgerObject =
         sharedPtrBackend_->fetchLedgerObject(ripple::keylet::account(*accountID).key, lgrInfo.seq, ctx.yield);

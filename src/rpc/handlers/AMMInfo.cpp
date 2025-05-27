@@ -104,7 +104,7 @@ AMMInfoHandler::process(AMMInfoHandler::Input input, Context const& ctx) const
     if (!expectedLgrInfo.has_value())
         return Error{expectedLgrInfo.error()};
 
-    auto const lgrInfo = expectedLgrInfo.value();
+    auto const& lgrInfo = expectedLgrInfo.value();
 
     if (input.accountID) {
         auto keylet = keylet::account(*input.accountID);

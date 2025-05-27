@@ -66,7 +66,7 @@ FeatureHandler::process(FeatureHandler::Input input, Context const& ctx) const
     if (!expectedLgrInfo.has_value())
         return Error{expectedLgrInfo.error()};
 
-    auto const lgrInfo = expectedLgrInfo.value();
+    auto const& lgrInfo = expectedLgrInfo.value();
     auto const& all = amendmentCenter_->getAll();
 
     auto searchPredicate = [search = input.feature](auto const& feature) {

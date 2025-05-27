@@ -55,7 +55,7 @@ BookChangesHandler::process(BookChangesHandler::Input input, Context const& ctx)
     if (!expectedLgrInfo.has_value())
         return Error{expectedLgrInfo.error()};
 
-    auto const lgrInfo = expectedLgrInfo.value();
+    auto const& lgrInfo = expectedLgrInfo.value();
     auto const transactions = sharedPtrBackend_->fetchAllTransactionsInLedger(lgrInfo.seq, ctx.yield);
 
     Output response;

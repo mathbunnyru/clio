@@ -62,7 +62,7 @@ LedgerHandler::process(LedgerHandler::Input input, Context const& ctx) const
     if (!expectedLgrInfo.has_value())
         return Error{expectedLgrInfo.error()};
 
-    auto const lgrInfo = expectedLgrInfo.value();
+    auto const& lgrInfo = expectedLgrInfo.value();
     Output output;
 
     output.header = toJson(lgrInfo, input.binary, ctx.apiVersion);

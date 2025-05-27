@@ -57,7 +57,7 @@ NFTsByIssuerHandler::process(NFTsByIssuerHandler::Input input, Context const& ct
     if (!expectedLgrInfo.has_value())
         return Error{expectedLgrInfo.error()};
 
-    auto const lgrInfo = expectedLgrInfo.value();
+    auto const& lgrInfo = expectedLgrInfo.value();
 
     auto const limit = input.limit.value_or(NFTsByIssuerHandler::kLIMIT_DEFAULT);
 

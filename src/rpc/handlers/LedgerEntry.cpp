@@ -209,7 +209,7 @@ LedgerEntryHandler::process(LedgerEntryHandler::Input input, Context const& ctx)
     if (!expectedLgrInfo.has_value())
         return Error{expectedLgrInfo.error()};
 
-    auto const lgrInfo = expectedLgrInfo.value();
+    auto const& lgrInfo = expectedLgrInfo.value();
     auto output = LedgerEntryHandler::Output{};
     auto ledgerObject = sharedPtrBackend_->fetchLedgerObject(key, lgrInfo.seq, ctx.yield);
 

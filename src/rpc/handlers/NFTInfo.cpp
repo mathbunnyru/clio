@@ -57,7 +57,7 @@ NFTInfoHandler::process(NFTInfoHandler::Input input, Context const& ctx) const
     if (!expectedLgrInfo.has_value())
         return Error{expectedLgrInfo.error()};
 
-    auto const lgrInfo = expectedLgrInfo.value();
+    auto const& lgrInfo = expectedLgrInfo.value();
     auto const maybeNft = sharedPtrBackend_->fetchNFT(tokenID, lgrInfo.seq, ctx.yield);
 
     if (not maybeNft.has_value())

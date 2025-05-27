@@ -62,7 +62,7 @@ DepositAuthorizedHandler::process(DepositAuthorizedHandler::Input input, Context
     if (!expectedLgrInfo.has_value())
         return Error{expectedLgrInfo.error()};
 
-    auto const lgrInfo = expectedLgrInfo.value();
+    auto const& lgrInfo = expectedLgrInfo.value();
     auto const sourceAccountID = accountFromStringStrict(input.sourceAccount);
     auto const destinationAccountID = accountFromStringStrict(input.destinationAccount);
 

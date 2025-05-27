@@ -67,7 +67,7 @@ AccountInfoHandler::process(AccountInfoHandler::Input input, Context const& ctx)
     if (!expectedLgrInfo.has_value())
         return Error{expectedLgrInfo.error()};
 
-    auto const lgrInfo = expectedLgrInfo.value();
+    auto const& lgrInfo = expectedLgrInfo.value();
     auto const accountStr = input.account.value_or(input.ident.value_or(""));
     auto const accountID = accountFromStringStrict(accountStr);
     auto const accountKeylet = ripple::keylet::account(*accountID);

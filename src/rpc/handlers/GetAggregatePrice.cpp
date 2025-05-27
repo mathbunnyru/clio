@@ -71,7 +71,7 @@ GetAggregatePriceHandler::process(GetAggregatePriceHandler::Input input, Context
     if (!expectedLgrInfo.has_value())
         return Error{expectedLgrInfo.error()};
 
-    auto const lgrInfo = expectedLgrInfo.value();
+    auto const& lgrInfo = expectedLgrInfo.value();
 
     // sorted descending by lastUpdateTime, ascending by AssetPrice
     using TimestampPricesBiMap = boost::bimaps::bimap<
