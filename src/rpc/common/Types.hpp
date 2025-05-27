@@ -147,7 +147,7 @@ struct Result {
      *
      * @param status The status to construct the result from
      */
-    explicit Result(Status status) : response{std::move(status)}
+    explicit Result(Status status) : response{std::unexpected{std::move(status)}}
     {
     }
 
