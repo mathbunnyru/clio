@@ -29,6 +29,7 @@
 #include "rpc/Errors.hpp"
 #include "util/Assert.hpp"
 #include "util/Mutex.hpp"
+#include "util/Random.hpp"
 #include "util/ResponseExpirationCache.hpp"
 #include "util/config/ConfigDefinition.hpp"
 #include "util/log/Logger.hpp"
@@ -87,6 +88,8 @@ private:
     // Forwarding cache must be destroyed after sources because sources have a callback to invalidate cache
     std::optional<util::ResponseExpirationCache> forwardingCache_;
     std::optional<std::string> forwardingXUserValue_;
+
+    util::UniformRandomGenerator urng_ = {};
 
     std::vector<SourcePtr> sources_;
     std::optional<ETLState> etlState_;
@@ -249,6 +252,14 @@ public:
      */
     void
     stop(boost::asio::yield_context yield) override;
+
+    /**
+     * @brief Set the seed for the random number generator.
+     * @param seed Seed to set
+     * @note This function is only used in tests.
+     */
+    void
+    setSeed(size_t seed);
 
 private:
     /**

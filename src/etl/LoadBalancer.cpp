@@ -314,12 +314,18 @@ LoadBalancer::toJson() const
     return ret;
 }
 
+void
+LoadBalancer::setSeed(size_t seed)
+{
+    urng_.setSeed(seed);
+}
+
 template <typename Func>
 void
 LoadBalancer::execute(Func f, uint32_t ledgerSequence, std::chrono::steady_clock::duration retryAfter)
 {
     ASSERT(not sources_.empty(), "ETL sources must be configured to execute functions.");
-    size_t sourceIdx = util::Random::uniform(0ul, sources_.size() - 1);
+    size_t sourceIdx = urng_.uniform(0ul, sources_.size() - 1);
 
     size_t numAttempts = 0;
 
@@ -403,7 +409,7 @@ LoadBalancer::forwardToRippledImpl(
     ++forwardingCounters_.cacheMiss.get();
 
     ASSERT(not sources_.empty(), "ETL sources must be configured to forward requests.");
-    std::size_t sourceIdx = util::Random::uniform(0ul, sources_.size() - 1);
+    std::size_t sourceIdx = urng_.uniform(0ul, sources_.size() - 1);
 
     auto numAttempts = 0u;
 

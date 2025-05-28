@@ -26,10 +26,12 @@
 namespace util {
 
 /**
- * @brief Random number generator
+ * @brief Uniform random number generator
  */
-class Random {
+class UniformRandomGenerator {
 public:
+    UniformRandomGenerator();
+
     /**
      * @brief Generate a random number between min and max
      *
@@ -39,16 +41,16 @@ public:
      * @return Random number between min and max
      */
     template <typename T>
-    static T
+    T
     uniform(T min, T max)
     {
         ASSERT(min <= max, "Min cannot be greater than max. min: {}, max: {}", min, max);
         if constexpr (std::is_floating_point_v<T>) {
             std::uniform_real_distribution<T> distribution(min, max);
-            return distribution(generator);
+            return distribution(generator_);
         }
         std::uniform_int_distribution<T> distribution(min, max);
-        return distribution(generator);
+        return distribution(generator_);
     }
 
     /**
@@ -56,11 +58,11 @@ public:
      *
      * @param seed Seed to set
      */
-    static void
+    void
     setSeed(size_t seed);
 
 private:
-    static std::mt19937_64 generator;
+    std::mt19937_64 generator_;
 };
 
 }  // namespace util

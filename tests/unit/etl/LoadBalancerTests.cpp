@@ -123,7 +123,7 @@ struct LoadBalancerConstructorTests : util::prometheus::WithPrometheus, MockBack
     makeLoadBalancer()
     {
         auto const cfg = getParseLoadBalancerConfig(configJson_);
-        return std::make_unique<LoadBalancer>(
+        auto lb = std::make_unique<LoadBalancer>(
             cfg,
             ioContext_,
             backend_,
@@ -131,6 +131,8 @@ struct LoadBalancerConstructorTests : util::prometheus::WithPrometheus, MockBack
             networkManager_,
             [this](auto&&... args) -> SourcePtr { return sourceFactory_(std::forward<decltype(args)>(args)...); }
         );
+        lb->setSeed(0);
+        return lb;
     }
 
 protected:
@@ -430,11 +432,6 @@ TEST_F(LoadBalancer3SourcesTests, forwardingUpdate)
 }
 
 struct LoadBalancerLoadInitialLedgerTests : LoadBalancerOnConnectHookTests {
-    LoadBalancerLoadInitialLedgerTests()
-    {
-        util::Random::setSeed(0);
-    }
-
 protected:
     uint32_t const sequence_ = 123;
     uint32_t const numMarkers_ = 16;
@@ -496,7 +493,6 @@ TEST_F(LoadBalancerLoadInitialLedgerCustomNumMarkersTests, loadInitialLedger)
     EXPECT_CALL(sourceFactory_.sourceAt(1), run);
     auto loadBalancer = makeLoadBalancer();
 
-    util::Random::setSeed(0);
     EXPECT_CALL(sourceFactory_.sourceAt(0), hasLedger(sequence_)).WillOnce(Return(true));
     EXPECT_CALL(sourceFactory_.sourceAt(0), loadInitialLedger(sequence_, numMarkers_)).WillOnce(Return(response_));
 
@@ -506,7 +502,6 @@ TEST_F(LoadBalancerLoadInitialLedgerCustomNumMarkersTests, loadInitialLedger)
 struct LoadBalancerFetchLegerTests : LoadBalancerOnConnectHookTests {
     LoadBalancerFetchLegerTests()
     {
-        util::Random::setSeed(0);
         response_.second.set_validated(true);
     }
 
@@ -580,7 +575,6 @@ TEST_F(LoadBalancerFetchLegerTests, fetch_bothSourcesFail)
 struct LoadBalancerForwardToRippledTests : LoadBalancerConstructorTests, SyncAsioContextTest {
     LoadBalancerForwardToRippledTests()
     {
-        util::Random::setSeed(0);
         EXPECT_CALL(sourceFactory_.sourceAt(0), forwardToRippled).WillOnce(Return(boost::json::object{}));
         EXPECT_CALL(sourceFactory_.sourceAt(0), run);
         EXPECT_CALL(sourceFactory_.sourceAt(1), forwardToRippled).WillOnce(Return(boost::json::object{}));

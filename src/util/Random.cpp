@@ -25,12 +25,15 @@
 
 namespace util {
 
-void
-Random::setSeed(size_t seed)
+UniformRandomGenerator::UniformRandomGenerator()
+    : generator_{std::chrono::system_clock::now().time_since_epoch().count()}
 {
-    generator.seed(seed);
 }
 
-std::mt19937_64 Random::generator{std::chrono::system_clock::now().time_since_epoch().count()};
+void
+UniformRandomGenerator::setSeed(size_t seed)
+{
+    generator_.seed(seed);
+}
 
 }  // namespace util

@@ -624,6 +624,7 @@ TEST_F(BackendCassandraTest, Basic)
         };
         auto generateAccountTx = [&](uint32_t ledgerSequence, auto txns) {
             std::vector<AccountTransactionsData> ret;
+            util::UniformRandomGenerator urng;
             auto accounts = generateAccounts(ledgerSequence, 10);
             uint32_t idx = 0;
             for (auto& [hash, txn, meta] : txns) {
@@ -632,7 +633,7 @@ TEST_F(BackendCassandraTest, Basic)
                 data.transactionIndex = idx;
                 data.txHash = hash;
                 for (size_t i = 0; i < 3; ++i) {
-                    data.accounts.insert(accounts[util::Random::uniform(0ul, accounts.size() - 1)]);
+                    data.accounts.insert(accounts[urng.uniform(0ul, accounts.size() - 1)]);
                 }
                 ++idx;
                 ret.push_back(data);
