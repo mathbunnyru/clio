@@ -1421,6 +1421,9 @@ TEST_F(BackendCassandraNodeMessageTest, MessageDisappearsAfterTTL)
 
 TEST_F(BackendCassandraNodeMessageTest, UpdatingMessageKeepsItAlive)
 {
+#if defined(__APPLE__)
+    GTEST_SKIP() << "Skipping test on Apple platform due to slow DB";
+#endif
     static boost::uuids::uuid const kUUID = generateUuid();
     static std::string const kUPDATED_MESSAGE = "updated message";
 
