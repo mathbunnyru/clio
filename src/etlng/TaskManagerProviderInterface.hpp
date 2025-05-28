@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
     This file is part of clio: https://github.com/XRPLF/clio
-    Copyright (c) 2023, the clio developers.
+    Copyright (c) 2025, the clio developers.
 
     Permission to use, copy, modify, and distribute this software for any
     purpose with or without fee is hereby granted, provided that the above
@@ -19,20 +19,33 @@
 
 #pragma once
 
-#include "etlng/LedgerPublisherInterface.hpp"
+#include "etlng/MonitorInterface.hpp"
+#include "etlng/TaskManagerInterface.hpp"
+#include "util/async/AnyExecutionContext.hpp"
 
-#include <gmock/gmock.h>
-#include <xrpl/protocol/LedgerHeader.h>
-
-#include <chrono>
+#include <cstddef>
 #include <cstdint>
-#include <optional>
+#include <functional>
+#include <memory>
 
-struct MockLedgerPublisher : public etlng::LedgerPublisherInterface {
-    MOCK_METHOD(bool, publish, (uint32_t, std::optional<uint32_t>, std::chrono::steady_clock::duration), (override));
-    MOCK_METHOD(void, publish, (ripple::LedgerHeader const&), ());
-    MOCK_METHOD(std::uint32_t, lastPublishAgeSeconds, (), (const));
-    MOCK_METHOD(std::chrono::time_point<std::chrono::system_clock>, getLastPublish, (), (const, override));
-    MOCK_METHOD(std::uint32_t, lastCloseAgeSeconds, (), (const, override));
-    MOCK_METHOD(std::optional<uint32_t>, getLastPublishedSequence, (), (const));
+namespace etlng {
+
+/**
+ * @brief An interface for providing the Task Manager
+ */
+struct TaskManagerProviderInterface {
+    virtual ~TaskManagerProviderInterface() = default;
+
+    /**
+     * @brief Make a task manager
+     *
+     * @param ctx The async context to associate the task manager instance with
+     * @param monitor The monitor to notify when ledger is loaded
+     * @param seq The sequence to start at
+     * @return A unique pointer to a TaskManager implementation
+     */
+    virtual std::unique_ptr<TaskManagerInterface>
+    make(util::async::AnyExecutionContext ctx, std::reference_wrapper<MonitorInterface> monitor, uint32_t seq) = 0;
 };
+
+}  // namespace etlng

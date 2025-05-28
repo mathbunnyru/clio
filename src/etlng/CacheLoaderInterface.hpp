@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
     This file is part of clio: https://github.com/XRPLF/clio
-    Copyright (c) 2023, the clio developers.
+    Copyright (c) 2025, the clio developers.
 
     Permission to use, copy, modify, and distribute this software for any
     purpose with or without fee is hereby granted, provided that the above
@@ -19,20 +19,35 @@
 
 #pragma once
 
-#include "etlng/LedgerPublisherInterface.hpp"
-
-#include <gmock/gmock.h>
-#include <xrpl/protocol/LedgerHeader.h>
-
-#include <chrono>
 #include <cstdint>
-#include <optional>
 
-struct MockLedgerPublisher : public etlng::LedgerPublisherInterface {
-    MOCK_METHOD(bool, publish, (uint32_t, std::optional<uint32_t>, std::chrono::steady_clock::duration), (override));
-    MOCK_METHOD(void, publish, (ripple::LedgerHeader const&), ());
-    MOCK_METHOD(std::uint32_t, lastPublishAgeSeconds, (), (const));
-    MOCK_METHOD(std::chrono::time_point<std::chrono::system_clock>, getLastPublish, (), (const, override));
-    MOCK_METHOD(std::uint32_t, lastCloseAgeSeconds, (), (const, override));
-    MOCK_METHOD(std::optional<uint32_t>, getLastPublishedSequence, (), (const));
+namespace etlng {
+
+/**
+ * @brief An interface for the Cache Loader
+ */
+struct CacheLoaderInterface {
+    virtual ~CacheLoaderInterface() = default;
+
+    /**
+     * @brief Load the cache with the most recent ledger data
+     *
+     * @param seq The sequence number of the ledger to load
+     */
+    virtual void
+    load(uint32_t const seq) = 0;
+
+    /**
+     * @brief Stop the cache loading process
+     */
+    virtual void
+    stop() noexcept = 0;
+
+    /**
+     * @brief Wait for all cache loading tasks to complete
+     */
+    virtual void
+    wait() noexcept = 0;
 };
+
+}  // namespace etlng

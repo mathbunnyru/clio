@@ -17,62 +17,62 @@
 */
 //==============================================================================
 
-#include "etlng/impl/ext/NFT.hpp"
+#include "etlng/impl/ext/MPT.hpp"
 
 #include "data/BackendInterface.hpp"
 #include "data/DBHelpers.hpp"
-#include "etl/NFTHelpers.hpp"
+#include "etl/MPTHelpers.hpp"
 #include "etlng/Models.hpp"
 #include "util/log/Logger.hpp"
 
+#include <xrpl/basics/strHex.h>
+
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 namespace etlng::impl {
 
-NFTExt::NFTExt(std::shared_ptr<BackendInterface> backend) : backend_(std::move(backend))
+MPTExt::MPTExt(std::shared_ptr<BackendInterface> backend) : backend_(std::move(backend))
 {
 }
 
 void
-NFTExt::onLedgerData(model::LedgerData const& data)
+MPTExt::onLedgerData(model::LedgerData const& data)
 {
     LOG(log_.trace()) << "got TXS cnt = " << data.transactions.size() << "; OBJS size = " << data.objects.size();
-    writeNFTs(data);
+    writeMPTHoldersFromTransactions(data);
 }
 
 void
-NFTExt::onInitialObject(uint32_t seq, model::Object const& obj)
+MPTExt::onInitialObject(uint32_t, model::Object const& obj)
 {
-    LOG(log_.trace()) << "got initial object with key = " << obj.key;
-    backend_->writeNFTs(etl::getNFTDataFromObj(seq, obj.keyRaw, obj.dataRaw));
+    LOG(log_.trace()) << "got initial object with key: " << ripple::strHex(obj.key);
+    if (auto const mptHolder = etl::getMPTHolderFromObj(obj.keyRaw, obj.dataRaw); mptHolder.has_value())
+        backend_->writeMPTHolders({*mptHolder});
 }
 
 void
-NFTExt::onInitialData(model::LedgerData const& data)
+MPTExt::onInitialData(model::LedgerData const& data)
 {
     LOG(log_.trace()) << "got initial TXS cnt = " << data.transactions.size();
-    writeNFTs(data);
+    writeMPTHoldersFromTransactions(data);
 }
 
 void
-NFTExt::writeNFTs(model::LedgerData const& data)
+MPTExt::writeMPTHoldersFromTransactions(model::LedgerData const& data)
 {
-    std::vector<NFTsData> nfts;
-    std::vector<NFTTransactionsData> nftTxs;
+    std::vector<MPTHolderData> holders;
 
     for (auto const& tx : data.transactions) {
-        auto const [txs, maybeNFT] = etl::getNFTDataFromTx(tx.meta, tx.sttx);
-        nftTxs.insert(nftTxs.end(), txs.begin(), txs.end());
-        if (maybeNFT)
-            nfts.push_back(*maybeNFT);
+        if (auto const mptHolder = etl::getMPTHolderFromTx(tx.meta, tx.sttx); mptHolder.has_value())
+            holders.push_back(*mptHolder);
     }
 
-    // This is uniqued so that we only write latest modification (as in previous implementation)
-    backend_->writeNFTs(etl::getUniqueNFTsDatas(nfts));
-    backend_->writeNFTTransactions(nftTxs);
+    if (not holders.empty())
+        backend_->writeMPTHolders(holders);
 }
 
 }  // namespace etlng::impl

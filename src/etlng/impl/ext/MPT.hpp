@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
     This file is part of clio: https://github.com/XRPLF/clio
-    Copyright (c) 2023, the clio developers.
+    Copyright (c) 2025, the clio developers.
 
     Permission to use, copy, modify, and distribute this software for any
     purpose with or without fee is hereby granted, provided that the above
@@ -19,20 +19,39 @@
 
 #pragma once
 
-#include "etlng/LedgerPublisherInterface.hpp"
+#include "data/BackendInterface.hpp"
+#include "etlng/Models.hpp"
+#include "util/log/Logger.hpp"
 
-#include <gmock/gmock.h>
-#include <xrpl/protocol/LedgerHeader.h>
+#include <xrpl/basics/strHex.h>
+#include <xrpl/protocol/AccountID.h>
+#include <xrpl/protocol/STTx.h>
+#include <xrpl/protocol/TxMeta.h>
 
-#include <chrono>
 #include <cstdint>
-#include <optional>
+#include <memory>
 
-struct MockLedgerPublisher : public etlng::LedgerPublisherInterface {
-    MOCK_METHOD(bool, publish, (uint32_t, std::optional<uint32_t>, std::chrono::steady_clock::duration), (override));
-    MOCK_METHOD(void, publish, (ripple::LedgerHeader const&), ());
-    MOCK_METHOD(std::uint32_t, lastPublishAgeSeconds, (), (const));
-    MOCK_METHOD(std::chrono::time_point<std::chrono::system_clock>, getLastPublish, (), (const, override));
-    MOCK_METHOD(std::uint32_t, lastCloseAgeSeconds, (), (const, override));
-    MOCK_METHOD(std::optional<uint32_t>, getLastPublishedSequence, (), (const));
+namespace etlng::impl {
+
+class MPTExt {
+    std::shared_ptr<BackendInterface> backend_;
+    util::Logger log_{"ETL"};
+
+public:
+    explicit MPTExt(std::shared_ptr<BackendInterface> backend);
+
+    void
+    onLedgerData(model::LedgerData const& data);
+
+    void
+    onInitialObject(uint32_t seq, model::Object const& obj);
+
+    void
+    onInitialData(model::LedgerData const& data);
+
+private:
+    void
+    writeMPTHoldersFromTransactions(model::LedgerData const& data);
 };
+
+}  // namespace etlng::impl

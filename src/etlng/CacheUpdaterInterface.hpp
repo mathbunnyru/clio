@@ -17,44 +17,50 @@
 */
 //==============================================================================
 
-#include "etlng/impl/ext/Cache.hpp"
+#pragma once
 
-#include "etlng/CacheUpdaterInterface.hpp"
+#include "data/Types.hpp"
 #include "etlng/Models.hpp"
-#include "util/log/Logger.hpp"
 
 #include <cstdint>
-#include <memory>
-#include <string>
-#include <utility>
 #include <vector>
 
-namespace etlng::impl {
+namespace etlng {
 
-CacheExt::CacheExt(std::shared_ptr<CacheUpdaterInterface> cacheUpdater) : cacheUpdater_(std::move(cacheUpdater))
-{
-}
+/**
+ * @brief An interface for the Cache Updater
+ */
+struct CacheUpdaterInterface {
+    virtual ~CacheUpdaterInterface() = default;
 
-void
-CacheExt::onLedgerData(model::LedgerData const& data)
-{
-    LOG(log_.trace()) << "got data. objects cnt = " << data.objects.size();
-    cacheUpdater_->update(data);
-}
+    /**
+     * @brief Update the cache with ledger data
+     * @param data The ledger data to update with
+     */
+    virtual void
+    update(model::LedgerData const& data) = 0;
 
-void
-CacheExt::onInitialData(model::LedgerData const& data)
-{
-    LOG(log_.trace()) << "got initial data. objects cnt = " << data.objects.size();
-    cacheUpdater_->update(data);
-    cacheUpdater_->setFull();
-}
+    /**
+     * @brief Update the cache with ledger objects at a specific sequence
+     * @param seq The ledger sequence number
+     * @param objs The ledger objects to update with
+     */
+    virtual void
+    update(uint32_t seq, std::vector<data::LedgerObject> const& objs) = 0;
 
-void
-CacheExt::onInitialObjects(uint32_t seq, std::vector<model::Object> const& objs, [[maybe_unused]] std::string lastKey)
-{
-    LOG(log_.trace()) << "got initial objects cnt = " << objs.size();
-    cacheUpdater_->update(seq, objs);
-}
+    /**
+     * @brief Update the cache with model objects at a specific sequence
+     * @param seq The ledger sequence number
+     * @param objs The model objects to update with
+     */
+    virtual void
+    update(uint32_t seq, std::vector<model::Object> const& objs) = 0;
 
-}  // namespace etlng::impl
+    /**
+     * @brief Mark the cache as fully loaded
+     */
+    virtual void
+    setFull() = 0;
+};
+
+}  // namespace etlng
