@@ -24,6 +24,7 @@
 #include "util/MockBackendTestFixture.hpp"
 #include "util/MockNetworkValidatedLedgers.hpp"
 #include "util/MockPrometheus.hpp"
+#include "util/MockRandomGenerator.hpp"
 #include "util/MockSource.hpp"
 #include "util/MockSubscriptionManager.hpp"
 #include "util/NameGenerator.hpp"
@@ -123,17 +124,23 @@ struct LoadBalancerConstructorTests : util::prometheus::WithPrometheus, MockBack
     makeLoadBalancer()
     {
         auto const cfg = getParseLoadBalancerConfig(configJson_);
+
+        auto randomGenerator = std::make_unique<MockRandomGenerator>();
+        randomGenerator_ = randomGenerator.get();
+
         return std::make_unique<LoadBalancer>(
             cfg,
             ioContext_,
             backend_,
             subscriptionManager_,
+            std::move(randomGenerator),
             networkManager_,
             [this](auto&&... args) -> SourcePtr { return sourceFactory_(std::forward<decltype(args)>(args)...); }
         );
     }
 
 protected:
+    MockRandomGenerator* randomGenerator_ = nullptr;
     StrictMockSubscriptionManagerSharedPtr subscriptionManager_;
     StrictMockNetworkValidatedLedgersPtr networkManager_;
     StrictMockSourceFactory sourceFactory_{2};
@@ -430,11 +437,6 @@ TEST_F(LoadBalancer3SourcesTests, forwardingUpdate)
 }
 
 struct LoadBalancerLoadInitialLedgerTests : LoadBalancerOnConnectHookTests {
-    LoadBalancerLoadInitialLedgerTests()
-    {
-        util::Random::setSeed(0);
-    }
-
 protected:
     uint32_t const sequence_ = 123;
     uint32_t const numMarkers_ = 16;
@@ -496,7 +498,6 @@ TEST_F(LoadBalancerLoadInitialLedgerCustomNumMarkersTests, loadInitialLedger)
     EXPECT_CALL(sourceFactory_.sourceAt(1), run);
     auto loadBalancer = makeLoadBalancer();
 
-    util::Random::setSeed(0);
     EXPECT_CALL(sourceFactory_.sourceAt(0), hasLedger(sequence_)).WillOnce(Return(true));
     EXPECT_CALL(sourceFactory_.sourceAt(0), loadInitialLedger(sequence_, numMarkers_)).WillOnce(Return(response_));
 
@@ -506,7 +507,6 @@ TEST_F(LoadBalancerLoadInitialLedgerCustomNumMarkersTests, loadInitialLedger)
 struct LoadBalancerFetchLegerTests : LoadBalancerOnConnectHookTests {
     LoadBalancerFetchLegerTests()
     {
-        util::Random::setSeed(0);
         response_.second.set_validated(true);
     }
 
@@ -580,7 +580,6 @@ TEST_F(LoadBalancerFetchLegerTests, fetch_bothSourcesFail)
 struct LoadBalancerForwardToRippledTests : LoadBalancerConstructorTests, SyncAsioContextTest {
     LoadBalancerForwardToRippledTests()
     {
-        util::Random::setSeed(0);
         EXPECT_CALL(sourceFactory_.sourceAt(0), forwardToRippled).WillOnce(Return(boost::json::object{}));
         EXPECT_CALL(sourceFactory_.sourceAt(0), run);
         EXPECT_CALL(sourceFactory_.sourceAt(1), forwardToRippled).WillOnce(Return(boost::json::object{}));
@@ -814,6 +813,7 @@ TEST_F(LoadBalancerForwardToRippledTests, onLedgerClosedHookInvalidatesCache)
 
     auto const request = boost::json::object{{"command", "server_info"}};
 
+    EXPECT_CALL(*randomGenerator_, uniform(0, 1)).WillOnce(Return(0)).WillOnce(Return(1));
     EXPECT_CALL(
         sourceFactory_.sourceAt(0),
         forwardToRippled(request, clientIP_, LoadBalancer::kUSER_FORWARDING_X_USER_VALUE, testing::_)

@@ -145,9 +145,13 @@ ClioApplication::run(bool const useNgWebServer)
     // The balancer itself publishes to streams (transactions_proposed and accounts_proposed)
     auto balancer = [&] -> std::shared_ptr<etlng::LoadBalancerInterface> {
         if (config_.get<bool>("__ng_etl"))
-            return etlng::LoadBalancer::makeLoadBalancer(config_, ioc, backend, subscriptions, ledgers);
+            return etlng::LoadBalancer::makeLoadBalancer(
+                config_, ioc, backend, subscriptions, std::make_unique<util::MTRandomGenerator>(), ledgers
+            );
 
-        return etl::LoadBalancer::makeLoadBalancer(config_, ioc, backend, subscriptions, ledgers);
+        return etl::LoadBalancer::makeLoadBalancer(
+            config_, ioc, backend, subscriptions, std::make_unique<util::MTRandomGenerator>(), ledgers
+        );
     }();
 
     // ETL is responsible for writing and publishing to streams. In read-only mode, ETL only publishes

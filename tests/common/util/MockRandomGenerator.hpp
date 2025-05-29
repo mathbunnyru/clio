@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
     This file is part of clio: https://github.com/XRPLF/clio
-    Copyright (c) 2023, the clio developers.
+    Copyright (c) 2025, the clio developers.
 
     Permission to use, copy, modify, and distribute this software for any
     purpose with or without fee is hereby granted, provided that the above
@@ -17,28 +17,15 @@
 */
 //==============================================================================
 
+#pragma once
 #include "util/Random.hpp"
 
-#include <chrono>
-#include <cstddef>
-#include <random>
+#include <gtest/gtest.h>
 
-namespace util {
+struct MockRandomGeneratorImpl : public util::RandomGeneratorInterface {
+    MOCK_METHOD(size_t, uniform, (size_t min, size_t max), (override));
+    MOCK_METHOD(void, setSeed, (SeedType seed), (override));
+};
 
-MTRandomGenerator::MTRandomGenerator() : generator_{std::chrono::system_clock::now().time_since_epoch().count()}
-{
-}
-
-size_t
-MTRandomGenerator::uniform(size_t min, size_t max)
-{
-    return uniformImpl(min, max);
-}
-
-void
-MTRandomGenerator::setSeed(SeedType seed)
-{
-    generator_.seed(seed);
-}
-
-}  // namespace util
+using MockRandomGenerator = testing::NiceMock<MockRandomGeneratorImpl>;
+using StrictMockRandomGenerator = testing::StrictMock<MockRandomGeneratorImpl>;
