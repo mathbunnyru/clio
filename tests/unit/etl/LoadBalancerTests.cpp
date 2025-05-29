@@ -24,6 +24,7 @@
 #include "util/MockBackendTestFixture.hpp"
 #include "util/MockNetworkValidatedLedgers.hpp"
 #include "util/MockPrometheus.hpp"
+#include "util/MockRandomGenerator.hpp"
 #include "util/MockSource.hpp"
 #include "util/MockSubscriptionManager.hpp"
 #include "util/NameGenerator.hpp"
@@ -123,8 +124,10 @@ struct LoadBalancerConstructorTests : util::prometheus::WithPrometheus, MockBack
     makeLoadBalancer()
     {
         auto const cfg = getParseLoadBalancerConfig(configJson_);
-        std::unique_ptr<util::RandomGeneratorInterface> randomGenerator = std::make_unique<util::MTRandomGenerator>();
-        randomGenerator->setSeed(0);
+
+        auto randomGenerator = std::make_unique<MockRandomGenerator>();
+        randomGenerator_ = randomGenerator.get();
+
         return std::make_unique<LoadBalancer>(
             cfg,
             ioContext_,
@@ -137,6 +140,7 @@ struct LoadBalancerConstructorTests : util::prometheus::WithPrometheus, MockBack
     }
 
 protected:
+    MockRandomGenerator* randomGenerator_ = nullptr;
     StrictMockSubscriptionManagerSharedPtr subscriptionManager_;
     StrictMockNetworkValidatedLedgersPtr networkManager_;
     StrictMockSourceFactory sourceFactory_{2};
@@ -809,6 +813,7 @@ TEST_F(LoadBalancerForwardToRippledTests, onLedgerClosedHookInvalidatesCache)
 
     auto const request = boost::json::object{{"command", "server_info"}};
 
+    EXPECT_CALL(*randomGenerator_, uniform(0, 1)).WillOnce(Return(0)).WillOnce(Return(1));
     EXPECT_CALL(
         sourceFactory_.sourceAt(0),
         forwardToRippled(request, clientIP_, LoadBalancer::kUSER_FORWARDING_X_USER_VALUE, testing::_)

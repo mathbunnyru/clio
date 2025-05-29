@@ -100,7 +100,7 @@ public:
     setSeed(SeedType seed) override;
 
 private:
-    std::mt19937_64 generator_ = {};
+    std::mt19937_64 generator_;
 };
 
 }  // namespace util
