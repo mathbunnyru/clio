@@ -41,6 +41,7 @@ public:
      * @param max Maximum value
      * @return Random number between min and max
      */
+    [[nodiscard]]
     virtual size_t
     uniform(size_t min, size_t max) = 0;
 
@@ -67,6 +68,7 @@ public:
      * @param max Maximum value
      * @return Random number between min and max
      */
+    [[nodiscard]]
     size_t
     uniform(size_t min, size_t max) override;
 
@@ -79,6 +81,7 @@ public:
      * @return Random number between min and max
      */
     template <typename T>
+    [[nodiscard]]
     T
     uniformImpl(T min, T max)
     {
