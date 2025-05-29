@@ -139,8 +139,6 @@ ClioApplication::run(bool const useNgWebServer)
     // Tracks which ledgers have been validated by the network
     auto ledgers = etl::NetworkValidatedLedgers::makeValidatedLedgers();
 
-    std::unique_ptr<util::RandomGeneratorInterface> randomGenerator = std::make_unique<util::MTRandomGenerator>();
-
     // Handles the connection to one or more rippled nodes.
     // ETL uses the balancer to extract data.
     // The server uses the balancer to forward RPCs to a rippled node.
@@ -148,11 +146,11 @@ ClioApplication::run(bool const useNgWebServer)
     auto balancer = [&] -> std::shared_ptr<etlng::LoadBalancerInterface> {
         if (config_.get<bool>("__ng_etl"))
             return etlng::LoadBalancer::makeLoadBalancer(
-                config_, ioc, backend, subscriptions, std::move(randomGenerator), ledgers
+                config_, ioc, backend, subscriptions, std::make_unique<util::MTRandomGenerator>(), ledgers
             );
 
         return etl::LoadBalancer::makeLoadBalancer(
-            config_, ioc, backend, subscriptions, std::move(randomGenerator), ledgers
+            config_, ioc, backend, subscriptions, std::make_unique<util::MTRandomGenerator>(), ledgers
         );
     }();
 
