@@ -144,16 +144,17 @@ struct LoadBalancerConstructorNgTests : util::prometheus::WithPrometheus, MockBa
     makeLoadBalancer()
     {
         auto const cfg = getParseLoadBalancerConfig(configJson_);
-        auto lb = std::make_unique<LoadBalancer>(
+        std::unique_ptr<util::RandomGeneratorInterface> randomGenerator = std::make_unique<util::MTRandomGenerator>();
+        randomGenerator->setSeed(0);
+        return std::make_unique<LoadBalancer>(
             cfg,
             ioContext_,
             backend_,
             subscriptionManager_,
+            std::move(randomGenerator),
             networkManager_,
             [this](auto&&... args) -> SourcePtr { return sourceFactory_(std::forward<decltype(args)>(args)...); }
         );
-        lb->setSeed(0);
-        return lb;
     }
 
 protected:

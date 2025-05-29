@@ -26,11 +26,49 @@
 namespace util {
 
 /**
- * @brief Uniform random number generator
+ * @brief Random number generator interface
  */
-class UniformRandomGenerator {
+class RandomGeneratorInterface {
 public:
-    UniformRandomGenerator();
+    virtual ~RandomGeneratorInterface() = default;
+
+    using SeedType = typename std::mt19937_64::result_type;
+
+    /**
+     * @brief Generate a random number between min and max
+     *
+     * @param min Minimum value
+     * @param max Maximum value
+     * @return Random number between min and max
+     */
+    virtual size_t
+    uniform(size_t min, size_t max) = 0;
+
+    /**
+     * @brief Set the seed for the random number generator
+     *
+     * @param seed Seed to set
+     */
+    virtual void
+    setSeed(SeedType seed) = 0;
+};
+
+/**
+ * @brief Mersenne Twister random number generator
+ */
+class MTRandomGenerator : public RandomGeneratorInterface {
+public:
+    MTRandomGenerator();
+
+    /**
+     * @brief Generate a random number between min and max
+     *
+     * @param min Minimum value
+     * @param max Maximum value
+     * @return Random number between min and max
+     */
+    size_t
+    uniform(size_t min, size_t max) override;
 
     /**
      * @brief Generate a random number between min and max
@@ -42,7 +80,7 @@ public:
      */
     template <typename T>
     T
-    uniform(T min, T max)
+    uniformImpl(T min, T max)
     {
         ASSERT(min <= max, "Min cannot be greater than max. min: {}, max: {}", min, max);
         if constexpr (std::is_floating_point_v<T>) {
@@ -59,10 +97,10 @@ public:
      * @param seed Seed to set
      */
     void
-    setSeed(size_t seed);
+    setSeed(SeedType seed) override;
 
 private:
-    std::mt19937_64 generator_;
+    std::mt19937_64 generator_ = {};
 };
 
 }  // namespace util

@@ -139,15 +139,21 @@ ClioApplication::run(bool const useNgWebServer)
     // Tracks which ledgers have been validated by the network
     auto ledgers = etl::NetworkValidatedLedgers::makeValidatedLedgers();
 
+    std::unique_ptr<util::RandomGeneratorInterface> randomGenerator = std::make_unique<util::MTRandomGenerator>();
+
     // Handles the connection to one or more rippled nodes.
     // ETL uses the balancer to extract data.
     // The server uses the balancer to forward RPCs to a rippled node.
     // The balancer itself publishes to streams (transactions_proposed and accounts_proposed)
     auto balancer = [&] -> std::shared_ptr<etlng::LoadBalancerInterface> {
         if (config_.get<bool>("__ng_etl"))
-            return etlng::LoadBalancer::makeLoadBalancer(config_, ioc, backend, subscriptions, ledgers);
+            return etlng::LoadBalancer::makeLoadBalancer(
+                config_, ioc, backend, subscriptions, std::move(randomGenerator), ledgers
+            );
 
-        return etl::LoadBalancer::makeLoadBalancer(config_, ioc, backend, subscriptions, ledgers);
+        return etl::LoadBalancer::makeLoadBalancer(
+            config_, ioc, backend, subscriptions, std::move(randomGenerator), ledgers
+        );
     }();
 
     // ETL is responsible for writing and publishing to streams. In read-only mode, ETL only publishes

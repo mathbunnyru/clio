@@ -89,7 +89,7 @@ private:
     std::optional<util::ResponseExpirationCache> forwardingCache_;
     std::optional<std::string> forwardingXUserValue_;
 
-    util::UniformRandomGenerator urng_ = {};
+    std::unique_ptr<util::RandomGeneratorInterface> randomGenerator_;
 
     std::vector<SourcePtr> sources_;
     std::optional<ETLState> etlState_;
@@ -126,6 +126,7 @@ public:
      * @param ioc The io_context to run on
      * @param backend BackendInterface implementation
      * @param subscriptions Subscription manager
+     * @param randomGenerator A random generator to use for selecting sources
      * @param validatedLedgers The network validated ledgers datastructure
      * @param sourceFactory A factory function to create a source
      */
@@ -134,6 +135,7 @@ public:
         boost::asio::io_context& ioc,
         std::shared_ptr<BackendInterface> backend,
         std::shared_ptr<feed::SubscriptionManagerInterface> subscriptions,
+        std::unique_ptr<util::RandomGeneratorInterface> randomGenerator,
         std::shared_ptr<NetworkValidatedLedgersInterface> validatedLedgers,
         SourceFactory sourceFactory = makeSource
     );
@@ -145,6 +147,7 @@ public:
      * @param ioc The io_context to run on
      * @param backend BackendInterface implementation
      * @param subscriptions Subscription manager
+     * @param randomGenerator A random generator to use for selecting sources
      * @param validatedLedgers The network validated ledgers data structure
      * @param sourceFactory A factory function to create a source
      * @return A shared pointer to a new instance of LoadBalancer
@@ -155,6 +158,7 @@ public:
         boost::asio::io_context& ioc,
         std::shared_ptr<BackendInterface> backend,
         std::shared_ptr<feed::SubscriptionManagerInterface> subscriptions,
+        std::unique_ptr<util::RandomGeneratorInterface> randomGenerator,
         std::shared_ptr<NetworkValidatedLedgersInterface> validatedLedgers,
         SourceFactory sourceFactory = makeSource
     );
@@ -252,14 +256,6 @@ public:
      */
     void
     stop(boost::asio::yield_context yield) override;
-
-    /**
-     * @brief Set the seed for the random number generator.
-     * @param seed Seed to set
-     * @note This function is only used in tests.
-     */
-    void
-    setSeed(size_t seed);
 
 private:
     /**
