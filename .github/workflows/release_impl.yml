@@ -85,7 +85,7 @@ jobs:
             echo '## SHA256 checksums'
             echo
             echo '```'
-            sha256sum *
+            cat *.sha256sum
             echo '```'
           } >> "${RUNNER_TEMP}/release_notes.md"
 
