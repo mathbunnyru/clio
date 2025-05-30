@@ -48,7 +48,7 @@ runs:
       if: ${{ inputs.conan_cache_hit != 'true' }}
       uses: actions/cache/save@v4
       with:
-        path: ${{ inputs.conan_dir }}/data
+        path: ${{ inputs.conan_dir }}/p
         key: clio-conan_data-${{ runner.os }}-${{ inputs.build_type }}-${{ inputs.conan_profile }}-develop-${{ inputs.conan_hash }}
 
     - name: Save ccache cache

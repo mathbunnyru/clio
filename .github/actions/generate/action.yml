@@ -61,13 +61,13 @@ runs:
           -of . \
           -b $BUILD_OPTION \
           -s build_type="${{ inputs.build_type }}" \
-          -o clio:static="${STATIC_OPTION}" \
-          -o clio:tests=True \
-          -o clio:integration_tests="${INTEGRATION_TESTS_OPTION}" \
-          -o clio:lint=False \
-          -o clio:coverage="${CODE_COVERAGE}" \
-          -o clio:time_trace="${TIME_TRACE}" \
-          --profile "${{ inputs.conan_profile }}"
+          -o '&:clio:static="${STATIC_OPTION}"' \
+          -o '&:clio:tests=True' \
+          -o '&:clio:integration_tests="${INTEGRATION_TESTS_OPTION}"' \
+          -o '&:clio:lint=False' \
+          -o '&:clio:coverage="${CODE_COVERAGE}"' \
+          -o '&:clio:time_trace="${TIME_TRACE}"' \
+          --profile:all "${{ inputs.conan_profile }}"
 
     - name: Run cmake
       shell: bash
