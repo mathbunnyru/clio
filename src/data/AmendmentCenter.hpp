@@ -139,9 +139,9 @@ struct Amendments {
     REGISTER(DeepFreeze);
     REGISTER(PermissionDelegation);
     REGISTER(fixPayChanCancelAfter);
+    REGISTER(Batch);
     REGISTER(PermissionedDEX);
     REGISTER(SingleAssetVault);
-    REGISTER(Batch);
 
     // Obsolete but supported by libxrpl
     REGISTER(CryptoConditionsSuite);
