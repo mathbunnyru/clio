@@ -92,7 +92,7 @@ jobs:
       - name: Upload release notes
         uses: actions/upload-artifact@v4
         with:
-          name: release_notes
+          name: release_notes_${{ inputs.version }}
           path: "${RUNNER_TEMP}/release_notes.md"
 
       - name: Remove current release and tag
