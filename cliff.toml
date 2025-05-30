@@ -11,16 +11,26 @@ header = """
 """
 # template for the changelog body
 # https://keats.github.io/tera/docs/#introduction
-body = """
-Version {{ version | trim_start_matches(pat="v") }} of Clio, an XRP Ledger API server optimized for HTTP and WebSocket API calls, is now available.
-This release adds new features and bug fixes.
 
+body = """
 {% if version %}\
-    ## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+  Version {{ version | trim_start_matches(pat="v") }} of Clio, an XRP Ledger API server optimized for HTTP and WebSocket API calls, is now available.
 {% else %}\
+  Clio, an XRP Ledger API server optimized for HTTP and WebSocket API calls, is under active development.
+{% endif %}\
+{% set grouped_commits = commits | filter(attribute="merge_commit", value=false) | group_by(attribute="group") %}\
+{% if "<!-- 0 -->🚀 Features" in grouped_commits %}\
+  This release adds new features and bug fixes.
+{% else %}\
+  This release adds bug fixes.
+{% endif %}\
+
+{% if version %}
+    ## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}
     ## [unreleased]
 {% endif %}\
-{% for group, commits in commits | filter(attribute="merge_commit", value=false) | group_by(attribute="group") %}
+{% for group, commits in grouped_commits %}
     ### {{ group | striptags | trim | upper_first }}
     {% for commit in commits %}
         - {% if commit.scope %}*({{ commit.scope }})* {% endif %}\
