@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
     This file is part of clio: https://github.com/XRPLF/clio
-    Copyright (c) 2023, the clio developers.
+    Copyright (c) 2025, the clio developers.
 
     Permission to use, copy, modify, and distribute this software for any
     purpose with or without fee is hereby granted, provided that the above
@@ -17,27 +17,15 @@
 */
 //==============================================================================
 
-#include "rpc/JS.hpp"
-#include "rpc/common/AnyHandler.hpp"
-#include "rpc/common/Types.hpp"
-#include "rpc/handlers/Random.hpp"
-#include "util/HandlerBaseTestFixture.hpp"
+#pragma once
+#include "util/Random.hpp"
 
-#include <boost/json/parse.hpp>
 #include <gtest/gtest.h>
-#include <xrpl/protocol/jss.h>
 
-using namespace rpc;
+struct MockRandomGeneratorImpl : public util::RandomGeneratorInterface {
+    MOCK_METHOD(size_t, uniform, (size_t min, size_t max), (override));
+    MOCK_METHOD(void, setSeed, (SeedType seed), (override));
+};
 
-class RPCRandomHandlerTest : public HandlerBaseTest {};
-
-TEST_F(RPCRandomHandlerTest, Default)
-{
-    runSpawn([](auto yield) {
-        auto const handler = AnyHandler{RandomHandler{}};
-        auto const output = handler.process(boost::json::parse(R"JSON({})JSON"), Context{yield});
-        ASSERT_TRUE(output);
-        EXPECT_TRUE(output.result->as_object().contains(JS(random)));
-        EXPECT_EQ(output.result->as_object().at(JS(random)).as_string().size(), 64u);
-    });
-}
+using MockRandomGenerator = testing::NiceMock<MockRandomGeneratorImpl>;
+using StrictMockRandomGenerator = testing::StrictMock<MockRandomGeneratorImpl>;
