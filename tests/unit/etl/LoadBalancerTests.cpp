@@ -62,7 +62,7 @@ using namespace util::config;
 using testing::Return;
 using namespace util::prometheus;
 
-constexpr static auto const kTWO_SOURCES_LEDGER_RESPONSE = R"({
+constexpr static auto const kTWO_SOURCES_LEDGER_RESPONSE = R"JSON({
     "etl_sources": [
         {
             "ip": "127.0.0.1",
@@ -75,9 +75,9 @@ constexpr static auto const kTWO_SOURCES_LEDGER_RESPONSE = R"({
             "grpc_port": "source2"
         }
     ]
-})";
+})JSON";
 
-constexpr static auto const kTHREE_SOURCES_LEDGER_RESPONSE = R"({
+constexpr static auto const kTHREE_SOURCES_LEDGER_RESPONSE = R"JSON({
     "etl_sources": [
         {
             "ip": "127.0.0.1",
@@ -95,7 +95,7 @@ constexpr static auto const kTHREE_SOURCES_LEDGER_RESPONSE = R"({
             "grpc_port": "source3"
         }
     ]
-})";
+})JSON";
 
 inline static ClioConfigDefinition
 getParseLoadBalancerConfig(boost::json::value val)
@@ -227,8 +227,8 @@ TEST_F(LoadBalancerConstructorTests, fetchETLState_Source0Fails1OK)
 
 TEST_F(LoadBalancerConstructorTests, fetchETLState_DifferentNetworkID)
 {
-    auto const source1Json = boost::json::parse(R"({"result": {"info": {"network_id": 0}}})");
-    auto const source2Json = boost::json::parse(R"({"result": {"info": {"network_id": 1}}})");
+    auto const source1Json = boost::json::parse(R"JSON({"result": {"info": {"network_id": 0}}})JSON");
+    auto const source2Json = boost::json::parse(R"JSON({"result": {"info": {"network_id": 1}}})JSON");
 
     EXPECT_CALL(sourceFactory_, makeSource).Times(2);
     EXPECT_CALL(sourceFactory_.sourceAt(0), forwardToRippled).WillOnce(Return(source1Json.as_object()));
@@ -251,8 +251,8 @@ TEST_F(LoadBalancerConstructorTests, fetchETLState_AllSourcesFailButAllowNoEtlIs
 
 TEST_F(LoadBalancerConstructorTests, fetchETLState_DifferentNetworkIDButAllowNoEtlIsTrue)
 {
-    auto const source1Json = boost::json::parse(R"({"result": {"info": {"network_id": 0}}})");
-    auto const source2Json = boost::json::parse(R"({"result": {"info": {"network_id": 1}}})");
+    auto const source1Json = boost::json::parse(R"JSON({"result": {"info": {"network_id": 0}}})JSON");
+    auto const source2Json = boost::json::parse(R"JSON({"result": {"info": {"network_id": 1}}})JSON");
     EXPECT_CALL(sourceFactory_, makeSource).Times(2);
     EXPECT_CALL(sourceFactory_.sourceAt(0), forwardToRippled).WillOnce(Return(source1Json.as_object()));
     EXPECT_CALL(sourceFactory_.sourceAt(0), run);
