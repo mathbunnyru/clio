@@ -2,13 +2,17 @@
 
 set -e -o pipefail
 
-BINARY_NAME = "clio_server"
+BINARY_NAME="clio_server"
 
-ARTIFACTS_DIR = "$1"
+ARTIFACTS_DIR="$1"
+if [ -z "${ARTIFACTS_DIR}" ]; then
+    echo "Usage: $0 <artifacts_directory>"
+    exit 1
+fi
 cd "${ARTIFACTS_DIR}" || exit 1
-GITHUB_ARTIFACTS = "$(ls)"
+GITHUB_ARTIFACTS="$(ls)"
 
-for artifact_name in "${GITHUB_ARTIFACTS}; do
+for artifact_name in "${GITHUB_ARTIFACTS}"; do
     pushd "${artifact_name}" || exit 1
     zip -r "../${artifact_name}.zip" ./${BINARY_NAME}
     popd || exit 1
