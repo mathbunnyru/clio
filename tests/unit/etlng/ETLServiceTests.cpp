@@ -197,16 +197,16 @@ protected:
 
 TEST_F(ETLServiceTests, GetInfoWithoutLastPublish)
 {
-    EXPECT_CALL(*balancer_, toJson()).WillOnce(testing::Return(boost::json::parse(R"json([{"test": "value"}])json")));
+    EXPECT_CALL(*balancer_, toJson()).WillOnce(testing::Return(boost::json::parse(R"JSON([{"test": "value"}])JSON")));
     EXPECT_CALL(*publisher_, getLastPublish()).WillOnce(testing::Return(std::chrono::system_clock::time_point{}));
     EXPECT_CALL(*publisher_, lastPublishAgeSeconds()).WillRepeatedly(testing::Return(0));
 
     auto result = service_.getInfo();
-    auto expectedResult = boost::json::parse(R"json({
+    auto expectedResult = boost::json::parse(R"JSON({
         "etl_sources": [{"test": "value"}],
         "is_writer": 0,
         "read_only": 0
-    })json");
+    })JSON");
 
     EXPECT_TRUE(result == expectedResult);
     EXPECT_FALSE(result.contains("last_publish_age_seconds"));
@@ -214,17 +214,17 @@ TEST_F(ETLServiceTests, GetInfoWithoutLastPublish)
 
 TEST_F(ETLServiceTests, GetInfoWithLastPublish)
 {
-    EXPECT_CALL(*balancer_, toJson()).WillOnce(testing::Return(boost::json::parse(R"json([{"test": "value"}])json")));
+    EXPECT_CALL(*balancer_, toJson()).WillOnce(testing::Return(boost::json::parse(R"JSON([{"test": "value"}])JSON")));
     EXPECT_CALL(*publisher_, getLastPublish()).WillOnce(testing::Return(std::chrono::system_clock::now()));
     EXPECT_CALL(*publisher_, lastPublishAgeSeconds()).WillOnce(testing::Return(42));
 
     auto result = service_.getInfo();
-    auto expectedResult = boost::json::parse(R"json({
+    auto expectedResult = boost::json::parse(R"JSON({
         "etl_sources": [{"test": "value"}],
         "is_writer": 0,
         "read_only": 0,
         "last_publish_age_seconds": "42"
-    })json");
+    })JSON");
 
     EXPECT_TRUE(result == expectedResult);
 }
