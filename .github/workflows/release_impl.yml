@@ -76,8 +76,7 @@ jobs:
 
       - name: Prepare release artifacts
         shell: bash
-        working-directory: release_artifacts
-        run: .github/scripts/prepare-release-artifacts.sh
+        run: .github/scripts/prepare-release-artifacts.sh release_artifacts
 
       - name: Append sha256 checksums
         shell: bash

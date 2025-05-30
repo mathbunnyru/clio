@@ -4,6 +4,8 @@ set -e -o pipefail
 
 BINARY_NAME = "clio_server"
 
+ARTIFACTS_DIR = "$1"
+cd "${ARTIFACTS_DIR}" || exit 1
 GITHUB_ARTIFACTS = "$(ls)"
 
 for artifact_name in "${GITHUB_ARTIFACTS}; do
