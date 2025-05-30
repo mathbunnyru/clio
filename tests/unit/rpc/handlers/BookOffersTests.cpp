@@ -316,7 +316,7 @@ generateParameterBookOffersTestBundles()
         },
         ParameterTestBundle{
             .testName = "Domain_InvalidType",
-            .testJson = R"({
+            .testJson = R"JSON({
                 "taker_pays" :
                 {
                     "currency" : "CNY",
@@ -327,13 +327,13 @@ generateParameterBookOffersTestBundles()
                     "currency" : "XRP"
                 },
                 "domain": 0
-            })",
+            })JSON",
             .expectedError = "invalidParams",
             .expectedErrorMessage = "Invalid parameters."
         },
         ParameterTestBundle{
             .testName = "Domain_InvalidInt",
-            .testJson = R"({
+            .testJson = R"JSON({
                 "taker_pays" :
                 {
                     "currency" : "CNY",
@@ -344,13 +344,13 @@ generateParameterBookOffersTestBundles()
                     "currency" : "XRP"
                 },
                 "domain": "123"
-            })",
+            })JSON",
             .expectedError = "invalidParams",
             .expectedErrorMessage = "domainMalformed"
         },
         ParameterTestBundle{
             .testName = "Domain_InvalidObject",
-            .testJson = R"({
+            .testJson = R"JSON({
                 "taker_pays" :
                 {
                     "currency" : "CNY",
@@ -361,7 +361,7 @@ generateParameterBookOffersTestBundles()
                     "currency" : "XRP"
                 },
                 "domain": {}
-            })",
+            })JSON",
             .expectedError = "invalidParams",
             .expectedErrorMessage = "Invalid parameters."
         },
@@ -699,7 +699,7 @@ generateNormalPathBookOffersTestBundles()
     );
 
     auto const getsXRPPaysUSDInputJsonWithDomain = fmt::format(
-        R"({{
+        R"JSON({{
             "taker_gets":
             {{
                 "currency": "XRP"
@@ -710,7 +710,7 @@ generateNormalPathBookOffersTestBundles()
                 "issuer": "{}"
             }},
             "domain": "{}"
-        }})",
+        }})JSON",
         kACCOUNT,
         kDOMAIN
     );
@@ -951,7 +951,7 @@ generateNormalPathBookOffersTestBundles()
             .ledgerObjectCalls = 3,
             .mockedOffers = std::vector<ripple::STObject>{gets10XRPPays20USDOfferWithDomain},
             .expectedJson = fmt::format(
-                R"({{
+                R"JSON({{
                     "ledger_hash":"{}",
                     "ledger_index":300,
                     "offers":
@@ -984,7 +984,7 @@ generateNormalPathBookOffersTestBundles()
                             }}
                         }}
                     ]
-                }})",
+                }})JSON",
                 kLEDGER_HASH,
                 kACCOUNT2,
                 0,
