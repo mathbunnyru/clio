@@ -63,7 +63,7 @@ jobs:
       - name: Create release notes
         shell: bash
         run: |
-          echo ${{ inputs.header }} > "${RUNNER_TEMP}/release_notes.md"
+          printf '%s\n' "${{ inputs.header }}" > "${RUNNER_TEMP}/release_notes.md"
 
       - name: Generate changelog
         shell: bash
