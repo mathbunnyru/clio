@@ -46,7 +46,7 @@ RUN apt update -qq \
     && pip3 install -q --upgrade --no-cache-dir pip \
     && pip3 install -q --no-cache-dir \
         cmake==3.31.6 \
-        conan==1.62 \
+        conan==2.17.0 \
         gcovr \
         pre-commit \
     && apt-get clean && apt remove -y software-properties-common
@@ -109,33 +109,18 @@ RUN wget "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VE
 WORKDIR /root
 
 # Setup conan
-RUN conan remote add --insert 0 conan-non-prod http://18.143.149.228:8081/artifactory/api/conan/conan-non-prod
+RUN conan remote add --index 0 ripple http://18.143.149.228:8081/artifactory/api/conan/stage
 
-# Note: intentionally leaving cppstd=20
-RUN conan profile new gcc --detect \
-    && conan profile update settings.compiler=gcc gcc \
-    && conan profile update settings.compiler.version=12 gcc \
-    && conan profile update settings.compiler.cppstd=20 gcc \
-    && conan profile update settings.compiler.libcxx=libstdc++11 gcc \
-    && conan profile update env.CC=/usr/bin/gcc-12 gcc \
-    && conan profile update env.CXX=/usr/bin/g++-12 gcc \
-    && conan profile update "conf.tools.build:compiler_executables={\"c\": \"/usr/bin/gcc-12\", \"cpp\": \"/usr/bin/g++-12\"}" gcc
+WORKDIR /root/.conan2/profiles
 
-RUN conan profile new clang --detect \
-    && conan profile update settings.compiler=clang clang \
-    && conan profile update settings.compiler.version=16 clang \
-    && conan profile update settings.compiler.cppstd=20 clang \
-    && conan profile update settings.compiler.libcxx=libc++ clang \
-    && conan profile update env.CC=/usr/bin/clang-16 clang \
-    && conan profile update env.CXX=/usr/bin/clang++-16 clang \
-    && conan profile update env.CXXFLAGS="-DBOOST_ASIO_DISABLE_CONCEPTS" clang \
-    && conan profile update "conf.tools.build:compiler_executables={\"c\": \"/usr/bin/clang-16\", \"cpp\": \"/usr/bin/clang++-16\"}" clang
+COPY conan/clang.profile ./clang
+COPY conan/sanitizer_template.profile ./clang.asan
+COPY conan/sanitizer_template.profile ./clang.tsan
+COPY conan/sanitizer_template.profile ./clang.ubsan
 
-RUN echo "include(gcc)" >> .conan/profiles/default
+COPY conan/gcc.profile ./gcc
+COPY conan/sanitizer_template.profile ./gcc.asan
+COPY conan/sanitizer_template.profile ./gcc.tsan
+COPY conan/sanitizer_template.profile ./gcc.ubsan
 
-COPY conan/gcc.asan /root/.conan/profiles
-COPY conan/gcc.tsan /root/.conan/profiles
-COPY conan/gcc.ubsan /root/.conan/profiles
-COPY conan/clang.asan /root/.conan/profiles
-COPY conan/clang.tsan /root/.conan/profiles
-COPY conan/clang.ubsan /root/.conan/profiles
+WORKDIR /root
