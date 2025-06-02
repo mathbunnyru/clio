@@ -71,7 +71,8 @@ jobs:
         run: |
           LAST_TAG=$(gh release view --json tagName -q .tagName)
           LAST_TAG_COMMIT=$(git rev-parse $LAST_TAG)
-          git-cliff --tag ${{ inputs.version }} ${LAST_TAG_COMMIT}
+          BASE_COMMIT=$(git merge-base HEAD $LAST_TAG_COMMIT)
+          git-cliff "${BASE_COMMIT}..HEAD" --ignore-tags nightly
           cat CHANGELOG.md >> "${RUNNER_TEMP}/release_notes.md"
 
       - name: Prepare release artifacts
