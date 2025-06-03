@@ -1348,7 +1348,7 @@ parseBook(
     if (domain.has_value()) {
         ripple::uint256 dom;
         if (!dom.parseHex(*domain))
-            return Status{RippledError::rpcDOMAIN_MALFORMED};
+            return std::unexpected{Status{RippledError::rpcDOMAIN_MALFORMED}};
         domainID = dom;
     }
 
@@ -1388,7 +1388,7 @@ parseBook(boost::json::object const& request)
     }
 
     if (request.contains("domain") && !request.at("domain").is_string())
-        return Status{RippledError::rpcDOMAIN_MALFORMED};
+        return std::unexpected{Status{RippledError::rpcDOMAIN_MALFORMED}};
 
     ripple::Currency payCurrency;
     if (!ripple::to_currency(payCurrency, boost::json::value_to<std::string>(takerPays.at("currency"))))
@@ -1467,7 +1467,7 @@ parseBook(boost::json::object const& request)
     if (request.contains("domain")) {
         ripple::uint256 dom;
         if (!dom.parseHex(boost::json::value_to<std::string>(request.at("domain"))))
-            return Status{RippledError::rpcDOMAIN_MALFORMED};
+            return std::unexpected{Status{RippledError::rpcDOMAIN_MALFORMED}};
         domainID = dom;
     }
 
