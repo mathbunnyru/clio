@@ -1309,7 +1309,13 @@ postProcessOrderBook(
 
 // get book via currency type
 std::expected<ripple::Book, Status>
-parseBook(ripple::Currency pays, ripple::AccountID payIssuer, ripple::Currency gets, ripple::AccountID getIssuer)
+parseBook(
+    ripple::Currency pays,
+    ripple::AccountID payIssuer,
+    ripple::Currency gets,
+    ripple::AccountID getIssuer,
+    std::optional<std::string> const& domain
+)
 {
     if (isXRP(pays) && !isXRP(payIssuer)) {
         return std::unexpected{Status{
@@ -1338,7 +1344,15 @@ parseBook(ripple::Currency pays, ripple::AccountID payIssuer, ripple::Currency g
     if (pays == gets && payIssuer == getIssuer)
         return std::unexpected{Status{RippledError::rpcBAD_MARKET, "badMarket"}};
 
-    return ripple::Book{{pays, payIssuer}, {gets, getIssuer}, std::nullopt};
+    std::optional<ripple::uint256> domainID = std::nullopt;
+    if (domain.has_value()) {
+        ripple::uint256 dom;
+        if (!dom.parseHex(*domain))
+            return std::unexpected{Status{RippledError::rpcDOMAIN_MALFORMED}};
+        domainID = dom;
+    }
+
+    return ripple::Book{{pays, payIssuer}, {gets, getIssuer}, domainID};
 }
 
 std::expected<ripple::Book, Status>
@@ -1372,6 +1386,9 @@ parseBook(boost::json::object const& request)
             RippledError::rpcDST_AMT_MALFORMED,
         }};
     }
+
+    if (request.contains("domain") && !request.at("domain").is_string())
+        return std::unexpected{Status{RippledError::rpcDOMAIN_MALFORMED}};
 
     ripple::Currency payCurrency;
     if (!ripple::to_currency(payCurrency, boost::json::value_to<std::string>(takerPays.at("currency"))))
@@ -1446,7 +1463,15 @@ parseBook(boost::json::object const& request)
     if (payCurrency == getCurrency && payIssuer == getIssuer)
         return std::unexpected{Status{RippledError::rpcBAD_MARKET, "badMarket"}};
 
-    return ripple::Book{{payCurrency, payIssuer}, {getCurrency, getIssuer}, std::nullopt};
+    std::optional<ripple::uint256> domainID;
+    if (request.contains("domain")) {
+        ripple::uint256 dom;
+        if (!dom.parseHex(boost::json::value_to<std::string>(request.at("domain"))))
+            return std::unexpected{Status{RippledError::rpcDOMAIN_MALFORMED}};
+        domainID = dom;
+    }
+
+    return ripple::Book{{payCurrency, payIssuer}, {getCurrency, getIssuer}, domainID};
 }
 
 std::expected<ripple::AccountID, Status>

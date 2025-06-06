@@ -278,7 +278,7 @@ TransactionFeed::pub(
                     ripple::Book const book{
                         data->getFieldAmount(ripple::sfTakerGets).issue(),
                         data->getFieldAmount(ripple::sfTakerPays).issue(),
-                        std::nullopt
+                        (*data)[~ripple::sfDomainID]
                     };
                     if (affectedBooks.find(book) == affectedBooks.end()) {
                         affectedBooks.insert(book);

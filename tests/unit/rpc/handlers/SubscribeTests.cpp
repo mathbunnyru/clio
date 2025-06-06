@@ -822,11 +822,13 @@ TEST_F(RPCSubscribeHandlerTest, BooksBothSnapshotSet)
     auto const issuer = getAccountIdWithString(kACCOUNT);
 
     auto const getsXRPPaysUSDBook = getBookBase(
-        rpc::parseBook(ripple::to_currency("USD"), issuer, ripple::xrpCurrency(), ripple::xrpAccount()).value()
+        rpc::parseBook(ripple::to_currency("USD"), issuer, ripple::xrpCurrency(), ripple::xrpAccount(), std::nullopt)
+            .value()
     );
 
     auto const reversedBook = getBookBase(
-        rpc::parseBook(ripple::xrpCurrency(), ripple::xrpAccount(), ripple::to_currency("USD"), issuer).value()
+        rpc::parseBook(ripple::xrpCurrency(), ripple::xrpAccount(), ripple::to_currency("USD"), issuer, std::nullopt)
+            .value()
     );
 
     ON_CALL(*backend_, doFetchSuccessorKey(getsXRPPaysUSDBook, kMAX_SEQ, _))
@@ -992,11 +994,13 @@ TEST_F(RPCSubscribeHandlerTest, BooksBothUnsetSnapshotSet)
     auto const issuer = getAccountIdWithString(kACCOUNT);
 
     auto const getsXRPPaysUSDBook = getBookBase(
-        rpc::parseBook(ripple::to_currency("USD"), issuer, ripple::xrpCurrency(), ripple::xrpAccount()).value()
+        rpc::parseBook(ripple::to_currency("USD"), issuer, ripple::xrpCurrency(), ripple::xrpAccount(), std::nullopt)
+            .value()
     );
 
     auto const reversedBook = getBookBase(
-        rpc::parseBook(ripple::xrpCurrency(), ripple::xrpAccount(), ripple::to_currency("USD"), issuer).value()
+        rpc::parseBook(ripple::xrpCurrency(), ripple::xrpAccount(), ripple::to_currency("USD"), issuer, std::nullopt)
+            .value()
     );
 
     ON_CALL(*backend_, doFetchSuccessorKey(getsXRPPaysUSDBook, kMAX_SEQ, _))
