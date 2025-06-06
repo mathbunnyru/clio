@@ -43,6 +43,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <vector>
 
 using namespace data;
