@@ -51,7 +51,7 @@ jobs:
           - os: heavy
             conan_profile: gcc.ubsan
             build_type: Release
-            static: true
+            static: false
             container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
             sanitizer: "ubsan"
 
