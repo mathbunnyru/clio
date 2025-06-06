@@ -42,7 +42,8 @@ jobs:
           files: "docker/compilers/gcc/**"
 
       - uses: ./.github/actions/build_docker_image
-        if: steps.changed-files.outputs.any_changed == 'true'
+        # Skipping this build for now, because CI environment is not stable
+        if: false && steps.changed-files.outputs.any_changed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
@@ -56,6 +57,7 @@ jobs:
           tags: |
             type=raw,value=latest
             type=raw,value=12
+            type=raw,value=12.3.0
             type=raw,value=${{ github.sha }}
           platforms: linux/amd64,linux/arm64
           dockerhub_repo: rippleci/clio_gcc
