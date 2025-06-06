@@ -138,7 +138,7 @@ jobs:
         with:
           images: |
             rippleci/clio_ci
-            ghcr.io/mathbunnyru/clio-ci
+            ghcr.io/xrplf/clio-ci
           push_image: ${{ github.event_name != 'pull_request' }}
           directory: docker/ci
           tags: |
