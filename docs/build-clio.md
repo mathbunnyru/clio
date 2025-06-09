@@ -28,7 +28,7 @@ Clio requires `compiler.cppstd=20` in your Conan profile (`~/.conan/profiles/def
 
 ```text
 [settings]
-arch=armv8
+arch={{detect_api.detect_arch()}}
 build_type=Release
 compiler=apple-clang
 compiler.cppstd=20
@@ -44,7 +44,7 @@ tools.build:cxxflags+=["-Wno-missing-template-arg-list-after-template-kw"]
 
 ```text
 [settings]
-arch=x86_64
+arch={{detect_api.detect_arch()}}
 build_type=Release
 compiler=gcc
 compiler.cppstd=20
