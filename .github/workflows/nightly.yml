@@ -40,19 +40,19 @@ jobs:
             conan_profile: gcc
             build_type: Release
             static: true
-            container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
+            container: '{ "image": "ghcr.io/mathbunnyru/clio-ci:latest" }'
             sanitizer: "false"
           - os: heavy
             conan_profile: gcc
             build_type: Debug
             static: true
-            container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
+            container: '{ "image": "ghcr.io/mathbunnyru/clio-ci:latest" }'
             sanitizer: "false"
           - os: heavy
             conan_profile: gcc.ubsan
             build_type: Release
             static: false
-            container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
+            container: '{ "image": "ghcr.io/mathbunnyru/clio-ci:latest" }'
             sanitizer: "ubsan"
 
     uses: ./.github/workflows/build_and_test.yml
@@ -77,7 +77,7 @@ jobs:
         include:
           - os: heavy
             conan_profile: clang
-            container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
+            container: '{ "image": "ghcr.io/mathbunnyru/clio-ci:latest" }'
             static: true
           - os: macos15
             conan_profile: default_apple_clang
