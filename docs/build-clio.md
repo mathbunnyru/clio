@@ -37,7 +37,7 @@ compiler.version=16
 os=Macos
 
 [conf]
-tools.build:cxxflags+=["-Wno-missing-template-arg-list-after-template-kw"]
+grpc/1.50.1:tools.build:cxxflags+=["-Wno-missing-template-arg-list-after-template-kw"]
 ```
 
 **Linux gcc-12 example**:
