@@ -48,11 +48,6 @@ on:
         required: true
         type: string
 
-      sanitizer:
-        description: Sanitizer to use
-        required: true
-        type: string
-
       analyze_build_time:
         description: Whether to enable build time analysis
         required: true
@@ -106,7 +101,6 @@ jobs:
           build_type: ${{ inputs.build_type }}
           code_coverage: ${{ inputs.code_coverage }}
           static: ${{ inputs.static }}
-          sanitizer: ${{ inputs.sanitizer }}
           time_trace: ${{ inputs.analyze_build_time }}
 
       - name: Build Clio
@@ -140,11 +134,11 @@ jobs:
           cat /tmp/ccache.stats
 
       - name: Strip unit_tests
-        if: inputs.sanitizer == 'false' && !inputs.code_coverage && !inputs.analyze_build_time
+        if: ${{ !endsWith(inputs.conan_profile, 'san') && !inputs.code_coverage && !inputs.analyze_build_time }}
         run: strip build/clio_tests
 
       - name: Strip integration_tests
-        if: inputs.sanitizer == 'false' && !inputs.code_coverage && !inputs.analyze_build_time
+        if: ${{ !endsWith(inputs.conan_profile, 'san') && !inputs.code_coverage && !inputs.analyze_build_time }}
         run: strip build/clio_integration_tests
 
       - name: Upload clio_server

@@ -25,15 +25,6 @@ inputs:
     description: Whether Clio is to be statically linked
     required: true
     default: "false"
-  sanitizer:
-    description: Sanitizer to use
-    required: true
-    default: "false"
-    choices:
-      - "false"
-      - "tsan"
-      - "asan"
-      - "ubsan"
   time_trace:
     description: Whether to enable compiler trace reports
     required: true
@@ -74,9 +65,9 @@ runs:
       env:
         BUILD_TYPE: "${{ inputs.build_type }}"
         SANITIZER_OPTION: |-
-          ${{ inputs.sanitizer == 'tsan' && '-Dsan=thread' ||
-              inputs.sanitizer == 'ubsan' && '-Dsan=undefined' ||
-              inputs.sanitizer == 'asan' && '-Dsan=address' ||
+          ${{ endsWith(inputs.conan_profile, '.asan') && '-Dsan=address' ||
+              endsWith(inputs.conan_profile, '.tsan') && '-Dsan=thread' ||
+              endsWith(inputs.conan_profile, '.ubsan') && '-Dsan=undefined' ||
               '' }}
       run: |
         cd build

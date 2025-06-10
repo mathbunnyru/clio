@@ -33,11 +33,6 @@ on:
         required: true
         type: boolean
 
-      sanitizer:
-        description: Sanitizer to use
-        required: true
-        type: string
-
 jobs:
   unit_tests:
     name: Unit testing ${{ inputs.container != '' && 'in container' || 'natively' }}
@@ -47,8 +42,8 @@ jobs:
     if: inputs.run_unit_tests
 
     env:
-      # TODO: remove when we have fixed all currently existing issues from sanitizers
-      SANITIZER_IGNORE_ERRORS: ${{ inputs.sanitizer != 'false' && inputs.sanitizer != 'ubsan' }}
+      # TODO: remove completely when we have fixed all currently existing issues with sanitizers
+      SANITIZER_IGNORE_ERRORS: ${{ endsWith(inputs.conan_profile, '.asan') || endsWith(inputs.conan_profile, '.tsan') }}
 
     steps:
       - name: Clean workdir
