@@ -59,7 +59,7 @@ public:
      * @param retryAfter Time to wait between retries (2 seconds by default)
      * @return A std::vector<std::string> The ledger data
      */
-    virtual std::vector<std::string>
+    [[nodiscard]] virtual std::vector<std::string>
     loadInitialLedger(
         uint32_t sequence,
         etlng::InitialLoadObserverInterface& loader,
@@ -74,7 +74,7 @@ public:
      * @param retryAfter Time to wait between retries (2 seconds by default)
      * @return A std::vector<std::string> The ledger data
      */
-    virtual std::vector<std::string>
+    [[nodiscard]] virtual std::vector<std::string>
     loadInitialLedger(uint32_t sequence, std::chrono::steady_clock::duration retryAfter = std::chrono::seconds{2}) = 0;
 
     /**
@@ -90,7 +90,7 @@ public:
      * @return The extracted data, if extraction was successful. If the ledger was found
      * in the database or the server is shutting down, the optional will be empty
      */
-    virtual OptionalGetLedgerResponseType
+    [[nodiscard]] virtual OptionalGetLedgerResponseType
     fetchLedger(
         uint32_t ledgerSequence,
         bool getObjects,
@@ -103,7 +103,7 @@ public:
      *
      * @return JSON representation of the state of this load balancer.
      */
-    virtual boost::json::value
+    [[nodiscard]] virtual boost::json::value
     toJson() const = 0;
 
     /**
@@ -115,7 +115,7 @@ public:
      * @param yield The coroutine context
      * @return Response received from rippled node as JSON object on success or error on failure
      */
-    virtual std::expected<boost::json::object, rpc::CombinedError>
+    [[nodiscard]] virtual std::expected<boost::json::object, rpc::CombinedError>
     forwardToRippled(
         boost::json::object const& request,
         std::optional<std::string> const& clientIp,
@@ -127,7 +127,7 @@ public:
      * @brief Return state of ETL nodes.
      * @return ETL state, nullopt if etl nodes not available
      */
-    virtual std::optional<etl::ETLState>
+    [[nodiscard]] virtual std::optional<etl::ETLState>
     getETLState() noexcept = 0;
 
     /**

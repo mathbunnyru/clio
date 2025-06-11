@@ -19,33 +19,35 @@
 
 #pragma once
 
+#include "data/BackendInterface.hpp"
+#include "etl/NetworkValidatedLedgersInterface.hpp"
 #include "etlng/MonitorInterface.hpp"
-#include "etlng/TaskManagerInterface.hpp"
+#include "etlng/MonitorProviderInterface.hpp"
+#include "etlng/impl/Monitor.hpp"
 #include "util/async/AnyExecutionContext.hpp"
 
-#include <cstddef>
+#include <chrono>
 #include <cstdint>
-#include <functional>
 #include <memory>
+#include <utility>
 
-namespace etlng {
+namespace etlng::impl {
 
-/**
- * @brief An interface for providing the Task Manager
- */
-struct TaskManagerProviderInterface {
-    virtual ~TaskManagerProviderInterface() = default;
-
-    /**
-     * @brief Make a task manager
-     *
-     * @param ctx The async context to associate the task manager instance with
-     * @param monitor The monitor to notify when ledger is loaded
-     * @param seq The sequence to start at
-     * @return A unique pointer to a TaskManager implementation
-     */
-    [[nodiscard]] virtual std::unique_ptr<TaskManagerInterface>
-    make(util::async::AnyExecutionContext ctx, std::reference_wrapper<MonitorInterface> monitor, uint32_t seq) = 0;
+class MonitorProvider : public MonitorProviderInterface {
+public:
+    std::unique_ptr<MonitorInterface>
+    make(
+        util::async::AnyExecutionContext ctx,
+        std::shared_ptr<BackendInterface> backend,
+        std::shared_ptr<etl::NetworkValidatedLedgersInterface> validatedLedgers,
+        uint32_t startSequence,
+        std::chrono::steady_clock::duration dbStalledReportDelay
+    ) override
+    {
+        return std::make_unique<Monitor>(
+            std::move(ctx), std::move(backend), std::move(validatedLedgers), startSequence, dbStalledReportDelay
+        );
+    }
 };
 
-}  // namespace etlng
+}  // namespace etlng::impl

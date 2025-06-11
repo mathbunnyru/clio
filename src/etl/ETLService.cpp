@@ -38,6 +38,7 @@
 #include "etlng/LoadBalancer.hpp"
 #include "etlng/LoadBalancerInterface.hpp"
 #include "etlng/impl/LedgerPublisher.hpp"
+#include "etlng/impl/MonitorProvider.hpp"
 #include "etlng/impl/TaskManagerProvider.hpp"
 #include "etlng/impl/ext/Cache.hpp"
 #include "etlng/impl/ext/Core.hpp"
@@ -86,6 +87,7 @@ ETLService::makeETLService(
         );
 
         auto state = std::make_shared<etl::SystemState>();
+        state->isStrictReadonly = config.get<bool>("read_only");
 
         auto fetcher = std::make_shared<etl::impl::LedgerFetcher>(backend, balancer);
         auto extractor = std::make_shared<etlng::impl::Extractor>(fetcher);
@@ -93,6 +95,7 @@ ETLService::makeETLService(
         auto cacheLoader = std::make_shared<etl::CacheLoader<>>(config, backend, backend->cache());
         auto cacheUpdater = std::make_shared<etlng::impl::CacheUpdater>(backend->cache());
         auto amendmentBlockHandler = std::make_shared<etlng::impl::AmendmentBlockHandler>(ctx, *state);
+        auto monitorProvider = std::make_shared<etlng::impl::MonitorProvider>();
 
         auto loader = std::make_shared<etlng::impl::Loader>(
             backend,
@@ -104,7 +107,8 @@ ETLService::makeETLService(
                 etlng::impl::NFTExt{backend},
                 etlng::impl::MPTExt{backend}
             ),
-            amendmentBlockHandler
+            amendmentBlockHandler,
+            state
         );
 
         auto taskManagerProvider = std::make_shared<etlng::impl::TaskManagerProvider>(*ledgers, extractor, loader);
@@ -122,6 +126,7 @@ ETLService::makeETLService(
             loader,  // loader itself
             loader,  // initial load observer
             taskManagerProvider,
+            monitorProvider,
             state
         );
     } else {
@@ -346,7 +351,7 @@ ETLService::doWork()
     worker_ = std::thread([this]() {
         beast::setCurrentThreadName("ETLService worker");
 
-        if (state_.isReadOnly) {
+        if (state_.isStrictReadonly) {
             monitorReadOnly();
         } else {
             monitor();
@@ -373,7 +378,7 @@ ETLService::ETLService(
 {
     startSequence_ = config.maybeValue<uint32_t>("start_sequence");
     finishSequence_ = config.maybeValue<uint32_t>("finish_sequence");
-    state_.isReadOnly = config.get<bool>("read_only");
+    state_.isStrictReadonly = config.get<bool>("read_only");
     extractorThreads_ = config.get<uint32_t>("extractor_threads");
 
     // This should probably be done in the backend factory but we don't have state available until here

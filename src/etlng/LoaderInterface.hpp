@@ -23,9 +23,13 @@
 
 #include <xrpl/protocol/LedgerHeader.h>
 
+#include <expected>
 #include <optional>
+#include <string>
 
 namespace etlng {
+
+using Error = std::string;
 
 /**
  * @brief An interface for a ETL Loader
@@ -36,8 +40,9 @@ struct LoaderInterface {
     /**
      * @brief Load ledger data
      * @param data The data to load
+     * @return Nothing or error as std::expected
      */
-    virtual void
+    [[nodiscard]] virtual std::expected<void, Error>
     load(model::LedgerData const& data) = 0;
 
     /**
