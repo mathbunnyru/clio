@@ -33,10 +33,8 @@ RUN apt-get update \
 # Install packages
 RUN apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests \
-        bison \
         clang-tidy-${LLVM_TOOLS_VERSION} \
         clang-tools-${LLVM_TOOLS_VERSION} \
-        flex \
         git \
         git-lfs \
         graphviz \
