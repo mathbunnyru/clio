@@ -1,5 +1,4 @@
-# TODO: change this when we are able to push gcc image to ghcr.io
-FROM rippleci/clio_gcc:12.3.0 AS clio-gcc
+FROM ghcr.io/xrplf/clio-gcc:12.3.0 AS clio-gcc
 FROM ghcr.io/xrplf/clio-tools:latest AS clio-tools
 
 FROM ghcr.io/xrplf/clio-clang:16
