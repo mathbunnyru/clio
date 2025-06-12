@@ -19,7 +19,7 @@
 
 ### Conan Configuration
 
-Clio requires `compiler.cppstd=20` in your Conan profile (`~/.conan/profiles/default`).
+Clio requires `compiler.cppstd=20` in your Conan profile (`~/.conan2/profiles/default`).
 
 > [!NOTE]
 > Although Clio is built using C++23, it's required to set `compiler.cppstd=20` for the time being as some of Clio's dependencies are not yet capable of building under C++23.
@@ -67,12 +67,12 @@ conan remote add --index 0 ripple http://18.143.149.228:8081/artifactory/api/con
 Now you should be able to download the prebuilt `xrpl` package on some platforms.
 
 > [!NOTE]
-> You may need to edit the `~/.conan/remotes.json` file to ensure that this newly added artifactory is listed last. Otherwise, you could see compilation errors when building the project with gcc version 13 (or newer).
+> You may need to edit the `~/.conan2/remotes.json` file to ensure that this newly added artifactory is listed last. Otherwise, you could see compilation errors when building the project with gcc version 13 (or newer).
 
-Remove old packages you may have cached.
+Remove old packages you may have cached interactively.
 
 ```sh
-conan remove -f xrpl
+conan remove xrpl
 ```
 
 #### Conan lockfile
@@ -167,24 +167,24 @@ If you wish to develop against a `rippled` instance running in standalone mode t
 
 Sometimes, during development, you need to build against a custom version of `libxrpl`. (For example, you may be developing compatibility for a proposed amendment that is not yet merged to the main `rippled` codebase.) To build Clio with compatibility for a custom fork or branch of `rippled`, follow these steps:
 
-1. First, pull/clone the appropriate `rippled` fork and switch to the branch you want to build.
-   The following example uses an in-development build with [XLS-33d Multi-Purpose Tokens](https://github.com/XRPLF/XRPL-Standards/tree/master/XLS-0033d-multi-purpose-tokens):
+1. First, pull/clone the appropriate `rippled` version and switch to the branch you want to build.
+   The following example uses a `2.5.0-rc1` tag of rippled in the main branch:
 
    ```sh
-   git clone https://github.com/shawnxie999/rippled/
+   git clone https://github.com/XRPLF/rippled/
    cd rippled
-   git switch mpt-1.1
+   git checkout 2.5.0-rc1
    ```
 
 2. Export a custom package to your local Conan store using a user/channel:
 
    ```sh
-   conan export . my/feature
+   conan export . --user=my --channel=feature
    ```
 
 3. Patch your local Clio build to use the right package.
 
-   Edit `conanfile.py` (from the Clio repository root). Replace the `xrpl` requirement with the custom package version from the previous step. This must also include the current version number from your `rippled` branch. For example:
+   Edit `conanfile.py` in the Clio repository root. Replace the `xrpl` requirement with the custom package version from the previous step. This must also include the current version number from your `rippled` branch. For example:
 
    ```py
    # ... (excerpt from conanfile.py)
@@ -195,7 +195,7 @@ Sometimes, during development, you need to build against a custom version of `li
        'protobuf/3.21.9',
        'grpc/1.50.1',
        'openssl/1.1.1v',
-       'xrpl/2.3.0-b1@my/feature', # Update this line
+       'xrpl/2.5.0-rc1@my/feature', # Use your exported version here
        'zlib/1.3.1',
        'libbacktrace/cci.20210118'
    ]
