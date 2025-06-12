@@ -103,7 +103,6 @@ jobs:
     name: Merge and push multi-arch GCC docker image
     runs-on: [self-hosted, heavy]
     needs: [gcc-amd64, gcc-arm64]
-    if: ${{ github.event_name != 'pull_request' }}
 
     steps:
       - uses: actions/checkout@v4
@@ -118,6 +117,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Login to GitHub Container Registry
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
         with:
           registry: ghcr.io
@@ -125,15 +125,20 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to DockerHub
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PW }}
 
-      - name: Create and push multi-arch manifest
-        if: steps.changed-files.outputs.any_changed == 'true'
+      - name: Make GHCR_REPO lowercase
         run: |
-          for image in ${{ env.GHCR_REPO }}/clio-gcc rippleci/clio_gcc; do
+          echo "GHCR_REPO_LC=$(echo ${{env.GHCR_REPO}} | tr '[:upper:]' '[:lower:]')" >> ${GITHUB_ENV}
+
+      - name: Create and push multi-arch manifest
+        if: github.event_name != 'pull_request' && steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          for image in ${{ env.GHCR_REPO_LC }}/clio-gcc rippleci/clio_gcc; do
             docker buildx imagetools create \
               -t $image:latest \
               -t $image:12 \

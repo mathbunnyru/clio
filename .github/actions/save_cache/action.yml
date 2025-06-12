@@ -3,7 +3,7 @@ description: Save conan and ccache cache for develop branch
 
 inputs:
   conan_dir:
-    description: Path to .conan directory
+    description: Path to Conan directory
     required: true
   conan_profile:
     description: Conan profile name
