@@ -4,7 +4,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG TARGETARCH
 ARG UBUNTU_VERSION=20.04
 ARG GCC_VERSION=12.3.0
-ARG BUILD_VERSION=2
+ARG BUILD_VERSION=3
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests \
