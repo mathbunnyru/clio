@@ -69,7 +69,6 @@
 #include <xrpl/protocol/TxFormats.h>
 #include <xrpl/protocol/TxMeta.h>
 
-#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
@@ -109,6 +108,9 @@ class ETLService : public ETLServiceInterface {
     std::shared_ptr<etlng::TaskManagerProviderInterface> taskManagerProvider_;
     std::shared_ptr<etlng::MonitorProviderInterface> monitorProvider_;
     std::shared_ptr<etl::SystemState> state_;
+
+    std::optional<uint32_t> startSequence_;
+    std::optional<uint32_t> finishSequence_;
 
     std::unique_ptr<MonitorInterface> monitor_;
     std::unique_ptr<TaskManagerInterface> taskMan_;

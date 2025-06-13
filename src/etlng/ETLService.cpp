@@ -52,7 +52,6 @@
 #include "util/Assert.hpp"
 #include "util/Profiler.hpp"
 #include "util/async/AnyExecutionContext.hpp"
-#include "util/async/AnyOperation.hpp"
 #include "util/log/Logger.hpp"
 
 #include <boost/json/object.hpp>
@@ -100,8 +99,17 @@ ETLService::ETLService(
     , taskManagerProvider_(std::move(taskManagerProvider))
     , monitorProvider_(std::move(monitorProvider))
     , state_(std::move(state))
+    , startSequence_(config.get().maybeValue<uint32_t>("start_sequence"))
+    , finishSequence_(config.get().maybeValue<uint32_t>("finish_sequence"))
 {
     ASSERT(not state_->isWriting, "ETL should never start in writer mode");
+
+    if (startSequence_.has_value())
+        LOG(log_.info()) << "Start sequence: " << *startSequence_;
+
+    if (finishSequence_.has_value())
+        LOG(log_.info()) << "Finish sequence: " << *finishSequence_;
+
     LOG(log_.info()) << "Starting in " << (state_->isStrictReadonly ? "STRICT READONLY MODE" : "WRITE MODE");
 }
 
@@ -204,11 +212,15 @@ ETLService::loadInitialLedgerIfNeeded()
         LOG(log_.info()) << "Database is empty. Will download a ledger from the network.";
         state_->isWriting = true;  // immediately become writer as the db is empty
 
-        LOG(log_.info()) << "Waiting for next ledger to be validated by network...";
-        if (auto const mostRecentValidated = ledgers_->getMostRecent(); mostRecentValidated.has_value()) {
-            auto const seq = *mostRecentValidated;
-            LOG(log_.info()) << "Ledger " << seq << " has been validated. "
-                             << "Downloading and extracting (takes a while)...";
+        auto const getMostRecent = [this]() {
+            LOG(log_.info()) << "Waiting for next ledger to be validated by network...";
+            return ledgers_->getMostRecent();
+        };
+
+        if (auto const maybeSeq = startSequence_.or_else(getMostRecent); maybeSeq.has_value()) {
+            auto const seq = *maybeSeq;
+            LOG(log_.info()) << "Starting from sequence " << seq
+                             << ". Initial ledger download and extraction can take a while...";
 
             auto [ledger, timeDiff] = ::util::timed<std::chrono::duration<double>>([this, seq]() {
                 return extractor_->extractLedgerOnly(seq).and_then([this, seq](auto&& data) {
@@ -280,7 +292,7 @@ void
 ETLService::startLoading(uint32_t seq)
 {
     ASSERT(not state_->isStrictReadonly, "This should only happen on writer nodes");
-    taskMan_ = taskManagerProvider_->make(ctx_, *monitor_, seq);
+    taskMan_ = taskManagerProvider_->make(ctx_, *monitor_, seq, finishSequence_);
     taskMan_->run(config_.get().get<std::size_t>("extractor_threads"));
 }
 

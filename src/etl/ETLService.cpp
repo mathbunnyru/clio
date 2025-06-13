@@ -97,6 +97,8 @@ ETLService::makeETLService(
         auto amendmentBlockHandler = std::make_shared<etlng::impl::AmendmentBlockHandler>(ctx, *state);
         auto monitorProvider = std::make_shared<etlng::impl::MonitorProvider>();
 
+        backend->setCorruptionDetector(CorruptionDetector{*state, backend->cache()});
+
         auto loader = std::make_shared<etlng::impl::Loader>(
             backend,
             etlng::impl::makeRegistry(

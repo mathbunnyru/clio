@@ -46,6 +46,7 @@
 #include "util/async/context/BasicExecutionContext.hpp"
 #include "util/async/context/SyncExecutionContext.hpp"
 #include "util/async/impl/ErasedOperation.hpp"
+#include "util/config/ConfigConstraints.hpp"
 #include "util/config/ConfigDefinition.hpp"
 #include "util/config/ConfigValue.hpp"
 #include "util/config/Types.hpp"
@@ -135,7 +136,10 @@ struct MockTaskManagerProvider : etlng::TaskManagerProviderInterface {
     MOCK_METHOD(
         std::unique_ptr<etlng::TaskManagerInterface>,
         make,
-        (util::async::AnyExecutionContext, std::reference_wrapper<etlng::MonitorInterface>, uint32_t),
+        (util::async::AnyExecutionContext,
+         std::reference_wrapper<etlng::MonitorInterface>,
+         uint32_t,
+         std::optional<uint32_t>),
         (override)
     );
 };
@@ -181,6 +185,8 @@ protected:
     SameThreadTestContext ctx_;
     util::config::ClioConfigDefinition config_{
         {"read_only", ConfigValue{ConfigType::Boolean}.defaultValue(false)},
+        {"start_sequence", ConfigValue{ConfigType::Integer}.optional().withConstraint(gValidateUint32)},
+        {"finish_sequence", ConfigValue{ConfigType::Integer}.optional().withConstraint(gValidateUint32)},
         {"extractor_threads", ConfigValue{ConfigType::Integer}.defaultValue(4)},
         {"io_threads", ConfigValue{ConfigType::Integer}.defaultValue(2)},
         {"cache.num_diffs", ConfigValue{ConfigType::Integer}.defaultValue(32)},
@@ -306,7 +312,7 @@ TEST_F(ETLServiceTests, RunWithEmptyDatabase)
         .InSequence(s)
         .WillOnce(testing::Return(data::LedgerRange{.minSequence = 1, .maxSequence = kSEQ}));
     EXPECT_CALL(mockTaskManagerRef, run);
-    EXPECT_CALL(*taskManagerProvider_, make(testing::_, testing::_, kSEQ + 1))
+    EXPECT_CALL(*taskManagerProvider_, make(testing::_, testing::_, kSEQ + 1, testing::_))
         .WillOnce(testing::Return(std::unique_ptr<etlng::TaskManagerInterface>(mockTaskManager.release())));
     EXPECT_CALL(*monitorProvider_, make(testing::_, testing::_, testing::_, testing::_, testing::_))
         .WillOnce([](auto, auto, auto, auto, auto) { return std::make_unique<testing::NiceMock<MockMonitor>>(); });
@@ -318,8 +324,9 @@ TEST_F(ETLServiceTests, RunWithPopulatedDatabase)
 {
     EXPECT_CALL(*backend_, hardFetchLedgerRange)
         .WillRepeatedly(testing::Return(data::LedgerRange{.minSequence = 1, .maxSequence = kSEQ}));
-    EXPECT_CALL(*monitorProvider_, make(testing::_, testing::_, testing::_, testing::_, testing::_))
-        .WillOnce([](auto, auto, auto, auto, auto) { return std::make_unique<testing::NiceMock<MockMonitor>>(); });
+    EXPECT_CALL(*monitorProvider_, make).WillOnce([](auto, auto, auto, auto, auto) {
+        return std::make_unique<testing::NiceMock<MockMonitor>>();
+    });
     EXPECT_CALL(*ledgers_, getMostRecent()).WillRepeatedly(testing::Return(kSEQ));
     EXPECT_CALL(*cacheLoader_, load(kSEQ));
 
@@ -335,7 +342,7 @@ TEST_F(ETLServiceTests, WaitForValidatedLedgerIsAborted)
     EXPECT_CALL(*extractor_, extractLedgerOnly).Times(0);
     EXPECT_CALL(*balancer_, loadInitialLedger(testing::_, testing::_, testing::_)).Times(0);
     EXPECT_CALL(*loader_, loadInitialLedger).Times(0);
-    EXPECT_CALL(*taskManagerProvider_, make(testing::_, testing::_, testing::_)).Times(0);
+    EXPECT_CALL(*taskManagerProvider_, make).Times(0);
 
     service_.run();
 }
@@ -437,7 +444,7 @@ TEST_F(ETLServiceTests, AttemptTakeoverWriter)
     auto& mockTaskManagerRef = *mockTaskManager;
     EXPECT_CALL(mockTaskManagerRef, run);
 
-    EXPECT_CALL(*taskManagerProvider_, make(testing::_, testing::_, kSEQ + 1))
+    EXPECT_CALL(*taskManagerProvider_, make(testing::_, testing::_, kSEQ + 1, testing::_))
         .WillOnce(testing::Return(std::move(mockTaskManager)));
 
     ASSERT_TRUE(capturedDbStalledCallback);
@@ -492,7 +499,7 @@ TEST_F(ETLServiceAssertTests, FailToLoadInitialLedger)
     // These calls should not happen because loading the initial ledger fails
     EXPECT_CALL(*balancer_, loadInitialLedger(testing::_, testing::_, testing::_)).Times(0);
     EXPECT_CALL(*loader_, loadInitialLedger).Times(0);
-    EXPECT_CALL(*taskManagerProvider_, make(testing::_, testing::_, testing::_)).Times(0);
+    EXPECT_CALL(*taskManagerProvider_, make).Times(0);
 
     EXPECT_CLIO_ASSERT_FAIL({ service_.run(); });
 }
@@ -508,7 +515,7 @@ TEST_F(ETLServiceAssertTests, WaitForValidatedLedgerIsAbortedLeadToFailToLoadIni
     EXPECT_CALL(*extractor_, extractLedgerOnly).Times(0);
     EXPECT_CALL(*balancer_, loadInitialLedger(testing::_, testing::_, testing::_)).Times(0);
     EXPECT_CALL(*loader_, loadInitialLedger).Times(0);
-    EXPECT_CALL(*taskManagerProvider_, make(testing::_, testing::_, testing::_)).Times(0);
+    EXPECT_CALL(*taskManagerProvider_, make).Times(0);
 
     EXPECT_CLIO_ASSERT_FAIL({ service_.run(); });
 }
