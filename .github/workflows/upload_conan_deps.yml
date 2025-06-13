@@ -26,17 +26,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [heavy]
+        os: [heavy, heavy-arm64]
         container: ['{ "image": "ghcr.io/xrplf/clio-ci:latest" }']
         compiler: ["gcc", "clang"]
-        sanitizer_ext: [".asan", ".tsan", ".ubsan"]
-        build_type: ["Release"]
-        include:
-          - os: heavy
+        sanitizer_ext: [".asan", ".tsan", ".ubsan", ""]
+        build_type: ["Release", "Debug"]
+        # libbacktrace doesn't build on arm64 with gcc.tsan
+        exclude:
+          - os: heavy-arm64
             container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
             compiler: gcc
-            sanitizer_ext: ""
+            sanitizer_ext: .tsan
+            build_type: Release
+          - os: heavy-arm64
+            container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
+            compiler: gcc
+            sanitizer_ext: .tsan
             build_type: Debug
+        include:
           - os: macos15
             container: ""
             compiler: default_apple_clang
@@ -70,7 +77,7 @@ jobs:
         with:
           conan_profile: ${{ env.CONAN_PROFILE }}
           conan_cache_hit: "false"
-          build_type: Release
+          build_type: ${{ matrix.build_type }}
 
       - name: Login to Conan
         if: github.event_name != 'pull_request'
