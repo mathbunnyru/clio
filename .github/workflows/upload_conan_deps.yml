@@ -8,12 +8,14 @@ on:
     paths:
       - .github/workflows/upload_conan_deps.yml
       - conanfile.py
+      - conan.lock
   push:
     branches:
       - develop
     paths:
       - .github/workflows/upload_conan_deps.yml
       - conanfile.py
+      - conan.lock
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
