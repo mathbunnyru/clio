@@ -24,7 +24,7 @@ on:
         type: string
 
       disable_cache:
-        description: Whether ccache and conan cache should be disabled
+        description: Whether ccache should be disabled
         required: false
         type: boolean
         default: false

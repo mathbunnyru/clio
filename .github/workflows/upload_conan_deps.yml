@@ -78,7 +78,7 @@ jobs:
         uses: ./.github/actions/generate
         with:
           conan_profile: ${{ env.CONAN_PROFILE }}
-          conan_cache_hit: "false"
+          conan_build_from_source: "true"
           build_type: ${{ matrix.build_type }}
 
       - name: Login to Conan
