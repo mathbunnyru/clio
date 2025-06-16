@@ -327,8 +327,8 @@ generateParameterBookOffersTestBundles()
                 },
                 "domain": 0
             })JSON",
-            .expectedError = "invalidParams",
-            .expectedErrorMessage = "Invalid parameters."
+            .expectedError = "domainMalformed",
+            .expectedErrorMessage = "Unable to parse domain."
         },
         ParameterTestBundle{
             .testName = "Domain_InvalidInt",
@@ -344,8 +344,8 @@ generateParameterBookOffersTestBundles()
                 },
                 "domain": "123"
             })JSON",
-            .expectedError = "invalidParams",
-            .expectedErrorMessage = "domainMalformed"
+            .expectedError = "domainMalformed",
+            .expectedErrorMessage = "Unable to parse domain."
         },
         ParameterTestBundle{
             .testName = "Domain_InvalidObject",
@@ -361,8 +361,8 @@ generateParameterBookOffersTestBundles()
                 },
                 "domain": {}
             })JSON",
-            .expectedError = "invalidParams",
-            .expectedErrorMessage = "Invalid parameters."
+            .expectedError = "domainMalformed",
+            .expectedErrorMessage = "Unable to parse domain."
         },
         ParameterTestBundle{
             .testName = "LimitNotInt",
