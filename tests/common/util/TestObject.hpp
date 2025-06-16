@@ -184,7 +184,8 @@ createMetaDataForBookChange(
     int finalTakerGets,
     int perviousTakerGets,
     int finalTakerPays,
-    int perviousTakerPays
+    int perviousTakerPays,
+    std::optional<std::string_view> const& domain = std::nullopt
 );
 
 /*

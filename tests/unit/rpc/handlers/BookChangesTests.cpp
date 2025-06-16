@@ -50,6 +50,7 @@ constexpr auto kISSUER = "rK9DrarGKnVEo2nYp5MfVRXRYf5yRX3mwD";
 constexpr auto kACCOUNT1 = "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn";
 constexpr auto kACCOUNT2 = "rLEsXccBGNR3UPuPu2hUXPjziKC3qKSBun";
 constexpr auto kLEDGER_HASH = "4BC50C9B0D8515D3EAAE1E74B29A95804346C491EE1A95BF25E4AAB854A6A652";
+constexpr auto kDOMAIN = "F10D0CC9A0F9A3CBF585B80BE09A186483668FDBDD39AA7E3370F3649CE134E5";
 constexpr auto kMAX_SEQ = 30;
 constexpr auto kMIN_SEQ = 10;
 
@@ -209,6 +210,54 @@ TEST_F(RPCBookChangesHandlerTest, NormalPath)
     trans1.transaction = obj.getSerializer().peekData();
     trans1.ledgerSequence = 32;
     ripple::STObject const metaObj = createMetaDataForBookChange(kCURRENCY, kISSUER, 22, 1, 3, 3, 1);
+    trans1.metadata = metaObj.getSerializer().peekData();
+    transactions.push_back(trans1);
+
+    EXPECT_CALL(*backend_, fetchAllTransactionsInLedger).Times(1);
+    ON_CALL(*backend_, fetchAllTransactionsInLedger(kMAX_SEQ, _)).WillByDefault(Return(transactions));
+
+    auto const handler = AnyHandler{BookChangesHandler{backend_}};
+    runSpawn([&](auto yield) {
+        auto const output = handler.process(json::parse("{}"), Context{yield});
+        ASSERT_TRUE(output);
+        EXPECT_EQ(*output.result, json::parse(kEXPECTED_OUT));
+    });
+}
+
+TEST_F(RPCBookChangesHandlerTest, NormalPathWithDomain)
+{
+    static constexpr auto kEXPECTED_OUT =
+        R"JSON({
+            "type":"bookChanges",
+            "ledger_hash":"4BC50C9B0D8515D3EAAE1E74B29A95804346C491EE1A95BF25E4AAB854A6A652",
+            "ledger_index":30,
+            "ledger_time":0,
+            "validated":true,
+            "changes":[
+                {
+                    "currency_a":"XRP_drops",
+                    "currency_b":"rK9DrarGKnVEo2nYp5MfVRXRYf5yRX3mwD/0158415500000000C1F76FF6ECB0BAC600000000",
+                    "volume_a":"2",
+                    "volume_b":"2",
+                    "high":"-1",
+                    "low":"-1",
+                    "open":"-1",
+                    "close":"-1",
+                    "domain":"F10D0CC9A0F9A3CBF585B80BE09A186483668FDBDD39AA7E3370F3649CE134E5"
+                }
+            ]
+        })JSON";
+
+    EXPECT_CALL(*backend_, fetchLedgerBySequence).Times(1);
+    ON_CALL(*backend_, fetchLedgerBySequence(kMAX_SEQ, _))
+        .WillByDefault(Return(createLedgerHeader(kLEDGER_HASH, kMAX_SEQ)));
+
+    auto transactions = std::vector<TransactionAndMetadata>{};
+    auto trans1 = TransactionAndMetadata();
+    ripple::STObject const obj = createPaymentTransactionObject(kACCOUNT1, kACCOUNT2, 1, 1, 32);
+    trans1.transaction = obj.getSerializer().peekData();
+    trans1.ledgerSequence = 32;
+    ripple::STObject const metaObj = createMetaDataForBookChange(kCURRENCY, kISSUER, 22, 1, 3, 3, 1, kDOMAIN);
     trans1.metadata = metaObj.getSerializer().peekData();
     transactions.push_back(trans1);
 

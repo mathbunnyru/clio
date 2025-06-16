@@ -330,13 +330,16 @@ createMetaDataForBookChange(
     int finalTakerGets,
     int perviousTakerGets,
     int finalTakerPays,
-    int perviousTakerPays
+    int perviousTakerPays,
+    std::optional<std::string_view> const& domain
 )
 {
     ripple::STObject finalFields(ripple::sfFinalFields);
     ripple::Issue const issue1 = getIssue(currency, issueId);
     finalFields.setFieldAmount(ripple::sfTakerPays, ripple::STAmount(issue1, finalTakerPays));
     finalFields.setFieldAmount(ripple::sfTakerGets, ripple::STAmount(finalTakerGets, false));
+    if (domain.has_value())
+        finalFields.setFieldH256(ripple::sfDomainID, ripple::uint256{*domain});
     ripple::STObject previousFields(ripple::sfPreviousFields);
     previousFields.setFieldAmount(ripple::sfTakerPays, ripple::STAmount(issue1, perviousTakerPays));
     previousFields.setFieldAmount(ripple::sfTakerGets, ripple::STAmount(perviousTakerGets, false));
