@@ -29,19 +29,19 @@ jobs:
       fail-fast: false
       matrix:
         os: [heavy, heavy-arm64]
-        container: ['{ "image": "ghcr.io/xrplf/clio-ci:latest" }']
+        container: ['{ "image": "ghcr.io/mathbunnyru/clio-ci:latest" }']
         compiler: ["gcc", "clang"]
         sanitizer_ext: [".asan", ".tsan", ".ubsan", ""]
         build_type: ["Release", "Debug"]
         # libbacktrace doesn't build on arm64 with gcc.tsan
         exclude:
           - os: heavy-arm64
-            container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
+            container: '{ "image": "ghcr.io/mathbunnyru/clio-ci:latest" }'
             compiler: gcc
             sanitizer_ext: .tsan
             build_type: Release
           - os: heavy-arm64
-            container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
+            container: '{ "image": "ghcr.io/mathbunnyru/clio-ci:latest" }'
             compiler: gcc
             sanitizer_ext: .tsan
             build_type: Debug
