@@ -331,7 +331,7 @@ createMetaDataForBookChange(
     int perviousTakerGets,
     int finalTakerPays,
     int perviousTakerPays,
-    std::optional<std::string_view> const domain
+    std::optional<std::string_view> domain
 )
 {
     ripple::STObject finalFields(ripple::sfFinalFields);
@@ -487,7 +487,7 @@ createOfferLedgerObject(
     std::string_view getsIssueId,
     std::string_view paysIssueId,
     std::string_view dirId,
-    std::optional<std::string_view> const domain
+    std::optional<std::string_view> domain
 )
 {
     ripple::STObject offer(ripple::sfLedgerEntry);

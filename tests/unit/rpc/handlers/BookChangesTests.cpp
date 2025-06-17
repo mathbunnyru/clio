@@ -126,7 +126,7 @@ TEST_F(RPCBookChangesHandlerTest, LedgerNonExistViaIntSequence)
     // return empty ledgerHeader
     ON_CALL(*backend_, fetchLedgerBySequence(kMAX_SEQ, _)).WillByDefault(Return(std::optional<ripple::LedgerHeader>{}));
 
-    auto static const kINPUT = json::parse(R"JSON({"ledger_index": 30})JSON");
+    static auto const kINPUT = json::parse(R"JSON({"ledger_index": 30})JSON");
     auto const handler = AnyHandler{BookChangesHandler{backend_}};
     runSpawn([&](auto yield) {
         auto const output = handler.process(kINPUT, Context{yield});
@@ -143,7 +143,7 @@ TEST_F(RPCBookChangesHandlerTest, LedgerNonExistViaStringSequence)
     // return empty ledgerHeader
     ON_CALL(*backend_, fetchLedgerBySequence(kMAX_SEQ, _)).WillByDefault(Return(std::nullopt));
 
-    auto static const kINPUT = json::parse(R"JSON({"ledger_index": "30"})JSON");
+    static auto const kINPUT = json::parse(R"JSON({"ledger_index": "30"})JSON");
     auto const handler = AnyHandler{BookChangesHandler{backend_}};
     runSpawn([&](auto yield) {
         auto const output = handler.process(kINPUT, Context{yield});
@@ -156,12 +156,11 @@ TEST_F(RPCBookChangesHandlerTest, LedgerNonExistViaStringSequence)
 
 TEST_F(RPCBookChangesHandlerTest, LedgerNonExistViaHash)
 {
-    EXPECT_CALL(*backend_, fetchLedgerByHash);
     // return empty ledgerHeader
-    ON_CALL(*backend_, fetchLedgerByHash(ripple::uint256{kLEDGER_HASH}, _))
-        .WillByDefault(Return(std::optional<ripple::LedgerHeader>{}));
+    EXPECT_CALL(*backend_, fetchLedgerByHash(ripple::uint256{kLEDGER_HASH}, _))
+        .WillOnce(Return(std::optional<ripple::LedgerHeader>{}));
 
-    auto static const kINPUT = json::parse(fmt::format(
+    static auto const kINPUT = json::parse(fmt::format(
         R"JSON({{
             "ledger_hash": "{}"
         }})JSON",
@@ -200,9 +199,8 @@ TEST_F(RPCBookChangesHandlerTest, NormalPath)
             ]
         })JSON";
 
-    EXPECT_CALL(*backend_, fetchLedgerBySequence);
-    ON_CALL(*backend_, fetchLedgerBySequence(kMAX_SEQ, _))
-        .WillByDefault(Return(createLedgerHeader(kLEDGER_HASH, kMAX_SEQ)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kMAX_SEQ, _))
+        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kMAX_SEQ)));
 
     auto transactions = std::vector<TransactionAndMetadata>{};
     auto trans1 = TransactionAndMetadata();
@@ -213,8 +211,7 @@ TEST_F(RPCBookChangesHandlerTest, NormalPath)
     trans1.metadata = metaObj.getSerializer().peekData();
     transactions.push_back(trans1);
 
-    EXPECT_CALL(*backend_, fetchAllTransactionsInLedger);
-    ON_CALL(*backend_, fetchAllTransactionsInLedger(kMAX_SEQ, _)).WillByDefault(Return(transactions));
+    EXPECT_CALL(*backend_, fetchAllTransactionsInLedger(kMAX_SEQ, _)).WillOnce(Return(transactions));
 
     auto const handler = AnyHandler{BookChangesHandler{backend_}};
     runSpawn([&](auto yield) {
@@ -248,9 +245,8 @@ TEST_F(RPCBookChangesHandlerTest, NormalPathWithDomain)
             ]
         })JSON";
 
-    EXPECT_CALL(*backend_, fetchLedgerBySequence);
-    ON_CALL(*backend_, fetchLedgerBySequence(kMAX_SEQ, _))
-        .WillByDefault(Return(createLedgerHeader(kLEDGER_HASH, kMAX_SEQ)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kMAX_SEQ, _))
+        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kMAX_SEQ)));
 
     auto transactions = std::vector<TransactionAndMetadata>{};
     auto trans1 = TransactionAndMetadata();
@@ -261,8 +257,7 @@ TEST_F(RPCBookChangesHandlerTest, NormalPathWithDomain)
     trans1.metadata = metaObj.getSerializer().peekData();
     transactions.push_back(trans1);
 
-    EXPECT_CALL(*backend_, fetchAllTransactionsInLedger);
-    ON_CALL(*backend_, fetchAllTransactionsInLedger(kMAX_SEQ, _)).WillByDefault(Return(transactions));
+    EXPECT_CALL(*backend_, fetchAllTransactionsInLedger(kMAX_SEQ, _)).WillOnce(Return(transactions));
 
     auto const handler = AnyHandler{BookChangesHandler{backend_}};
     runSpawn([&](auto yield) {
