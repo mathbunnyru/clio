@@ -1,0 +1,39 @@
+name: Setup conan
+description: Setup conan profile and artifactory on macOS runner
+
+inputs:
+  conan_profile:
+    description: Conan profile name
+    required: true
+  global_conf_file:
+    description: Path to global.conf file
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Fail on non-macOS
+      if: runner.os != 'macOS'
+      shell: bash
+      run: exit 1
+
+    - name: Check profile name is default_apple_clang
+      if: inputs.conan_profile != 'default_apple_clang'
+      shell: bash
+      run: exit 1
+
+    - name: Create conan profile
+      shell: bash
+      run: |
+        conan profile detect --name "${{ inputs.conan_profile }}"
+        sed -i '' 's/compiler.cppstd=[^ ]*/compiler.cppstd=20/' "${{ env.CONAN_HOME }}/profiles/${{ inputs.conan_profile }}"
+
+    - name: Copy global.conf
+      shell: bash
+      run: |
+        cp "${{ inputs.global_conf_file }}" "${{ env.CONAN_HOME }}/global.conf"
+
+    - name: Add artifactory remote
+      shell: bash
+      run: |
+        conan remote add --index 0 ripple http://18.143.149.228:8081/artifactory/api/conan/dev
