@@ -87,6 +87,9 @@ WORKDIR /root
 # Setup conan
 RUN conan remote add --index 0 ripple http://18.143.149.228:8081/artifactory/api/conan/dev
 
+WORKDIR /root/.conan2
+COPY conan/global.conf ./global.conf
+
 WORKDIR /root/.conan2/profiles
 
 COPY conan/clang.profile ./clang
