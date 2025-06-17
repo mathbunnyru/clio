@@ -182,9 +182,9 @@ createMetaDataForBookChange(
     std::string_view issueId,
     uint32_t transactionIndex,
     int finalTakerGets,
-    int perviousTakerGets,
+    int previousTakerGets,
     int finalTakerPays,
-    int perviousTakerPays,
+    int previousTakerPays,
     std::optional<std::string_view> domain = std::nullopt
 );
 

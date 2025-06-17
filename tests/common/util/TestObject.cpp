@@ -328,9 +328,9 @@ createMetaDataForBookChange(
     std::string_view issueId,
     uint32_t transactionIndex,
     int finalTakerGets,
-    int perviousTakerGets,
+    int previousTakerGets,
     int finalTakerPays,
-    int perviousTakerPays,
+    int previousTakerPays,
     std::optional<std::string_view> domain
 )
 {
@@ -341,8 +341,8 @@ createMetaDataForBookChange(
     if (domain.has_value())
         finalFields.setFieldH256(ripple::sfDomainID, ripple::uint256{*domain});
     ripple::STObject previousFields(ripple::sfPreviousFields);
-    previousFields.setFieldAmount(ripple::sfTakerPays, ripple::STAmount(issue1, perviousTakerPays));
-    previousFields.setFieldAmount(ripple::sfTakerGets, ripple::STAmount(perviousTakerGets, false));
+    previousFields.setFieldAmount(ripple::sfTakerPays, ripple::STAmount(issue1, previousTakerPays));
+    previousFields.setFieldAmount(ripple::sfTakerGets, ripple::STAmount(previousTakerGets, false));
     ripple::STObject metaObj(ripple::sfTransactionMetaData);
     ripple::STArray metaArray{1};
     ripple::STObject node(ripple::sfModifiedNode);
