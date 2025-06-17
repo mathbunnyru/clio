@@ -67,9 +67,11 @@ jobs:
           disable_ccache: true
 
       - name: Setup conan
-        uses: ./.github/actions/setup_conan
+        if: runner.os == 'macOS'
+        uses: ./.github/actions/setup_conan_macos
         with:
           conan_profile: ${{ env.CONAN_PROFILE }}
+          global_conf_file: docker/ci/conan/global.conf
 
       - name: Show conan profile
         run: conan profile show --profile:all ${{ env.CONAN_PROFILE }}

@@ -34,11 +34,6 @@ jobs:
         with:
           disable_ccache: true
 
-      - name: Setup conan
-        uses: ./.github/actions/setup_conan
-        with:
-          conan_profile: ${{ env.CONAN_PROFILE }}
-
       - name: Run conan and cmake
         uses: ./.github/actions/generate
         with:
