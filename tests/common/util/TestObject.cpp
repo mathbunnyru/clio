@@ -328,18 +328,21 @@ createMetaDataForBookChange(
     std::string_view issueId,
     uint32_t transactionIndex,
     int finalTakerGets,
-    int perviousTakerGets,
+    int previousTakerGets,
     int finalTakerPays,
-    int perviousTakerPays
+    int previousTakerPays,
+    std::optional<std::string_view> domain
 )
 {
     ripple::STObject finalFields(ripple::sfFinalFields);
     ripple::Issue const issue1 = getIssue(currency, issueId);
     finalFields.setFieldAmount(ripple::sfTakerPays, ripple::STAmount(issue1, finalTakerPays));
     finalFields.setFieldAmount(ripple::sfTakerGets, ripple::STAmount(finalTakerGets, false));
+    if (domain.has_value())
+        finalFields.setFieldH256(ripple::sfDomainID, ripple::uint256{*domain});
     ripple::STObject previousFields(ripple::sfPreviousFields);
-    previousFields.setFieldAmount(ripple::sfTakerPays, ripple::STAmount(issue1, perviousTakerPays));
-    previousFields.setFieldAmount(ripple::sfTakerGets, ripple::STAmount(perviousTakerGets, false));
+    previousFields.setFieldAmount(ripple::sfTakerPays, ripple::STAmount(issue1, previousTakerPays));
+    previousFields.setFieldAmount(ripple::sfTakerGets, ripple::STAmount(previousTakerGets, false));
     ripple::STObject metaObj(ripple::sfTransactionMetaData);
     ripple::STArray metaArray{1};
     ripple::STObject node(ripple::sfModifiedNode);
@@ -484,7 +487,7 @@ createOfferLedgerObject(
     std::string_view getsIssueId,
     std::string_view paysIssueId,
     std::string_view dirId,
-    std::optional<std::string_view> const& domain
+    std::optional<std::string_view> domain
 )
 {
     ripple::STObject offer(ripple::sfLedgerEntry);
