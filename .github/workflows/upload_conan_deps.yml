@@ -80,7 +80,7 @@ jobs:
         uses: ./.github/actions/generate
         with:
           conan_profile: ${{ env.CONAN_PROFILE }}
-          conan_cache_hit: "false"
+          force_conan_source_build: "true"
           build_type: ${{ matrix.build_type }}
 
       - name: Login to Conan

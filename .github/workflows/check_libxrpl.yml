@@ -38,8 +38,6 @@ jobs:
         uses: ./.github/actions/generate
         with:
           conan_profile: ${{ env.CONAN_PROFILE }}
-          conan_cache_hit: ${{ steps.restore_cache.outputs.conan_cache_hit }}
-          build_type: Release
 
       - name: Build Clio
         uses: ./.github/actions/build_clio

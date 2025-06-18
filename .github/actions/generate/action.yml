@@ -5,8 +5,8 @@ inputs:
   conan_profile:
     description: Conan profile name
     required: true
-  conan_cache_hit:
-    description: Whether conan cache has been downloaded
+  force_conan_source_build:
+    description: Whether conan should build all dependencies from source
     required: true
     default: "false"
   build_type:
@@ -40,7 +40,7 @@ runs:
     - name: Run conan
       shell: bash
       env:
-        BUILD_OPTION: "${{ inputs.conan_cache_hit == 'true' && 'missing' || '*' }}"
+        CONAN_BUILD_OPTION: "${{ inputs.force_conan_source_build == 'true' && '*' || 'missing' }}"
         CODE_COVERAGE: "${{ inputs.code_coverage == 'true' && 'True' || 'False' }}"
         STATIC_OPTION: "${{ inputs.static == 'true' && 'True' || 'False' }}"
         INTEGRATION_TESTS_OPTION: "${{ inputs.build_integration_tests == 'true' && 'True' || 'False' }}"
@@ -50,7 +50,7 @@ runs:
         conan \
           install .. \
           -of . \
-          -b "$BUILD_OPTION" \
+          -b "$CONAN_BUILD_OPTION" \
           -s "build_type=${{ inputs.build_type }}" \
           -o "&:static=${STATIC_OPTION}" \
           -o "&:tests=True" \
