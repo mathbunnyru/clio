@@ -22,35 +22,26 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout Repo ⚡️
+        uses: actions/checkout@v4
+
+      - name: Calculate recipes matrix 🛠
+        id: set-matrix
+        run: .github/scripts/generate_conan_matrix.py >> "${GITHUB_OUTPUT}"
+
   upload-conan-deps:
     name: Build and Upload Conan Deps
 
+    needs: generate-matrix
+
     strategy:
       fail-fast: false
-      matrix:
-        os: [heavy, heavy-arm64]
-        container: ['{ "image": "ghcr.io/xrplf/clio-ci:latest" }']
-        compiler: ["gcc", "clang"]
-        sanitizer_ext: [".asan", ".tsan", ".ubsan", ""]
-        build_type: ["Release", "Debug"]
-        # libbacktrace doesn't build on arm64 with gcc.tsan
-        exclude:
-          - os: heavy-arm64
-            container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
-            compiler: gcc
-            sanitizer_ext: .tsan
-            build_type: Release
-          - os: heavy-arm64
-            container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
-            compiler: gcc
-            sanitizer_ext: .tsan
-            build_type: Debug
-        include:
-          - os: macos15
-            container: ""
-            compiler: default_apple_clang
-            sanitizer_ext: ""
-            build_type: Release
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
 
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container != '' && fromJson(matrix.container) || null }}
@@ -70,8 +61,7 @@ jobs:
         if: runner.os == 'macOS'
         uses: ./.github/actions/setup_conan_macos
         with:
-          conan_profile: ${{ env.CONAN_PROFILE }}
-          global_conf_file: docker/ci/conan/global.conf
+          conan_files_dir: docker/ci/conan/
 
       - name: Show conan profile
         run: conan profile show --profile:all ${{ env.CONAN_PROFILE }}
@@ -89,4 +79,4 @@ jobs:
 
       - name: Upload Conan packages
         if: github.event_name != 'pull_request'
-        run: conan upload "*" -r=ripple --confirm --force
+        run: conan upload "*" -r=ripple --confirm
