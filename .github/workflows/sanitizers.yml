@@ -39,6 +39,10 @@ jobs:
       matrix:
         compiler: ["gcc", "clang"]
         sanitizer_ext: [".asan", ".tsan", ".ubsan"]
+        exclude:
+          # Currently, clang.tsan build hangs
+          - compiler: clang
+            sanitizer_ext: .tsan
 
     uses: ./.github/workflows/build_and_test.yml
     with:
