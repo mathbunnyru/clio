@@ -1,12 +1,15 @@
 name: Upload Conan Dependencies
 
 on:
+  schedule:
+    - cron: "0 9 * * 1-5"
   workflow_dispatch:
   pull_request:
     branches:
       - develop
     paths:
       - .github/workflows/upload_conan_deps.yml
+      - .github/scripts/generate_conan_matrix.py
       - conanfile.py
       - conan.lock
   push:
@@ -14,6 +17,7 @@ on:
       - develop
     paths:
       - .github/workflows/upload_conan_deps.yml
+      - .github/scripts/generate_conan_matrix.py
       - conanfile.py
       - conan.lock
 
@@ -27,15 +31,14 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Checkout Repo ⚡️
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Calculate recipes matrix 🛠
+      - name: Calculate conan matrix
         id: set-matrix
         run: .github/scripts/generate_conan_matrix.py >> "${GITHUB_OUTPUT}"
 
   upload-conan-deps:
-    name: Build and Upload Conan Deps
+    name: Build ${{ matrix.compiler }}${{ matrix.sanitizer_ext }} ${{ matrix.build_type }}
 
     needs: generate-matrix
 
@@ -70,7 +73,7 @@ jobs:
         uses: ./.github/actions/generate
         with:
           conan_profile: ${{ env.CONAN_PROFILE }}
-          force_conan_source_build: "true"
+          force_conan_source_build: ${{ github.event_name == 'schedule' }}
           build_type: ${{ matrix.build_type }}
 
       - name: Login to Conan
