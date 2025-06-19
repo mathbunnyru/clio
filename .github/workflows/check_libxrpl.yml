@@ -15,7 +15,7 @@ env:
 jobs:
   build:
     name: Build Clio / `libXRPL ${{ github.event.client_payload.version }}`
-    runs-on: [self-hosted, heavy]
+    runs-on: heavy
     container:
       image: ghcr.io/xrplf/clio-ci:latest
 
@@ -54,7 +54,7 @@ jobs:
   run_tests:
     name: Run tests
     needs: build
-    runs-on: [self-hosted, heavy]
+    runs-on: heavy
     container:
       image: ghcr.io/xrplf/clio-ci:latest
 
