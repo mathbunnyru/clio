@@ -27,7 +27,8 @@ jobs:
       - name: Update libXRPL version requirement
         shell: bash
         run: |
-          ./.github/scripts/update-libxrpl-version.sh ${{ github.event.client_payload.version }}
+          sed -i.bak -E "s|'xrpl/[a-zA-Z0-9\\.\\-]+'|'xrpl/${{ github.event.client_payload.version }}'|g" conanfile.py
+          rm -f conanfile.py.bak
 
       - name: Update conan lockfile
         shell: bash
