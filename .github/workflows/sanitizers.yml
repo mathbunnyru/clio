@@ -40,7 +40,7 @@ jobs:
         compiler: ["gcc", "clang"]
         sanitizer_ext: [".asan", ".tsan", ".ubsan"]
         exclude:
-          # Currently, clang.tsan build hangs
+          # Currently, clang.tsan unit tests hang
           - compiler: clang
             sanitizer_ext: .tsan
 
