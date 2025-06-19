@@ -27,7 +27,12 @@ jobs:
       - name: Update libXRPL version requirement
         shell: bash
         run: |
-          ./.github/scripts/update-libxrpl-version ${{ github.event.client_payload.version }}
+          ./.github/scripts/update-libxrpl-version.sh ${{ github.event.client_payload.version }}
+
+      - name: Update conan lockfile
+        shell: bash
+        run: |
+          conan lock create . -o '&:tests=True' -o '&:benchmark=True'
 
       - name: Prepare runner
         uses: ./.github/actions/prepare_runner
