@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: "0 9 * * 1-5"
   workflow_dispatch:
+    inputs:
+      force_source_build:
+        description: "Force source build of all dependencies"
+        required: false
+        default: false
+        type: boolean
   pull_request:
     branches:
       - develop
@@ -73,7 +79,9 @@ jobs:
         uses: ./.github/actions/generate
         with:
           conan_profile: ${{ env.CONAN_PROFILE }}
-          force_conan_source_build: ${{ github.event_name == 'schedule' }}
+          # We check that everything builds fine from source on scheduled runs
+          # But we do build and upload packages with build=missing by default
+          force_conan_source_build: ${{ github.event_name == 'schedule' || github.event.inputs.force_source_build == 'true' }}
           build_type: ${{ matrix.build_type }}
 
       - name: Login to Conan
@@ -81,5 +89,5 @@ jobs:
         run: conan remote login -p ${{ secrets.CONAN_PASSWORD }} ripple ${{ secrets.CONAN_USERNAME }}
 
       - name: Upload Conan packages
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.event_name != 'schedule'
         run: conan upload "*" -r=ripple --confirm
