@@ -59,7 +59,7 @@ on:
 
 jobs:
   build:
-    name: Build ${{ inputs.container != '' && 'in container' || 'natively' }}
+    name: Build
     runs-on: ${{ inputs.runs_on }}
     container: ${{ inputs.container != '' && fromJson(inputs.container) || null }}
 
