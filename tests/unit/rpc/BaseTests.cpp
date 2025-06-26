@@ -277,7 +277,7 @@ TEST_F(RPCBaseTest, ArrayAtValidator)
     auto failingInput = json::parse(R"JSON({ "arr": [{"limit": "not int"}] })JSON");
     ASSERT_FALSE(spec.process(failingInput));
 
-    failingInput = json::parse(R"JSON({ "arr": [{"limit": 42}] , "arr2": "not array type" })JSON");
+    failingInput = json::parse(R"JSON({ "arr": [{"limit": 42}], "arr2": "not array type" })JSON");
     ASSERT_FALSE(spec.process(failingInput));
 
     failingInput = json::parse(R"JSON({ "arr": [] })JSON");
@@ -323,7 +323,7 @@ TEST_F(RPCBaseTest, IfTypeValidator)
     failingInput = json::parse(R"JSON({ "mix": 1213 })JSON");
     ASSERT_FALSE(spec.process(failingInput));
 
-    failingInput = json::parse(R"JSON({ "mix": {"limit": 42, "limit2": 22} , "mix2": 1213 })JSON");
+    failingInput = json::parse(R"JSON({ "mix": {"limit": 42, "limit2": 22}, "mix2": 1213 })JSON");
     ASSERT_FALSE(spec.process(failingInput));
 }
 
