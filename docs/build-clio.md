@@ -6,7 +6,7 @@
 ## Minimum Requirements
 
 - [Python 3.7](https://www.python.org/downloads/)
-- [Conan 1.55, <2.0](https://conan.io/downloads.html)
+- [Conan 2.17.0](https://conan.io/downloads.html)
 - [CMake 3.20, <4.0](https://cmake.org/download/)
 - [**Optional**] [GCovr](https://gcc.gnu.org/onlinedocs/gcc/Gcov.html): needed for code coverage generation
 - [**Optional**] [CCache](https://ccache.dev/): speeds up compilation if you are going to compile Clio often
@@ -18,6 +18,10 @@
 | Apple Clang | 15      |
 
 ### Conan Configuration
+
+> [!TIP]
+> To setup Conan automatically, you can run `.github/scripts/conan/init.sh`.
+> This will delete ~/.conan2 directory, if it exists, set up profiles and add Artifactory remote
 
 Clio requires `compiler.cppstd=20` in your Conan profile (`~/.conan2/profiles/default`).
 
