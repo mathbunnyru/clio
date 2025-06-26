@@ -19,9 +19,16 @@
 
 ### Conan Configuration
 
+By default, conan uses `~/.conan2` as the conan home folder.
+You can change it by using `$CONAN_HOME` env variable.
+[More info about conan home](https://docs.conan.io/2/reference/environment.html#conan-home).
+The instruction below assumes that `$CONAN_HOME` is not set.
+
 > [!TIP]
 > To setup Conan automatically, you can run `.github/scripts/conan/init.sh`.
-> This will delete ~/.conan2 directory, if it exists, set up profiles and add Artifactory remote
+> This will delete conan home directory (if it exists), set up profiles and add Artifactory remote
+
+#### Profiles
 
 Clio requires `compiler.cppstd=20` in your Conan profile (`~/.conan2/profiles/default`).
 
@@ -59,6 +66,8 @@ os=Linux
 [conf]
 tools.build:compiler_executables={'c': '/usr/bin/gcc-12', 'cpp': '/usr/bin/g++-12'}
 ```
+
+#### global.conf file
 
 Add the following to the `~/.conan2/global.conf` file:
 
