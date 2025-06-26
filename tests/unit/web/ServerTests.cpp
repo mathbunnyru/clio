@@ -246,8 +246,8 @@ TEST_F(WebServerTest, Http)
 {
     auto const e = std::make_shared<EchoExecutor>();
     auto const server = makeServerSync(cfg, ctx, dosGuard, e);
-    auto const [status, res] = HttpSyncClient::post("localhost", port, R"JSON({"Hello": 1})JSON");
-    EXPECT_EQ(res, R"JSON({"Hello": 1})JSON");
+    auto const [status, res] = HttpSyncClient::post("localhost", port, R"JSON({"Hello":1})JSON");
+    EXPECT_EQ(res, R"JSON({"Hello":1})JSON");
     EXPECT_EQ(status, boost::beast::http::status::ok);
 }
 
@@ -257,8 +257,8 @@ TEST_F(WebServerTest, Ws)
     auto const server = makeServerSync(cfg, ctx, dosGuard, e);
     WebSocketSyncClient wsClient;
     wsClient.connect("localhost", port);
-    auto const res = wsClient.syncPost(R"JSON({"Hello": 1})JSON");
-    EXPECT_EQ(res, R"JSON({"Hello": 1})JSON");
+    auto const res = wsClient.syncPost(R"JSON({"Hello":1})JSON");
+    EXPECT_EQ(res, R"JSON({"Hello":1})JSON");
     wsClient.disconnect();
 }
 
@@ -269,7 +269,7 @@ TEST_F(WebServerTest, HttpInternalError)
     auto const [status, res] = HttpSyncClient::post("localhost", port, R"JSON({})JSON");
     EXPECT_EQ(
         res,
-        R"JSON({"error": "internal", "error_code": 73, "error_message": "Internal error.", "status": "error", "type": "response"})JSON"
+        R"JSON({"error":"internal","error_code":73,"error_message":"Internal error.","status":"error","type":"response"})JSON"
     );
     EXPECT_EQ(status, boost::beast::http::status::internal_server_error);
 }
@@ -280,11 +280,11 @@ TEST_F(WebServerTest, WsInternalError)
     auto const server = makeServerSync(cfg, ctx, dosGuard, e);
     WebSocketSyncClient wsClient;
     wsClient.connect("localhost", port);
-    auto const res = wsClient.syncPost(R"JSON({"id": "id1"})JSON");
+    auto const res = wsClient.syncPost(R"JSON({"id":"id1"})JSON");
     wsClient.disconnect();
     EXPECT_EQ(
         res,
-        R"JSON({"error": "internal", "error_code": 73, "error_message": "Internal error.", "status": "error", "type": "response", "id": "id1", "request": {"id": "id1"}})JSON"
+        R"JSON({"error":"internal","error_code":73,"error_message":"Internal error.","status":"error","type":"response","id":"id1","request":{"id":"id1"}})JSON"
     );
 }
 
@@ -298,7 +298,7 @@ TEST_F(WebServerTest, WsInternalErrorNotJson)
     wsClient.disconnect();
     EXPECT_EQ(
         res,
-        R"JSON({"error": "internal", "error_code": 73, "error_message": "Internal error.", "status": "error", "type": "response", "request": "not json"})JSON"
+        R"JSON({"error":"internal","error_code":73,"error_message":"Internal error.","status":"error","type":"response","request":"not json"})JSON"
     );
 }
 
@@ -330,8 +330,8 @@ TEST_F(WebServerTest, Https)
     auto const e = std::make_shared<EchoExecutor>();
     cfg = getParseServerConfig(addSslConfig(generateJSONWithDynamicPort(port)));
     auto const server = makeServerSync(cfg, ctx, dosGuard, e);
-    auto const res = HttpsSyncClient::syncPost("localhost", port, R"JSON({"Hello": 1})JSON");
-    EXPECT_EQ(res, R"JSON({"Hello": 1})JSON");
+    auto const res = HttpsSyncClient::syncPost("localhost", port, R"JSON({"Hello":1})JSON");
+    EXPECT_EQ(res, R"JSON({"Hello":1})JSON");
 }
 
 TEST_F(WebServerTest, Wss)
@@ -341,8 +341,8 @@ TEST_F(WebServerTest, Wss)
     auto server = makeServerSync(cfg, ctx, dosGuard, e);
     WebServerSslSyncClient wsClient;
     wsClient.connect("localhost", port);
-    auto const res = wsClient.syncPost(R"JSON({"Hello": 1})JSON");
-    EXPECT_EQ(res, R"JSON({"Hello": 1})JSON");
+    auto const res = wsClient.syncPost(R"JSON({"Hello":1})JSON");
+    EXPECT_EQ(res, R"JSON({"Hello":1})JSON");
     wsClient.disconnect();
 }
 
@@ -352,10 +352,10 @@ TEST_F(WebServerTest, HttpPayloadOverload)
     auto const e = std::make_shared<EchoExecutor>();
     auto server = makeServerSync(cfg, ctx, dosGuardOverload, e);
     auto const [status, res] =
-        HttpSyncClient::post("localhost", port, fmt::format(R"JSON({{"payload": "{}"}})JSON", s100));
+        HttpSyncClient::post("localhost", port, fmt::format(R"JSON({{"payload":"{}"}})JSON", s100));
     EXPECT_EQ(
         res,
-        R"JSON({"payload": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "warning": "load", "warnings": [{"id": 2003, "message": "You are about to be rate limited"}]})JSON"
+        R"JSON({"payload":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","warning":"load","warnings":[{"id":2003,"message":"You are about to be rate limited"}]})JSON"
     );
     EXPECT_EQ(status, boost::beast::http::status::ok);
 }
@@ -367,11 +367,11 @@ TEST_F(WebServerTest, WsPayloadOverload)
     auto server = makeServerSync(cfg, ctx, dosGuardOverload, e);
     WebSocketSyncClient wsClient;
     wsClient.connect("localhost", port);
-    auto const res = wsClient.syncPost(fmt::format(R"JSON({{"payload": "{}"}})JSON", s100));
+    auto const res = wsClient.syncPost(fmt::format(R"JSON({{"payload":"{}"}})JSON", s100));
     wsClient.disconnect();
     EXPECT_EQ(
         res,
-        R"JSON({"payload": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "warning": "load", "warnings": [{"id": 2003, "message": "You are about to be rate limited"}]})JSON"
+        R"JSON({"payload":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","warning":"load","warnings":[{"id":2003,"message":"You are about to be rate limited"}]})JSON"
     );
 }
 
@@ -630,7 +630,7 @@ TEST_F(WebServerTest, AdminErrorCfgTestBothAdminPasswordAndLocalAdminSet)
     uint32_t webServerPort = tests::util::generateFreePort();
     std::string const jsonServerConfigWithBothAdminPasswordAndLocalAdmin = fmt::format(
         R"JSON({{
-        "server": {{
+        "server":{{
                 "ip": "0.0.0.0",
                 "port": {},
                 "admin_password": "secret",
@@ -689,7 +689,7 @@ TEST_F(WebServerPrometheusTest, rejectedIfPrometheusIsDisabled)
     uint32_t webServerPort = tests::util::generateFreePort();
     std::string const jsonServerConfigWithDisabledPrometheus = fmt::format(
         R"JSON({{
-        "server": {{
+        "server":{{
                 "ip": "0.0.0.0",
                 "port": {},
                 "admin_password": "secret",
