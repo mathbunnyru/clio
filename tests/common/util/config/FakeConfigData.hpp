@@ -85,7 +85,7 @@ generateConfig()
            }
        }
      ],
-     "dosguard":  {
+     "dosguard": {
         "whitelist": [
             // mandatory for user to include
         ],
@@ -132,7 +132,7 @@ static constexpr auto kJSON_DATA = R"JSON({
             }
         }
     ],
-    "dosguard":  {
+    "dosguard": {
         "whitelist": [
             "125.5.5.1", "204.2.2.1"
         ],
@@ -177,7 +177,7 @@ static constexpr auto kJSON_DATA = R"JSON({
            }
        }
      ],
-     "dosguard":  {
+     "dosguard": {
         "whitelist": [
             "125.5.5.1", "204.2.2.1"
         ],
