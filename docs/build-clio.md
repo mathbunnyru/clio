@@ -111,6 +111,7 @@ Navigate to Clio's root directory and run:
 
 ```sh
 mkdir build && cd build
+# You can also specify profile explicitly by adding `--profile:all <PROFILE_NAME>`
 conan install .. --output-folder . --build missing --settings build_type=Release -o '&:tests=True'
 # You can also add -GNinja to use Ninja build system instead of Make
 cmake -DCMAKE_TOOLCHAIN_FILE:FILEPATH=build/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release ..
