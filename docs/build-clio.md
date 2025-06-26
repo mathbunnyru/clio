@@ -19,14 +19,15 @@
 
 ### Conan Configuration
 
-By default, conan uses `~/.conan2` as the conan home folder.
+By default, Conan uses `~/.conan2` as it's home folder.
 You can change it by using `$CONAN_HOME` env variable.
-[More info about conan home](https://docs.conan.io/2/reference/environment.html#conan-home).
-The instruction below assumes that `$CONAN_HOME` is not set.
+[More info about Conan home](https://docs.conan.io/2/reference/environment.html#conan-home).
 
 > [!TIP]
 > To setup Conan automatically, you can run `.github/scripts/conan/init.sh`.
-> This will delete conan home directory (if it exists), set up profiles and add Artifactory remote
+> This will delete Conan home directory (if it exists), set up profiles and add Artifactory remote.
+
+The instruction below assumes that `$CONAN_HOME` is not set.
 
 #### Profiles
 
@@ -83,16 +84,7 @@ Make sure artifactory is setup with Conan.
 conan remote add --index 0 ripple http://18.143.149.228:8081/artifactory/api/conan/dev
 ```
 
-Now you should be able to download the prebuilt `xrpl` package on some platforms.
-
-> [!NOTE]
-> You may need to edit the `~/.conan2/remotes.json` file to ensure that this newly added artifactory is listed last. Otherwise, you could see compilation errors when building the project with gcc version 13 (or newer).
-
-Remove old packages you may have cached interactively.
-
-```sh
-conan remove xrpl
-```
+Now you should be able to download the prebuilt `xrpl` package on supported platforms.
 
 #### Conan lockfile
 
