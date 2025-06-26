@@ -392,14 +392,13 @@ TEST_P(NormalPathTest, CheckOutput)
 
     // return valid account
     auto const accountKk = ripple::keylet::account(getAccountIdWithString(kACCOUNT)).key;
-    ON_CALL(*backend_, doFetchLedgerObject(accountKk, seq, _)).WillByDefault(Return(Blob{'f', 'a', 'k', 'e'}));
+    EXPECT_CALL(*backend_, doFetchLedgerObject(accountKk, seq, _)).WillOnce(Return(Blob{'f', 'a', 'k', 'e'}));
 
     // return valid owner dir
     auto const ownerDir = createOwnerDirLedgerObject({ripple::uint256{kINDEX2}}, kINDEX1);
     auto const ownerDirKk = ripple::keylet::ownerDir(getAccountIdWithString(kACCOUNT)).key;
-    ON_CALL(*backend_, doFetchLedgerObject(ownerDirKk, seq, _))
-        .WillByDefault(Return(bundle.mockedDir.getSerializer().peekData()));
-    EXPECT_CALL(*backend_, doFetchLedgerObject).Times(2);
+    EXPECT_CALL(*backend_, doFetchLedgerObject(ownerDirKk, seq, _))
+        .WillOnce(Return(bundle.mockedDir.getSerializer().peekData()));
 
     std::vector<Blob> bbs;
     std::ranges::transform(bundle.mockedObjects, std::back_inserter(bbs), [](auto const& obj) {
@@ -666,12 +665,11 @@ TEST_P(EscrowTest, CheckEscrowOutput)
     EXPECT_CALL(*backend_, fetchLedgerBySequence(seq, _)).WillOnce(Return(ledgerHeader));
 
     auto const accountKk = ripple::keylet::account(getAccountIdWithString(kACCOUNT)).key;
-    ON_CALL(*backend_, doFetchLedgerObject(accountKk, seq, _)).WillByDefault(Return(Blob{'f', 'a', 'k', 'e'}));
+    EXPECT_CALL(*backend_, doFetchLedgerObject(accountKk, seq, _)).WillOnce(Return(Blob{'f', 'a', 'k', 'e'}));
 
     auto const ownerDirKk = ripple::keylet::ownerDir(getAccountIdWithString(kACCOUNT)).key;
-    ON_CALL(*backend_, doFetchLedgerObject(ownerDirKk, seq, _))
-        .WillByDefault(Return(bundle.mockedDir.getSerializer().peekData()));
-    EXPECT_CALL(*backend_, doFetchLedgerObject).Times(2);
+    EXPECT_CALL(*backend_, doFetchLedgerObject(ownerDirKk, seq, _))
+        .WillOnce(Return(bundle.mockedDir.getSerializer().peekData()));
 
     std::vector<Blob> bbs;
     std::ranges::transform(bundle.mockedObjects, std::back_inserter(bbs), [](auto const& obj) {
