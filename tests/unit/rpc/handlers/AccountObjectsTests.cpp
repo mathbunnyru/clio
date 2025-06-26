@@ -1245,7 +1245,7 @@ TEST_F(RPCAccountObjectsHandlerTest, NFTMarkerNotInRange)
     static auto const kINPUT = json::parse(fmt::format(
         R"JSON({{
             "account": "{}",
-            "marker" : "{},{}"
+            "marker": "{},{}"
         }})JSON",
         kACCOUNT,
         kINDEX1,
@@ -1278,7 +1278,7 @@ TEST_F(RPCAccountObjectsHandlerTest, NFTMarkerNotExist)
     static auto const kINPUT = json::parse(fmt::format(
         R"JSON({{
             "account": "{}",
-            "marker" : "{},{}"
+            "marker": "{},{}"
         }})JSON",
         kACCOUNT,
         ripple::strHex(accountNftMax),

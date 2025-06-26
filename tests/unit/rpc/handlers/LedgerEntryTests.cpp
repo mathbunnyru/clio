@@ -687,7 +687,7 @@ generateTestValuesForParametersTest()
             .testJson = fmt::format(
                 R"JSON({{
                     "ripple_state": {{
-                        "accounts" : ["{}"]
+                        "accounts": ["{}"]
                     }}
                 }})JSON",
                 kACCOUNT
@@ -701,7 +701,7 @@ generateTestValuesForParametersTest()
             .testJson = fmt::format(
                 R"JSON({{
                     "ripple_state": {{
-                        "accounts" : ["{}", "{}"],
+                        "accounts": ["{}", "{}"],
                         "currency": "USD"
                     }}
                 }})JSON",
@@ -717,7 +717,7 @@ generateTestValuesForParametersTest()
             .testJson = fmt::format(
                 R"JSON({{
                     "ripple_state": {{
-                        "accounts" : ["{}",123],
+                        "accounts": ["{}",123],
                         "currency": "USD"
                     }}
                 }})JSON",
@@ -732,7 +732,7 @@ generateTestValuesForParametersTest()
             .testJson = fmt::format(
                 R"JSON({{
                     "ripple_state": {{
-                        "accounts" : ["{}", "123"],
+                        "accounts": ["{}", "123"],
                         "currency": "USD"
                     }}
                 }})JSON",
@@ -747,7 +747,7 @@ generateTestValuesForParametersTest()
             .testJson = fmt::format(
                 R"JSON({{
                     "ripple_state": {{
-                        "accounts" : ["{}", "{}"],
+                        "accounts": ["{}", "{}"],
                         "currency": "XXXX"
                     }}
                 }})JSON",
@@ -763,7 +763,7 @@ generateTestValuesForParametersTest()
             .testJson = fmt::format(
                 R"JSON({{
                     "ripple_state": {{
-                        "accounts" : ["{}", "{}"],
+                        "accounts": ["{}", "{}"],
                         "currency": 123
                     }}
                 }})JSON",
@@ -915,8 +915,8 @@ generateTestValuesForParametersTest()
                         "asset": {{}},
                         "asset2":
                         {{
-                            "currency" : "USD",
-                            "issuer" : "{}"
+                            "currency": "USD",
+                            "issuer": "{}"
                         }}
                     }}
                 }})JSON",
@@ -935,8 +935,8 @@ generateTestValuesForParametersTest()
                         "asset2": {{}},
                         "asset":
                         {{
-                            "currency" : "USD",
-                            "issuer" : "{}"
+                            "currency": "USD",
+                            "issuer": "{}"
                         }}
                     }}
                 }})JSON",
@@ -954,8 +954,8 @@ generateTestValuesForParametersTest()
                     {{
                         "asset":
                         {{
-                            "currency" : "USD",
-                            "issuer" : "{}"
+                            "currency": "USD",
+                            "issuer": "{}"
                         }}
                     }}
                 }})JSON",
@@ -973,8 +973,8 @@ generateTestValuesForParametersTest()
                     {{
                         "asset2":
                         {{
-                            "currency" : "USD",
-                            "issuer" : "{}"
+                            "currency": "USD",
+                            "issuer": "{}"
                         }}
                     }}
                 }})JSON",
@@ -993,8 +993,8 @@ generateTestValuesForParametersTest()
                         "asset": "invalid",
                         "asset2":
                         {{
-                            "currency" : "USD",
-                            "issuer" : "{}"
+                            "currency": "USD",
+                            "issuer": "{}"
                         }}
                     }}
                 }})JSON",
@@ -1013,8 +1013,8 @@ generateTestValuesForParametersTest()
                         "asset2": "invalid",
                         "asset":
                         {{
-                            "currency" : "USD",
-                            "issuer" : "{}"
+                            "currency": "USD",
+                            "issuer": "{}"
                         }}
                     }}
                 }})JSON",
@@ -1036,8 +1036,8 @@ generateTestValuesForParametersTest()
                         }},
                         "asset":
                         {{
-                            "currency" : "USD2",
-                            "issuer" : "{}"
+                            "currency": "USD2",
+                            "issuer": "{}"
                         }}
                     }}
                 }})JSON",
@@ -1059,8 +1059,8 @@ generateTestValuesForParametersTest()
                         }},
                         "asset":
                         {{
-                            "currency" : "USD",
-                            "issuer" : "aa{}"
+                            "currency": "USD",
+                            "issuer": "aa{}"
                         }}
                     }}
                 }})JSON",
@@ -1082,8 +1082,8 @@ generateTestValuesForParametersTest()
                         }},
                         "asset":
                         {{
-                            "currency" : "USD",
-                            "issuer" : "{}"
+                            "currency": "USD",
+                            "issuer": "{}"
                         }}
                     }}
                 }})JSON",
@@ -1106,8 +1106,8 @@ generateTestValuesForParametersTest()
                         }},
                         "asset":
                         {{
-                            "currency" : "USD",
-                            "issuer" : "{}"
+                            "currency": "USD",
+                            "issuer": "{}"
                         }}
                     }}
                 }})JSON",
@@ -1130,7 +1130,7 @@ generateTestValuesForParametersTest()
                         }},
                         "asset":
                         {{
-                            "issuer" : "{}"
+                            "issuer": "{}"
                         }}
                     }}
                 }})JSON",
@@ -2782,11 +2782,11 @@ generateTestValuesForNormalPathTest()
                         "LockingChainDoor": "{}",
                         "IssuingChainDoor": "{}",
                         "LockingChainIssue": {{
-                            "currency" : "XRP"
+                            "currency": "XRP"
                         }},
                         "IssuingChainIssue": {{
-                            "currency" : "JPY",
-                            "issuer" : "{}"
+                            "currency": "JPY",
+                            "issuer": "{}"
                         }}
                     }}
                 }})JSON",
@@ -2817,11 +2817,11 @@ generateTestValuesForNormalPathTest()
                         "LockingChainDoor": "{}",
                         "IssuingChainDoor": "{}",
                         "LockingChainIssue": {{
-                            "currency" : "XRP"
+                            "currency": "XRP"
                         }},
                         "IssuingChainIssue": {{
-                            "currency" : "JPY",
-                            "issuer" : "{}"
+                            "currency": "JPY",
+                            "issuer": "{}"
                         }}
                     }}
                 }})JSON",
@@ -2851,11 +2851,11 @@ generateTestValuesForNormalPathTest()
                         "LockingChainDoor": "{}",
                         "IssuingChainDoor": "{}",
                         "LockingChainIssue": {{
-                            "currency" : "XRP"
+                            "currency": "XRP"
                         }},
                         "IssuingChainIssue": {{
-                            "currency" : "JPY",
-                            "issuer" : "{}"
+                            "currency": "JPY",
+                            "issuer": "{}"
                         }},
                         "xchain_owned_claim_id": 10
                     }}
@@ -2885,11 +2885,11 @@ generateTestValuesForNormalPathTest()
                         "LockingChainDoor": "{}",
                         "IssuingChainDoor": "{}",
                         "LockingChainIssue": {{
-                            "currency" : "XRP"
+                            "currency": "XRP"
                         }},
                         "IssuingChainIssue": {{
-                            "currency" : "JPY",
-                            "issuer" : "{}"
+                            "currency": "JPY",
+                            "issuer": "{}"
                         }},
                         "xchain_owned_create_account_claim_id": 10
                     }}

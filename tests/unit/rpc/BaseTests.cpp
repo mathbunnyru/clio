@@ -585,7 +585,7 @@ TEST_F(RPCBaseTest, CurrencyValidator)
     ASSERT_TRUE(spec.process(passingInput));
 
     for (auto const& currency : {"[]<", ">()", "{}|", "?!@", "#$%", "^&*"}) {
-        passingInput = json::parse(fmt::format(R"JSON({{ "currency" : "{}" }})JSON", currency));
+        passingInput = json::parse(fmt::format(R"JSON({{ "currency": "{}" }})JSON", currency));
         ASSERT_TRUE(spec.process(passingInput));
     }
 
