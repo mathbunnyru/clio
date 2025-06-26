@@ -31,10 +31,9 @@ The instruction below assumes that `$CONAN_HOME` is not set.
 
 #### Profiles
 
-Clio requires `compiler.cppstd=20` in your Conan profile (`~/.conan2/profiles/default`).
+The default profile is the file in `~/.conan2/profiles/default`.
 
-> [!NOTE]
-> Although Clio is built using C++23, it's required to set `compiler.cppstd=20` for the time being as some of Clio's dependencies are not yet capable of building under C++23.
+Here are some examples of possible profiles:
 
 **Mac apple-clang 16 example**:
 
@@ -68,11 +67,16 @@ os=Linux
 tools.build:compiler_executables={'c': '/usr/bin/gcc-12', 'cpp': '/usr/bin/g++-12'}
 ```
 
+> [!NOTE]
+> Although Clio is built using C++23, it's required to set `compiler.cppstd=20` in your profile for the time being as some of Clio's dependencies are not yet capable of building under C++23.
+
 #### global.conf file
 
 Add the following to the `~/.conan2/global.conf` file:
 
 ```text
+core.download:parallel={{os.cpu_count()}}
+core.upload:parallel={{os.cpu_count()}}
 tools.info.package_id:confs = ["tools.build:cflags", "tools.build:cxxflags", "tools.build:exelinkflags", "tools.build:sharedlinkflags"]
 ```
 
@@ -84,7 +88,7 @@ Make sure artifactory is setup with Conan.
 conan remote add --index 0 ripple http://18.143.149.228:8081/artifactory/api/conan/dev
 ```
 
-Now you should be able to download the prebuilt `xrpl` package on supported platforms.
+Now you should be able to download the prebuilt dependencies (including `xrpl` package) on supported platforms.
 
 #### Conan lockfile
 
