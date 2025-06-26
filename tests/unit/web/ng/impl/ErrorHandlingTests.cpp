@@ -92,7 +92,7 @@ INSTANTIATE_TEST_CASE_P(
             "WsRequest",
             false,
             rpc::Status{rpc::RippledError::rpcTOO_BUSY},
-            R"JSON({"error":"tooBusy","error_code":9,"error_message":"The server is too busy to help you now.","status":"error","type":"response"})JSON",
+            R"JSON({"error": "tooBusy", "error_code": 9, "error_message": "The server is too busy to help you now.", "status": "error", "type": "response"})JSON",
             boost::beast::http::status::ok
         },
         NgErrorHandlingMakeErrorTestBundle{
@@ -134,7 +134,7 @@ INSTANTIATE_TEST_CASE_P(
             "HttpRequest_RippledError",
             true,
             rpc::Status{rpc::RippledError::rpcTOO_BUSY},
-            R"JSON({"result":{"error":"tooBusy","error_code":9,"error_message":"The server is too busy to help you now.","status":"error","type":"response"}})JSON",
+            R"JSON({"result": {"error": "tooBusy", "error_code": 9, "error_message": "The server is too busy to help you now.", "status": "error", "type": "response"}})JSON",
             boost::beast::http::status::bad_request
         },
     }),
@@ -244,7 +244,7 @@ TEST_F(NgErrorHandlingTests, MakeNotReadyError)
     EXPECT_EQ(
         response.message(),
         std::string{
-            R"JSON({"result":{"error":"notReady","error_code":13,"error_message":"Not ready to handle this request.","status":"error","type":"response"}})JSON"
+            R"JSON({"result": {"error": "notReady", "error_code": 13, "error_message": "Not ready to handle this request.", "status": "error", "type": "response"}})JSON"
         }
     );
     auto const httpResponse = std::move(response).intoHttpResponse();
@@ -259,7 +259,7 @@ TEST_F(NgErrorHandlingTests, MakeTooBusyError_WebsocketRequest)
     EXPECT_EQ(
         response.message(),
         std::string{
-            R"JSON({"error":"tooBusy","error_code":9,"error_message":"The server is too busy to help you now.","status":"error","type":"response"})JSON"
+            R"JSON({"error": "tooBusy", "error_code": 9, "error_message": "The server is too busy to help you now.", "status": "error", "type": "response"})JSON"
         }
     );
 }
@@ -271,7 +271,7 @@ TEST_F(NgErrorHandlingTests, sendTooBusyError_HttpConnection)
     EXPECT_EQ(
         response.message(),
         std::string{
-            R"JSON({"error":"tooBusy","error_code":9,"error_message":"The server is too busy to help you now.","status":"error","type":"response"})JSON"
+            R"JSON({"error": "tooBusy", "error_code": 9, "error_message": "The server is too busy to help you now.", "status": "error", "type": "response"})JSON"
         }
     );
     auto const httpResponse = std::move(response).intoHttpResponse();
@@ -286,7 +286,7 @@ TEST_F(NgErrorHandlingTests, makeJsonParsingError_WebsocketConnection)
     EXPECT_EQ(
         response.message(),
         std::string{
-            R"JSON({"error":"badSyntax","error_code":1,"error_message":"Syntax error.","status":"error","type":"response"})JSON"
+            R"JSON({"error": "badSyntax", "error_code": 1, "error_message": "Syntax error.", "status": "error", "type": "response"})JSON"
         }
     );
 }
@@ -327,31 +327,31 @@ INSTANTIATE_TEST_CASE_P(
              "NoRequest_WebsocketConnection",
              false,
              std::nullopt,
-             R"JSON({"error":"internal","error_code":73,"error_message":"Internal error.","status":"error","type":"response"})JSON"
+             R"JSON({"error": "internal", "error_code": 73, "error_message": "Internal error.", "status": "error", "type": "response"})JSON"
          },
          NgErrorHandlingComposeErrorTestBundle{
              "NoRequest_HttpConnection",
              true,
              std::nullopt,
-             R"JSON({"result":{"error":"internal","error_code":73,"error_message":"Internal error.","status":"error","type":"response"}})JSON"
+             R"JSON({"result": {"error": "internal", "error_code": 73, "error_message": "Internal error.", "status": "error", "type": "response"}})JSON"
          },
          NgErrorHandlingComposeErrorTestBundle{
              "Request_WebsocketConnection",
              false,
              boost::json::object{{"id", 1}, {"api_version", 2}},
-             R"JSON({"error":"internal","error_code":73,"error_message":"Internal error.","status":"error","type":"response","id":1,"api_version":2,"request":{"id":1,"api_version":2}})JSON",
+             R"JSON({"error": "internal", "error_code": 73, "error_message": "Internal error.", "status": "error", "type": "response", "id": 1, "api_version": 2, "request": {"id": 1, "api_version": 2}})JSON",
          },
          NgErrorHandlingComposeErrorTestBundle{
              "Request_WebsocketConnection_NoId",
              false,
              boost::json::object{{"api_version", 2}},
-             R"JSON({"error":"internal","error_code":73,"error_message":"Internal error.","status":"error","type":"response","api_version":2,"request":{"api_version":2}})JSON",
+             R"JSON({"error": "internal", "error_code": 73, "error_message": "Internal error.", "status": "error", "type": "response", "api_version": 2, "request": {"api_version": 2}})JSON",
          },
          NgErrorHandlingComposeErrorTestBundle{
              "Request_HttpConnection",
              true,
              boost::json::object{{"id", 1}, {"api_version", 2}},
-             R"JSON({"result":{"error":"internal","error_code":73,"error_message":"Internal error.","status":"error","type":"response","id":1,"request":{"id":1,"api_version":2}}})JSON"
+             R"JSON({"result": {"error": "internal", "error_code": 73, "error_message": "Internal error.", "status": "error", "type": "response", "id": 1, "request": {"id": 1, "api_version": 2}}})JSON"
          }}
     ),
     tests::util::kNAME_GENERATOR

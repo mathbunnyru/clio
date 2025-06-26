@@ -71,7 +71,7 @@ struct SubscriptionSourceConnectionTestsBase : SyncAsioContextTest {
             ASSERT_TRUE(message);
             EXPECT_EQ(
                 message.value(),
-                R"JSON({"command":"subscribe","streams":["ledger","manifests","validations","transactions_proposed"]})JSON"
+                R"JSON({"command": "subscribe", "streams": ["ledger", "manifests", "validations", "transactions_proposed"]})JSON"
             );
         }();
         return std::move(connection).value();
@@ -199,7 +199,7 @@ TEST_F(SubscriptionSourceReadTests, GotWrongMessage_Reconnect)
 TEST_F(SubscriptionSourceReadTests, GotResult)
 {
     boost::asio::spawn(ctx_, [this](boost::asio::yield_context yield) {
-        auto connection = connectAndSendMessage(R"JSON({"result":{})JSON", yield);
+        auto connection = connectAndSendMessage(R"JSON({"result": {})JSON", yield);
         connection.close(yield);
     });
 
@@ -211,7 +211,7 @@ TEST_F(SubscriptionSourceReadTests, GotResult)
 TEST_F(SubscriptionSourceReadTests, GotResultWithLedgerIndex)
 {
     boost::asio::spawn(ctx_, [this](boost::asio::yield_context yield) {
-        auto connection = connectAndSendMessage(R"JSON({"result":{"ledger_index":123}})JSON", yield);
+        auto connection = connectAndSendMessage(R"JSON({"result": {"ledger_index": 123}})JSON", yield);
         connection.close(yield);
     });
 
@@ -224,7 +224,7 @@ TEST_F(SubscriptionSourceReadTests, GotResultWithLedgerIndex)
 TEST_F(SubscriptionSourceReadTests, GotResultWithLedgerIndexAsString_Reconnect)
 {
     boost::asio::spawn(ctx_, [this](boost::asio::yield_context yield) {
-        auto connection = connectAndSendMessage(R"JSON({"result":{"ledger_index":"123"}})JSON", yield);
+        auto connection = connectAndSendMessage(R"JSON({"result": {"ledger_index": "123"}})JSON", yield);
         // We have to schedule receiving to receive close frame and boost will handle it automatically
         connection.receive(yield);
         serverConnection(yield);
@@ -238,7 +238,7 @@ TEST_F(SubscriptionSourceReadTests, GotResultWithLedgerIndexAsString_Reconnect)
 TEST_F(SubscriptionSourceReadTests, GotResultWithValidatedLedgersAsNumber_Reconnect)
 {
     boost::asio::spawn(ctx_, [this](boost::asio::yield_context yield) {
-        auto connection = connectAndSendMessage(R"JSON({"result":{"validated_ledgers":123}})JSON", yield);
+        auto connection = connectAndSendMessage(R"JSON({"result": {"validated_ledgers": 123}})JSON", yield);
         // We have to schedule receiving to receive close frame and boost will handle it automatically
         connection.receive(yield);
         serverConnection(yield);
@@ -262,7 +262,8 @@ TEST_F(SubscriptionSourceReadTests, GotResultWithValidatedLedgers)
     EXPECT_FALSE(subscriptionSource_.hasLedger(790));
 
     boost::asio::spawn(ctx_, [this](boost::asio::yield_context yield) {
-        auto connection = connectAndSendMessage(R"JSON({"result":{"validated_ledgers":"123-456,789,32"}})JSON", yield);
+        auto connection =
+            connectAndSendMessage(R"JSON({"result": {"validated_ledgers": "123-456,789,32"}})JSON", yield);
         connection.close(yield);
     });
 
@@ -286,7 +287,8 @@ TEST_F(SubscriptionSourceReadTests, GotResultWithValidatedLedgers)
 TEST_F(SubscriptionSourceReadTests, GotResultWithValidatedLedgersWrongValue_Reconnect)
 {
     boost::asio::spawn(ctx_, [this](boost::asio::yield_context yield) {
-        auto connection = connectAndSendMessage(R"JSON({"result":{"validated_ledgers":"123-456-789,32"}})JSON", yield);
+        auto connection =
+            connectAndSendMessage(R"JSON({"result": {"validated_ledgers": "123-456-789,32"}})JSON", yield);
         // We have to schedule receiving to receive close frame and boost will handle it automatically
         connection.receive(yield);
         serverConnection(yield);
@@ -307,7 +309,7 @@ TEST_F(SubscriptionSourceReadTests, GotResultWithLedgerIndexAndValidatedLedgers)
 
     boost::asio::spawn(ctx_, [this](boost::asio::yield_context yield) {
         auto connection =
-            connectAndSendMessage(R"JSON({"result":{"ledger_index":123,"validated_ledgers":"1-3"}})JSON", yield);
+            connectAndSendMessage(R"JSON({"result": {"ledger_index": 123, "validated_ledgers": "1-3"}})JSON", yield);
         connection.close(yield);
     });
 
@@ -327,7 +329,7 @@ TEST_F(SubscriptionSourceReadTests, GotResultWithLedgerIndexAndValidatedLedgers)
 TEST_F(SubscriptionSourceReadTests, GotLedgerClosed)
 {
     boost::asio::spawn(ctx_, [this](boost::asio::yield_context yield) {
-        auto connection = connectAndSendMessage(R"JSON({"type":"ledgerClosed"})JSON", yield);
+        auto connection = connectAndSendMessage(R"JSON({"type": "ledgerClosed"})JSON", yield);
         connection.close(yield);
     });
 
@@ -357,7 +359,7 @@ TEST_F(SubscriptionSourceReadTests, GotLedgerClosedForwardingIsSet)
 TEST_F(SubscriptionSourceReadTests, GotLedgerClosedWithLedgerIndex)
 {
     boost::asio::spawn(ctx_, [this](boost::asio::yield_context yield) {
-        auto connection = connectAndSendMessage(R"JSON({"type": "ledgerClosed","ledger_index": 123})JSON", yield);
+        auto connection = connectAndSendMessage(R"JSON({"type": "ledgerClosed", "ledger_index": 123})JSON", yield);
         connection.close(yield);
     });
 
@@ -370,7 +372,7 @@ TEST_F(SubscriptionSourceReadTests, GotLedgerClosedWithLedgerIndex)
 TEST_F(SubscriptionSourceReadTests, GotLedgerClosedWithLedgerIndexAsString_Reconnect)
 {
     boost::asio::spawn(ctx_, [this](boost::asio::yield_context yield) {
-        auto connection = connectAndSendMessage(R"JSON({"type":"ledgerClosed","ledger_index":"123"}})JSON", yield);
+        auto connection = connectAndSendMessage(R"JSON({"type": "ledgerClosed", "ledger_index": "123"}})JSON", yield);
         // We have to schedule receiving to receive close frame and boost will handle it automatically
         connection.receive(yield);
         serverConnection(yield);
@@ -384,7 +386,7 @@ TEST_F(SubscriptionSourceReadTests, GotLedgerClosedWithLedgerIndexAsString_Recon
 TEST_F(SubscriptionSourceReadTests, GorLedgerClosedWithValidatedLedgersAsNumber_Reconnect)
 {
     boost::asio::spawn(ctx_, [this](boost::asio::yield_context yield) {
-        auto connection = connectAndSendMessage(R"JSON({"type":"ledgerClosed","validated_ledgers":123})JSON", yield);
+        auto connection = connectAndSendMessage(R"JSON({"type": "ledgerClosed", "validated_ledgers": 123})JSON", yield);
         // We have to schedule receiving to receive close frame and boost will handle it automatically
         connection.receive(yield);
         serverConnection(yield);
@@ -403,7 +405,8 @@ TEST_F(SubscriptionSourceReadTests, GotLedgerClosedWithValidatedLedgers)
     EXPECT_FALSE(subscriptionSource_.hasLedger(3));
 
     boost::asio::spawn(ctx_, [this](boost::asio::yield_context yield) {
-        auto connection = connectAndSendMessage(R"JSON({"type":"ledgerClosed","validated_ledgers":"1-2"})JSON", yield);
+        auto connection =
+            connectAndSendMessage(R"JSON({"type": "ledgerClosed", "validated_ledgers": "1-2"})JSON", yield);
         connection.close(yield);
     });
 
@@ -427,7 +430,7 @@ TEST_F(SubscriptionSourceReadTests, GotLedgerClosedWithLedgerIndexAndValidatedLe
 
     boost::asio::spawn(ctx_, [this](boost::asio::yield_context yield) {
         auto connection = connectAndSendMessage(
-            R"JSON({"type":"ledgerClosed","ledger_index":123,"validated_ledgers":"1-2"})JSON", yield
+            R"JSON({"type": "ledgerClosed", "ledger_index": 123, "validated_ledgers": "1-2"})JSON", yield
         );
         connection.close(yield);
     });
@@ -447,7 +450,7 @@ TEST_F(SubscriptionSourceReadTests, GotLedgerClosedWithLedgerIndexAndValidatedLe
 TEST_F(SubscriptionSourceReadTests, GotTransactionIsForwardingFalse)
 {
     boost::asio::spawn(ctx_, [this](boost::asio::yield_context yield) {
-        auto connection = connectAndSendMessage(R"JSON({"transaction":"some_transaction_data"})JSON", yield);
+        auto connection = connectAndSendMessage(R"JSON({"transaction": "some_transaction_data"})JSON", yield);
         connection.close(yield);
     });
 
@@ -491,7 +494,7 @@ TEST_F(SubscriptionSourceReadTests, GotTransactionWithMetaIsForwardingFalse)
 TEST_F(SubscriptionSourceReadTests, GotValidationReceivedIsForwardingFalse)
 {
     boost::asio::spawn(ctx_, [this](boost::asio::yield_context yield) {
-        auto connection = connectAndSendMessage(R"JSON({"type":"validationReceived"})JSON", yield);
+        auto connection = connectAndSendMessage(R"JSON({"type": "validationReceived"})JSON", yield);
         connection.close(yield);
     });
 
@@ -519,7 +522,7 @@ TEST_F(SubscriptionSourceReadTests, GotValidationReceivedIsForwardingTrue)
 TEST_F(SubscriptionSourceReadTests, GotManiefstReceivedIsForwardingFalse)
 {
     boost::asio::spawn(ctx_, [this](boost::asio::yield_context yield) {
-        auto connection = connectAndSendMessage(R"JSON({"type":"manifestReceived"})JSON", yield);
+        auto connection = connectAndSendMessage(R"JSON({"type": "manifestReceived"})JSON", yield);
         connection.close(yield);
     });
 

@@ -277,7 +277,7 @@ TEST_F(RPCBaseTest, ArrayAtValidator)
     auto failingInput = json::parse(R"JSON({ "arr": [{"limit": "not int"}] })JSON");
     ASSERT_FALSE(spec.process(failingInput));
 
-    failingInput = json::parse(R"JSON({ "arr": [{"limit": 42}] ,"arr2": "not array type" })JSON");
+    failingInput = json::parse(R"JSON({ "arr": [{"limit": 42}] , "arr2": "not array type" })JSON");
     ASSERT_FALSE(spec.process(failingInput));
 
     failingInput = json::parse(R"JSON({ "arr": [] })JSON");
@@ -652,7 +652,7 @@ TEST_F(RPCBaseTest, SubscribeAccountsValidator)
 {
     auto const spec = RpcSpec{{"accounts", CustomValidators::subscribeAccountsValidator}};
     auto passingInput = json::parse(
-        R"JSON({ "accounts": ["rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn","rLEsXccBGNR3UPuPu2hUXPjziKC3qKSBun"]})JSON"
+        R"JSON({ "accounts": ["rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn", "rLEsXccBGNR3UPuPu2hUXPjziKC3qKSBun"]})JSON"
     );
     ASSERT_TRUE(spec.process(passingInput));
 

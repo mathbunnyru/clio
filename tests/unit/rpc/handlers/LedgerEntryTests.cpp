@@ -701,7 +701,7 @@ generateTestValuesForParametersTest()
             .testJson = fmt::format(
                 R"JSON({{
                     "ripple_state": {{
-                        "accounts" : ["{}","{}"],
+                        "accounts" : ["{}", "{}"],
                         "currency": "USD"
                     }}
                 }})JSON",
@@ -732,7 +732,7 @@ generateTestValuesForParametersTest()
             .testJson = fmt::format(
                 R"JSON({{
                     "ripple_state": {{
-                        "accounts" : ["{}","123"],
+                        "accounts" : ["{}", "123"],
                         "currency": "USD"
                     }}
                 }})JSON",
@@ -747,7 +747,7 @@ generateTestValuesForParametersTest()
             .testJson = fmt::format(
                 R"JSON({{
                     "ripple_state": {{
-                        "accounts" : ["{}","{}"],
+                        "accounts" : ["{}", "{}"],
                         "currency": "XXXX"
                     }}
                 }})JSON",
@@ -763,7 +763,7 @@ generateTestValuesForParametersTest()
             .testJson = fmt::format(
                 R"JSON({{
                     "ripple_state": {{
-                        "accounts" : ["{}","{}"],
+                        "accounts" : ["{}", "{}"],
                         "currency": 123
                     }}
                 }})JSON",
@@ -912,7 +912,7 @@ generateTestValuesForParametersTest()
                 R"JSON({{
                     "amm":
                     {{
-                        "asset":{{}},
+                        "asset": {{}},
                         "asset2":
                         {{
                             "currency" : "USD",
@@ -932,7 +932,7 @@ generateTestValuesForParametersTest()
                 R"JSON({{
                     "amm":
                     {{
-                        "asset2":{{}},
+                        "asset2": {{}},
                         "asset":
                         {{
                             "currency" : "USD",
@@ -1032,7 +1032,7 @@ generateTestValuesForParametersTest()
                     {{
                         "asset2":
                         {{
-                            "currency":"XRP"
+                            "currency": "XRP"
                         }},
                         "asset":
                         {{
@@ -1055,7 +1055,7 @@ generateTestValuesForParametersTest()
                     {{
                         "asset2":
                         {{
-                            "currency":"XRP"
+                            "currency": "XRP"
                         }},
                         "asset":
                         {{
@@ -1078,7 +1078,7 @@ generateTestValuesForParametersTest()
                     {{
                         "asset2":
                         {{
-                            "currency":"JPY"
+                            "currency": "JPY"
                         }},
                         "asset":
                         {{
@@ -1101,8 +1101,8 @@ generateTestValuesForParametersTest()
                     {{
                         "asset2":
                         {{
-                            "currency":"XRP",
-                            "issuer":"{}"
+                            "currency": "XRP",
+                            "issuer": "{}"
                         }},
                         "asset":
                         {{
@@ -1126,7 +1126,7 @@ generateTestValuesForParametersTest()
                     {{
                         "asset2":
                         {{
-                            "currency":"XRP"
+                            "currency": "XRP"
                         }},
                         "asset":
                         {{
@@ -2694,7 +2694,7 @@ generateTestValuesForNormalPathTest()
                 R"JSON({{
                     "binary": true,
                     "ripple_state": {{
-                        "accounts": ["{}","{}"],
+                        "accounts": ["{}", "{}"],
                         "currency": "USD"
                     }}
                 }})JSON",
@@ -3131,23 +3131,23 @@ TEST_P(RPCLedgerEntryNormalPathTest, NormalPath)
 TEST_F(RPCLedgerEntryTest, BinaryFalse)
 {
     static constexpr auto kOUT = R"JSON({
-        "ledger_hash":"4BC50C9B0D8515D3EAAE1E74B29A95804346C491EE1A95BF25E4AAB854A6A652",
-        "ledger_index":30,
-        "validated":true,
-        "index":"05FB0EB4B899F056FA095537C5817163801F544BAFCEA39C995D76DB4D16F9DD",
-        "node":{
-            "Account":"rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-            "Amount":"100",
-            "Balance":"200",
-            "Destination":"rLEsXccBGNR3UPuPu2hUXPjziKC3qKSBun",
-            "Flags":0,
-            "LedgerEntryType":"PayChannel",
-            "OwnerNode":"0",
-            "PreviousTxnID":"05FB0EB4B899F056FA095537C5817163801F544BAFCEA39C995D76DB4D16F9DD",
-            "PreviousTxnLgrSeq":400,
-            "PublicKey":"020000000000000000000000000000000000000000000000000000000000000000",
-            "SettleDelay":300,
-            "index":"05FB0EB4B899F056FA095537C5817163801F544BAFCEA39C995D76DB4D16F9DD"
+        "ledger_hash": "4BC50C9B0D8515D3EAAE1E74B29A95804346C491EE1A95BF25E4AAB854A6A652",
+        "ledger_index": 30,
+        "validated": true,
+        "index": "05FB0EB4B899F056FA095537C5817163801F544BAFCEA39C995D76DB4D16F9DD",
+        "node": {
+            "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+            "Amount": "100",
+            "Balance": "200",
+            "Destination": "rLEsXccBGNR3UPuPu2hUXPjziKC3qKSBun",
+            "Flags": 0,
+            "LedgerEntryType": "PayChannel",
+            "OwnerNode": "0",
+            "PreviousTxnID": "05FB0EB4B899F056FA095537C5817163801F544BAFCEA39C995D76DB4D16F9DD",
+            "PreviousTxnLgrSeq": 400,
+            "PublicKey": "020000000000000000000000000000000000000000000000000000000000000000",
+            "SettleDelay": 300,
+            "index": "05FB0EB4B899F056FA095537C5817163801F544BAFCEA39C995D76DB4D16F9DD"
         }
     })JSON";
 
@@ -3622,23 +3622,23 @@ TEST_F(RPCLedgerEntryTest, ObjectSeqNotExist)
 TEST_F(RPCLedgerEntryTest, SyntheticMPTIssuanceID)
 {
     static constexpr auto kOUT = R"JSON({
-        "ledger_hash":"4BC50C9B0D8515D3EAAE1E74B29A95804346C491EE1A95BF25E4AAB854A6A652",
-        "ledger_index":30,
-        "validated":true,
-        "index":"FD7E7EFAE2A20E75850D0E0590B205E2F74DC472281768CD6E03988069816336",
-        "node":{
-            "Flags":0,
-            "Issuer":"rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-            "LedgerEntryType":"MPTokenIssuance",
-            "MPTokenMetadata":"6D65746164617461",
-            "MaximumAmount":"0",
-            "OutstandingAmount":"0",
-            "OwnerNode":"0",
-            "PreviousTxnID":"0000000000000000000000000000000000000000000000000000000000000000",
-            "PreviousTxnLgrSeq":0,
-            "Sequence":2,
-            "index":"FD7E7EFAE2A20E75850D0E0590B205E2F74DC472281768CD6E03988069816336",
-            "mpt_issuance_id":"000000024B4E9C06F24296074F7BC48F92A97916C6DC5EA9"
+        "ledger_hash": "4BC50C9B0D8515D3EAAE1E74B29A95804346C491EE1A95BF25E4AAB854A6A652",
+        "ledger_index": 30,
+        "validated": true,
+        "index": "FD7E7EFAE2A20E75850D0E0590B205E2F74DC472281768CD6E03988069816336",
+        "node": {
+            "Flags": 0,
+            "Issuer": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+            "LedgerEntryType": "MPTokenIssuance",
+            "MPTokenMetadata": "6D65746164617461",
+            "MaximumAmount": "0",
+            "OutstandingAmount": "0",
+            "OwnerNode": "0",
+            "PreviousTxnID": "0000000000000000000000000000000000000000000000000000000000000000",
+            "PreviousTxnLgrSeq": 0,
+            "Sequence": 2,
+            "index": "FD7E7EFAE2A20E75850D0E0590B205E2F74DC472281768CD6E03988069816336",
+            "mpt_issuance_id": "000000024B4E9C06F24296074F7BC48F92A97916C6DC5EA9"
         }
     })JSON";
 
