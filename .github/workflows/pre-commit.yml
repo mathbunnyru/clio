@@ -10,7 +10,7 @@ jobs:
   run-hooks:
     runs-on: heavy
     container:
-      image: ghcr.io/xrplf/clio-ci:latest
+      image: ghcr.io/mathbunnyru/clio-ci:gcc_15_clang_19
 
     steps:
       - name: Checkout Repo ⚡️
