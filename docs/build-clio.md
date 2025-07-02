@@ -14,7 +14,7 @@
 | Compiler    | Version |
 | ----------- | ------- |
 | GCC         | 12.3    |
-| Clang       | 16      |
+| Clang       | 20      |
 | Apple Clang | 15      |
 
 ### Conan Configuration

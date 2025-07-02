@@ -29,7 +29,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  CLANG_MAJOR_VERSION: 16
+  CLANG_MAJOR_VERSION: 20
   GCC_MAJOR_VERSION: 12
   GCC_VERSION: 12.3.0
 

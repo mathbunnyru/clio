@@ -17,9 +17,9 @@ SANITIZER_TEMPLATE_FILE="$REPO_DIR/docker/ci/conan/sanitizer_template.profile"
 
 rm -rf "$CONAN_DIR"
 
-conan remote add --index 0 ripple http://18.143.149.228:8081/artifactory/api/conan/dev
+conan remote add --index 1 ripple http://18.143.149.228:8081/artifactory/api/conan/dev
 
-cp "$REPO_DIR/docker/ci/conan/global.conf" "$CONAN_DIR/global.conf"
+conan config install "$REPO_DIR/docker/ci/conan/global.conf"
 
 create_profile_with_sanitizers() {
     profile_name="$1"
