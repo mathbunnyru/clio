@@ -32,7 +32,7 @@
 #include "util/config/Types.hpp"
 #include "util/config/ValueView.hpp"
 
-#include <fmt/core.h>
+#include <fmt/format.h>
 
 #include <algorithm>
 #include <chrono>
