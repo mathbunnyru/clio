@@ -19,6 +19,7 @@
 
 #include "util/TimeUtils.hpp"
 
+#include <fmt/base.h>
 #include <fmt/chrono.h>
 #include <fmt/format.h>
 #include <xrpl/basics/chrono.h>
