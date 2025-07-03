@@ -16,7 +16,7 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-ARG CLANG_MAJOR_VERSION
+ARG CLANG_MAJOR_VERSION=invalid
 
 RUN wget --progress=dot:giga https://apt.llvm.org/llvm.sh \
     && chmod +x llvm.sh \
