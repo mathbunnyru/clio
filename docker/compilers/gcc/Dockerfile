@@ -8,7 +8,7 @@ ARG UBUNTU_VERSION
 
 ARG GCC_MAJOR_VERSION
 
-ARG BUILD_VERSION=7
+ARG BUILD_VERSION=0
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG TARGETARCH
@@ -18,6 +18,7 @@ RUN apt-get update \
         build-essential \
         file \
         flex \
+        git \
         libz-dev \
         libzstd-dev \
         software-properties-common \
@@ -32,6 +33,19 @@ RUN wget --progress=dot:giga https://gcc.gnu.org/pub/gcc/releases/gcc-$GCC_VERSI
     && tar xf gcc-$GCC_VERSION.tar.gz
 
 WORKDIR /gcc-$GCC_VERSION
+
+# Failure when using == operator on a class derived from std::expected
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=119714
+# Happens in gmock
+# https://github.com/google/googletest/issues/4759
+# Fix in
+# https://gcc.gnu.org/cgit/gcc/commit/?id=0b76b58a5875d519f95a5af661fb64e42a42ed8e
+# https://github.com/gcc-mirror/gcc/commit/91bc8169edd9038d78f38bd813287d72e6345c26
+RUN export COMMIT_FILE=91bc8169edd9038d78f38bd813287d72e6345c26.diff \
+    && wget https://github.com/gcc-mirror/gcc/commit/${COMMIT_FILE} \
+    && git apply ${COMMIT_FILE} \
+    && rm ${COMMIT_FILE}
+
 RUN ./contrib/download_prerequisites
 
 RUN mkdir /gcc-build
