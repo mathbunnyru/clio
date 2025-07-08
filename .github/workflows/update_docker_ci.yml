@@ -197,6 +197,7 @@ jobs:
   tools:
     name: Build and push tools docker image
     runs-on: heavy
+    needs: [gcc-merge]
 
     steps:
       - uses: actions/checkout@v4
@@ -220,6 +221,8 @@ jobs:
             type=raw,value=latest
             type=raw,value=${{ github.sha }}
           platforms: linux/amd64,linux/arm64
+          build_args: |
+            GCC_VERSION=${{ env.GCC_VERSION }}
 
   ci:
     name: Build and push CI docker image
