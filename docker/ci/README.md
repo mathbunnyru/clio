@@ -6,7 +6,7 @@ It is used in [Clio Github Actions](https://github.com/XRPLF/clio/actions) but c
 The image is based on Ubuntu 20.04 and contains:
 
 - ccache 4.11.3
-- clang 16.0.6
+- clang 19
 - ClangBuildAnalyzer 1.6.0
 - conan 2.17.0
 - doxygen 1.12
