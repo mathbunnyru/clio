@@ -8,7 +8,7 @@ ARG TARGETARCH
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ARG BUILD_VERSION=1
+ARG BUILD_VERSION=2
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests \

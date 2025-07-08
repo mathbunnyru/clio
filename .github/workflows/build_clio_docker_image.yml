@@ -6,7 +6,7 @@ on:
       tags:
         required: true
         type: string
-        description: Comma separated tags for docker image
+        description: Newline separated tags for docker image
       artifact_name:
         type: string
         description: Name of Github artifact to put into docker image
@@ -24,7 +24,7 @@ on:
       tags:
         required: true
         type: string
-        description: Comma separated tags for docker image
+        description: Newline separated tags for docker image
       clio_server_binary_url:
         required: true
         type: string

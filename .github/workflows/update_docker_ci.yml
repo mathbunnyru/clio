@@ -5,6 +5,7 @@ on:
     paths:
       - .github/workflows/update_docker_ci.yml
 
+      - ".github/workflows/multiarch_image.yml"
       - ".github/actions/build_docker_image/**"
 
       - "docker/ci/**"
@@ -15,6 +16,7 @@ on:
     paths:
       - .github/workflows/update_docker_ci.yml
 
+      - ".github/workflows/multiarch_image.yml"
       - ".github/actions/build_docker_image/**"
 
       - "docker/ci/**"
@@ -34,298 +36,87 @@ env:
   GCC_VERSION: 12.3.0
 
 jobs:
-  repo:
-    name: Calculate repo name
+  # https://github.com/orgs/community/discussions/26671
+  vars:
     runs-on: ubuntu-latest
     outputs:
       GHCR_REPO: ${{ steps.set-ghcr-repo.outputs.GHCR_REPO }}
-
+      GCC_MAJOR_VERSION: ${{ steps.set-vars.outputs.GCC_MAJOR_VERSION }}
+      GCC_VERSION: ${{ steps.set-vars.outputs.GCC_VERSION }}
+      CLANG_MAJOR_VERSION: ${{ steps.set-vars.outputs.CLANG_MAJOR_VERSION }}
     steps:
       - name: Set GHCR_REPO
         id: set-ghcr-repo
         run: |
           echo "GHCR_REPO=$(echo ghcr.io/${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> ${GITHUB_OUTPUT}
 
-  gcc-amd64:
-    name: Build and push GCC docker image (amd64)
-    runs-on: heavy
-    needs: repo
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@ed68ef82c095e0d48ec87eccea555d944a631a4c # v46.0.5
-        with:
-          files: "docker/compilers/gcc/**"
-
-      - uses: ./.github/actions/build_docker_image
-        if: steps.changed-files.outputs.any_changed == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
-          DOCKERHUB_PW: ${{ secrets.DOCKERHUB_PW }}
-        with:
-          images: |
-            ${{ needs.repo.outputs.GHCR_REPO }}/clio-gcc
-            rippleci/clio_gcc
-          push_image: ${{ github.event_name != 'pull_request' }}
-          directory: docker/compilers/gcc
-          tags: |
-            type=raw,value=amd64-latest
-            type=raw,value=amd64-${{ env.GCC_MAJOR_VERSION }}
-            type=raw,value=amd64-${{ env.GCC_VERSION }}
-            type=raw,value=amd64-${{ github.sha }}
-          platforms: linux/amd64
-          build_args: |
-            GCC_MAJOR_VERSION=${{ env.GCC_MAJOR_VERSION }}
-            GCC_VERSION=${{ env.GCC_VERSION }}
-          dockerhub_repo: rippleci/clio_gcc
-          dockerhub_description: GCC compiler for XRPLF/clio.
-
-  gcc-arm64:
-    name: Build and push GCC docker image (arm64)
-    runs-on: heavy-arm64
-    needs: repo
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@ed68ef82c095e0d48ec87eccea555d944a631a4c # v46.0.5
-        with:
-          files: "docker/compilers/gcc/**"
-
-      - uses: ./.github/actions/build_docker_image
-        if: steps.changed-files.outputs.any_changed == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
-          DOCKERHUB_PW: ${{ secrets.DOCKERHUB_PW }}
-        with:
-          images: |
-            ${{ needs.repo.outputs.GHCR_REPO }}/clio-gcc
-            rippleci/clio_gcc
-          push_image: ${{ github.event_name != 'pull_request' }}
-          directory: docker/compilers/gcc
-          tags: |
-            type=raw,value=arm64-latest
-            type=raw,value=arm64-${{ env.GCC_MAJOR_VERSION }}
-            type=raw,value=arm64-${{ env.GCC_VERSION }}
-            type=raw,value=arm64-${{ github.sha }}
-          platforms: linux/arm64
-          build_args: |
-            GCC_MAJOR_VERSION=${{ env.GCC_MAJOR_VERSION }}
-            GCC_VERSION=${{ env.GCC_VERSION }}
-          dockerhub_repo: rippleci/clio_gcc
-          dockerhub_description: GCC compiler for XRPLF/clio.
-
-  gcc-merge:
-    name: Merge and push multi-arch GCC docker image
-    runs-on: heavy
-    needs: [repo, gcc-amd64, gcc-arm64]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@ed68ef82c095e0d48ec87eccea555d944a631a4c # v46.0.5
-        with:
-          files: "docker/compilers/gcc/**"
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to GitHub Container Registry
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Login to DockerHub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_PW }}
-
-      - name: Create and push multi-arch manifest
-        if: github.event_name != 'pull_request' && steps.changed-files.outputs.any_changed == 'true'
+      - name: Set environment variables
+        id: set-vars
         run: |
-          for image in ${{ needs.repo.outputs.GHCR_REPO }}/clio-gcc rippleci/clio_gcc; do
-            docker buildx imagetools create \
-              -t $image:latest \
-              -t $image:${{ env.GCC_MAJOR_VERSION }} \
-              -t $image:${{ env.GCC_VERSION }} \
-              -t $image:${{ github.sha }} \
-              $image:arm64-latest \
-              $image:amd64-latest
-          done
+          echo "CLANG_MAJOR_VERSION=${{ env.CLANG_MAJOR_VERSION }}" >> $GITHUB_OUTPUT
+          echo "GCC_MAJOR_VERSION=${{ env.GCC_MAJOR_VERSION }}" >> $GITHUB_OUTPUT
+          echo "GCC_VERSION=${{ env.GCC_VERSION }}" >> $GITHUB_OUTPUT
+
+  gcc:
+    name: Build and push GCC docker image
+    uses: ./.github/workflows/multiarch_image.yml
+    needs: vars
+    with:
+      directory: docker/compilers/gcc
+      image_name: clio-gcc
+      tags: |
+        latest
+        ${{ needs.vars.outputs.GCC_MAJOR_VERSION }}
+        ${{ needs.vars.outputs.GCC_VERSION }}
+        ${{ github.sha }}
+      build_args: |
+        GCC_MAJOR_VERSION=${{ needs.vars.outputs.GCC_MAJOR_VERSION }}
+        GCC_VERSION=${{ needs.vars.outputs.GCC_VERSION }}
+      env: GHCR_REPO=${{ needs.vars.outputs.GHCR_REPO }}
 
   clang:
     name: Build and push Clang docker image
-    runs-on: heavy
-    needs: repo
+    uses: ./.github/workflows/multiarch_image.yml
+    needs: vars
+    with:
+      directory: docker/compilers/clang
+      image_name: clio-clang
+      tags: |
+        latest
+        ${{ needs.vars.outputs.CLANG_MAJOR_VERSION }}
+        ${{ github.sha }}
+      build_args: |
+        CLANG_MAJOR_VERSION=${{ needs.vars.outputs.CLANG_MAJOR_VERSION }}
+      env: GHCR_REPO=${{ needs.vars.outputs.GHCR_REPO }}
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@ed68ef82c095e0d48ec87eccea555d944a631a4c # v46.0.5
-        with:
-          files: "docker/compilers/clang/**"
-
-      - uses: ./.github/actions/build_docker_image
-        if: steps.changed-files.outputs.any_changed == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
-          DOCKERHUB_PW: ${{ secrets.DOCKERHUB_PW }}
-        with:
-          images: |
-            ${{ needs.repo.outputs.GHCR_REPO }}/clio-clang
-            rippleci/clio_clang
-          push_image: ${{ github.event_name != 'pull_request' }}
-          directory: docker/compilers/clang
-          tags: |
-            type=raw,value=latest
-            type=raw,value=${{ env.CLANG_MAJOR_VERSION }}
-            type=raw,value=${{ github.sha }}
-          platforms: linux/amd64,linux/arm64
-          build_args: |
-            CLANG_MAJOR_VERSION=${{ env.CLANG_MAJOR_VERSION }}
-          dockerhub_repo: rippleci/clio_clang
-          dockerhub_description: Clang compiler for XRPLF/clio.
-
-  tools-amd64:
-    name: Build and push tools docker image (amd64)
-    runs-on: heavy
-    needs: [repo, gcc-merge]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@ed68ef82c095e0d48ec87eccea555d944a631a4c # v46.0.5
-        with:
-          files: "docker/tools/**"
-
-      - uses: ./.github/actions/build_docker_image
-        if: steps.changed-files.outputs.any_changed == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          images: |
-            ${{ needs.repo.outputs.GHCR_REPO }}/clio-tools
-          push_image: ${{ github.event_name != 'pull_request' }}
-          directory: docker/tools
-          tags: |
-            type=raw,value=amd64-latest
-            type=raw,value=amd64-${{ github.sha }}
-          platforms: linux/amd64
-          build_args: |
-            GHCR_REPO=${{ needs.repo.outputs.GHCR_REPO }}
-            GCC_VERSION=${{ env.GCC_VERSION }}
-
-  tools-arm64:
-    name: Build and push tools docker image (arm64)
-    runs-on: heavy-arm64
-    needs: [repo, gcc-merge]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@ed68ef82c095e0d48ec87eccea555d944a631a4c # v46.0.5
-        with:
-          files: "docker/tools/**"
-
-      - uses: ./.github/actions/build_docker_image
-        if: steps.changed-files.outputs.any_changed == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          images: |
-            ${{ needs.repo.outputs.GHCR_REPO }}/clio-tools
-          push_image: ${{ github.event_name != 'pull_request' }}
-          directory: docker/tools
-          tags: |
-            type=raw,value=arm64-latest
-            type=raw,value=arm64-${{ github.sha }}
-          platforms: linux/arm64
-          build_args: |
-            GHCR_REPO=${{ needs.repo.outputs.GHCR_REPO }}
-            GCC_VERSION=${{ env.GCC_VERSION }}
-
-  tools-merge:
-    name: Merge and push multi-arch tools docker image
-    runs-on: heavy
-    needs: [repo, tools-amd64, tools-arm64]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@ed68ef82c095e0d48ec87eccea555d944a631a4c # v46.0.5
-        with:
-          files: "docker/tools/**"
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to GitHub Container Registry
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create and push multi-arch manifest
-        if: github.event_name != 'pull_request' && steps.changed-files.outputs.any_changed == 'true'
-        run: |
-          image=${{ needs.repo.outputs.GHCR_REPO }}/clio-tools
-          docker buildx imagetools create \
-            -t $image:latest \
-            -t $image:${{ github.sha }} \
-            $image:arm64-latest \
-            $image:amd64-latest
+  tools:
+    name: Build and push tools docker image
+    needs: [vars, gcc]
+    uses: ./.github/workflows/multiarch_image.yml
+    with:
+      directory: docker/tools
+      image_name: clio-tools
+      tags: |
+        latest
+        ${{ github.sha }}
+      build_args: |
+        GHCR_REPO=${{ needs.vars.outputs.GHCR_REPO }}
+        GCC_VERSION=${{ needs.vars.outputs.GCC_VERSION }}
+      env: GHCR_REPO=${{ needs.vars.outputs.GHCR_REPO }}
 
   ci:
     name: Build and push CI docker image
-    runs-on: heavy
-    needs: [repo, gcc-merge, clang, tools-merge]
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/build_docker_image
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
-          DOCKERHUB_PW: ${{ secrets.DOCKERHUB_PW }}
-        with:
-          images: |
-            ${{ needs.repo.outputs.GHCR_REPO }}/clio-ci
-            rippleci/clio_ci
-          push_image: ${{ github.event_name != 'pull_request' }}
-          directory: docker/ci
-          tags: |
-            type=raw,value=latest
-            type=raw,value=gcc_${{ env.GCC_MAJOR_VERSION }}_clang_${{ env.CLANG_MAJOR_VERSION }}
-            type=raw,value=${{ github.sha }}
-          platforms: linux/amd64,linux/arm64
-          build_args: |
-            GHCR_REPO=${{ needs.repo.outputs.GHCR_REPO }}
-            CLANG_MAJOR_VERSION=${{ env.CLANG_MAJOR_VERSION }}
-            GCC_VERSION=${{ env.GCC_VERSION }}
-          dockerhub_repo: rippleci/clio_ci
-          dockerhub_description: CI image for XRPLF/clio.
+    needs: [vars, gcc, clang, tools]
+    uses: ./.github/workflows/multiarch_image.yml
+    with:
+      directory: docker/ci
+      image_name: clio-ci
+      tags: |
+        latest
+        gcc_${{ needs.vars.outputs.CLANG_MAJOR_VERSION }}_clang_${{ needs.vars.outputs.GCC_MAJOR_VERSION }}
+        ${{ github.sha }}
+      build_args: |
+        GHCR_REPO=${{ needs.vars.outputs.GHCR_REPO }}
+        CLANG_MAJOR_VERSION=${{ needs.vars.outputs.CLANG_MAJOR_VERSION }}
+        GCC_VERSION=${{ needs.vars.outputs.GCC_VERSION }}
+      env: GHCR_REPO=${{ needs.vars.outputs.GHCR_REPO }}

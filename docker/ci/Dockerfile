@@ -11,6 +11,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+ARG BUILD_VERSION=0
+
 # Using root by default is not very secure but github checkout action doesn't work with any other user
 # https://github.com/actions/checkout/issues/956
 # And Github Actions doc recommends using root
