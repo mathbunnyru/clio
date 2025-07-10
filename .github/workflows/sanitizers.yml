@@ -53,7 +53,7 @@ jobs:
     with:
       runs_on: heavy
       container: '{ "image": "ghcr.io/xrplf/clio-ci:latest" }'
-      disable_cache: true
+      disable_cache: ${{ github.event_name != 'pull_request' }}
       conan_profile: ${{ matrix.compiler }}${{ matrix.sanitizer_ext }}
       build_type: ${{ matrix.build_type }}
       static: false
