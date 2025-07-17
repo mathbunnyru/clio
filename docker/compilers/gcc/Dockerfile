@@ -68,12 +68,13 @@ RUN /gcc-$GCC_VERSION/configure \
         --enable-checking=release
 
 RUN make -j "$(nproc)"
+RUN make install-strip DESTDIR=/gcc-$GCC_VERSION-$BUILD_VERSION-ubuntu-$UBUNTU_VERSION
 
-RUN make install-strip DESTDIR=/gcc-$GCC_VERSION-$BUILD_VERSION-ubuntu-$UBUNTU_VERSION \
-    && mkdir -p /gcc-$GCC_VERSION-$BUILD_VERSION-ubuntu-$UBUNTU_VERSION/usr/share/gdb/auto-load/usr/lib64 \
+RUN export GDB_AUTOLOAD_DIR="/gcc-$GCC_VERSION-$BUILD_VERSION-ubuntu-$UBUNTU_VERSION/usr/share/gdb/auto-load/usr/lib64" \
+    && mkdir -p "$GDB_AUTOLOAD_DIR" \
     && mv \
-        /gcc-$GCC_VERSION-$BUILD_VERSION-ubuntu-$UBUNTU_VERSION/usr/lib64/libstdc++.so.6.0.30-gdb.py \
-        /gcc-$GCC_VERSION-$BUILD_VERSION-ubuntu-$UBUNTU_VERSION/usr/share/gdb/auto-load/usr/lib64/libstdc++.so.6.0.30-gdb.py
+        /gcc-$GCC_VERSION-$BUILD_VERSION-ubuntu-$UBUNTU_VERSION/usr/lib64/libstdc++.so.*-gdb.py \
+        $GDB_AUTOLOAD_DIR/
 
 # Generate deb
 WORKDIR /
