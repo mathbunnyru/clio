@@ -1,6 +1,5 @@
 ARG GHCR_REPO=invalid
 ARG CLANG_MAJOR_VERSION=invalid
-ARG GCC_MAJOR_VERSION=invalid
 ARG GCC_VERSION=invalid
 
 FROM ${GHCR_REPO}/clio-gcc:${GCC_VERSION} AS clio-gcc
@@ -60,6 +59,8 @@ RUN apt-get update \
         pre-commit \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+ARG GCC_MAJOR_VERSION=invalid
 
 # Install custom-built gcc and make ldconfig aware of the new libstdc++ location (for gcc)
 # Note: Clang is using libc++ instead
