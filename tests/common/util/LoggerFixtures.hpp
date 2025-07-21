@@ -24,10 +24,15 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <memory>
 #include <mutex>
 #include <ostream>
 #include <sstream>
 #include <string>
+
+// ostream_sink_mt is an alias for ostream_sink<std::mutex>
+// We wrap it to be able to forward declare
+struct ostream_sink_mt_fwd;
 
 /**
  * @brief Fixture with util::Logger support.
@@ -50,6 +55,7 @@ class LoggerFixture : virtual public ::testing::Test {
 
     FakeBuffer buffer_;
     std::ostream stream_ = std::ostream{&buffer_};
+    std::shared_ptr<ostream_sink_mt_fwd> ostream_sink_;
 
 public:
     // Simulates the `util::Logger::init(config)` call

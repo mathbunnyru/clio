@@ -21,35 +21,25 @@
 
 #include "util/SourceLocation.hpp"
 
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/json.hpp>
-#include <boost/json/conversion.hpp>
-#include <boost/json/value.hpp>
-#include <boost/log/core/core.hpp>
-#include <boost/log/core/record.hpp>
-#include <boost/log/expressions/filter.hpp>
-#include <boost/log/expressions/keyword.hpp>
-#include <boost/log/expressions/predicates/channel_severity_filter.hpp>
-#include <boost/log/keywords/channel.hpp>
-#include <boost/log/keywords/severity.hpp>
-#include <boost/log/sinks/unlocked_frontend.hpp>
-#include <boost/log/sources/record_ostream.hpp>
-#include <boost/log/sources/severity_channel_logger.hpp>
-#include <boost/log/sources/severity_feature.hpp>
-#include <boost/log/sources/severity_logger.hpp>
-#include <boost/log/utility/manipulators/add_value.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/log/utility/setup/console.hpp>
-#include <boost/log/utility/setup/file.hpp>
-#include <boost/log/utility/setup/formatter_parser.hpp>
-
 #include <array>
 #include <cstddef>
 #include <expected>
+#include <memory>
 #include <optional>
 #include <ostream>
+#include <sstream>
 #include <string>
+
+// Forward declaration of spdlog::logger and level::level_enum
+namespace spdlog {
+
+class logger;
+
+namespace level {
+enum level_enum : int;
+}  // namespace level
+
+}  // namespace spdlog
 
 namespace util {
 
@@ -83,22 +73,24 @@ enum class Severity {
     FTL,
 };
 
-/** @cond */
-// NOLINTBEGIN(readability-identifier-naming)
-BOOST_LOG_ATTRIBUTE_KEYWORD(LogSeverity, "Severity", Severity);
-BOOST_LOG_ATTRIBUTE_KEYWORD(LogChannel, "Channel", std::string);
-// NOLINTEND(readability-identifier-naming)
-/** @endcond */
-
 /**
  * @brief Custom labels for @ref Severity in log output.
  *
- * @param stream std::ostream The output stream
- * @param sev Severity The severity to output to the ostream
+ * @param stream The output stream
+ * @param sev The severity to output to the ostream
  * @return The same ostream we were given
  */
 std::ostream&
 operator<<(std::ostream& stream, Severity sev);
+
+/**
+ * @brief Convert severity to spdlog level
+ *
+ * @param sev The severity to output to the ostream
+ * @return The level enum corresponding to the severity
+ */
+spdlog::level::level_enum
+toSpdlogLevel(Severity sev);
 
 /**
  * @brief A simple thread-safe logger for the channel specified
@@ -109,8 +101,7 @@ operator<<(std::ostream& stream, Severity sev);
  * severity levels for each channel.
  */
 class Logger final {
-    using LoggerType = boost::log::sources::severity_channel_logger_mt<Severity, std::string>;
-    mutable LoggerType logger_;
+    std::shared_ptr<spdlog::logger> logger_;
 
     friend class LogService;  // to expose the Pump interface
 
@@ -118,22 +109,16 @@ class Logger final {
      * @brief Helper that pumps data into a log record via `operator<<`.
      */
     class Pump final {
-        using PumpOptType = std::optional<boost::log::aux::record_pump<LoggerType>>;
-
-        boost::log::record rec_;
-        PumpOptType pump_ = std::nullopt;
+        std::shared_ptr<spdlog::logger> logger_;
+        Severity severity_;
+        std::string sourceLocation_;
+        std::ostringstream stream_;
+        bool enabled_;
 
     public:
-        ~Pump() = default;
+        ~Pump();
 
-        Pump(LoggerType& logger, Severity sev, SourceLocationType const& loc)
-            : rec_{logger.open_record(boost::log::keywords::severity = sev)}
-        {
-            if (rec_) {
-                pump_.emplace(boost::log::aux::make_record_pump(logger, rec_));
-                pump_->stream() << boost::log::add_value("SourceLocation", prettyPath(loc));
-            }
-        }
+        Pump(std::shared_ptr<spdlog::logger> logger, Severity sev, SourceLocationType const& loc);
 
         Pump(Pump&&) = delete;
         Pump(Pump const&) = delete;
@@ -143,7 +128,7 @@ class Logger final {
         operator=(Pump&&) = delete;
 
         /**
-         * @brief Perfectly forwards any incoming data into the underlying boost::log pump if the pump is available.
+         * @brief Perfectly forwards any incoming data into the underlying stream if the pump is available.
          *
          * @tparam T Type of data to pump
          * @param data The data to pump
@@ -153,8 +138,8 @@ class Logger final {
         [[maybe_unused]] Pump&
         operator<<(T&& data)
         {
-            if (pump_)
-                pump_->stream() << std::forward<T>(data);
+            if (enabled_)
+                stream_ << std::forward<T>(data);
             return *this;
         }
 
@@ -163,7 +148,7 @@ class Logger final {
          */
         operator bool() const
         {
-            return pump_.has_value();
+            return enabled_;
         }
 
     private:
@@ -192,9 +177,7 @@ public:
      *
      * @param channel The channel this logger will report into.
      */
-    Logger(std::string channel) : logger_{boost::log::keywords::channel = channel}
-    {
-    }
+    Logger(std::string channel);
 
     Logger(Logger const&) = default;
     ~Logger() = default;
@@ -269,7 +252,6 @@ public:
  */
 class LogService {
     static Logger generalLog; /*< Global logger for General channel */
-    static boost::log::filter filter;
 
 public:
     LogService() = delete;

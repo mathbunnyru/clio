@@ -30,27 +30,14 @@
 #include "util/prometheus/Prometheus.hpp"
 
 #include <boost/algorithm/string/predicate.hpp>
-#include <boost/date_time/posix_time/posix_time_duration.hpp>
-#include <boost/log/attributes/attribute_value_set.hpp>
-#include <boost/log/core/core.hpp>
-#include <boost/log/expressions/filter.hpp>
-#include <boost/log/keywords/auto_flush.hpp>
-#include <boost/log/keywords/file_name.hpp>
-#include <boost/log/keywords/filter.hpp>
-#include <boost/log/keywords/format.hpp>
-#include <boost/log/keywords/max_size.hpp>
-#include <boost/log/keywords/open_mode.hpp>
-#include <boost/log/keywords/rotation_size.hpp>
-#include <boost/log/keywords/target.hpp>
-#include <boost/log/keywords/target_file_name.hpp>
-#include <boost/log/keywords/time_based_rotation.hpp>
-#include <boost/log/sinks/text_file_backend.hpp>
-#include <boost/log/utility/exception_handler.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/log/utility/setup/console.hpp>
-#include <boost/log/utility/setup/file.hpp>
-#include <boost/log/utility/setup/formatter_parser.hpp>
 #include <fmt/format.h>
+#include <spdlog/async.h>
+#include <spdlog/common.h>
+#include <spdlog/pattern_formatter.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
 
 #include <algorithm>
 #include <array>
@@ -61,8 +48,10 @@
 #include <functional>
 #include <ios>
 #include <iostream>
+#include <memory>
 #include <optional>
 #include <ostream>
+#include <regex>
 #include <string>
 #include <string_view>
 #include <system_error>
@@ -96,7 +85,6 @@ public:
 }  // namespace
 
 Logger LogService::generalLog = Logger{"General"};
-boost::log::filter LogService::filter{};
 
 std::ostream&
 operator<<(std::ostream& stream, Severity sev)
@@ -111,6 +99,26 @@ operator<<(std::ostream& stream, Severity sev)
     };
 
     return stream << kLABELS.at(static_cast<int>(sev));
+}
+
+spdlog::level::level_enum
+toSpdlogLevel(Severity sev)
+{
+    switch (sev) {
+        case Severity::TRC:
+            return spdlog::level::trace;
+        case Severity::DBG:
+            return spdlog::level::debug;
+        case Severity::NFO:
+            return spdlog::level::info;
+        case Severity::WRN:
+            return spdlog::level::warn;
+        case Severity::ERR:
+            return spdlog::level::err;
+        case Severity::FTL:
+            return spdlog::level::critical;
+    }
+    return spdlog::level::info;
 }
 
 /**
@@ -143,98 +151,138 @@ getSeverityLevel(std::string_view logLevel)
 std::expected<void, std::string>
 LogService::init(config::ClioConfigDefinition const& config)
 {
-    namespace keywords = boost::log::keywords;
-    namespace sinks = boost::log::sinks;
+    try {
+        // Initialize spdlog
+        spdlog::init_thread_pool(8192, 1);
 
-    boost::log::add_common_attributes();
-    boost::log::register_simple_formatter_factory<Severity, char>("Severity");
-    std::string format = config.get<std::string>("log_format");
+        std::vector<spdlog::sink_ptr> sinks;
 
-    if (config.get<bool>("log_to_console")) {
-        boost::log::add_console_log(
-            std::cout, keywords::format = format, keywords::filter = LogSeverity < Severity::FTL
-        );
-    }
+        auto defaultSeverity = getSeverityLevel(config.get<std::string>("log_level"));
 
-    // Always print fatal logs to cerr
-    boost::log::add_console_log(std::cerr, keywords::format = format, keywords::filter = LogSeverity >= Severity::FTL);
+        // Setup console logging
+        if (config.get<bool>("log_to_console")) {
+            auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+            sinks.push_back(consoleSink);
+        }
 
-    auto const logDir = config.maybeValue<std::string>("log_directory");
-    if (logDir) {
-        std::filesystem::path dirPath{logDir.value()};
-        if (not std::filesystem::exists(dirPath)) {
-            if (std::error_code error; not std::filesystem::create_directories(dirPath, error)) {
+        // Setup file logging
+        auto const logDir = config.maybeValue<std::string>("log_directory");
+        if (logDir) {
+            std::filesystem::path dirPath{logDir.value()};
+            if (not std::filesystem::exists(dirPath)) {
+                if (std::error_code error; not std::filesystem::create_directories(dirPath, error)) {
+                    return std::unexpected{
+                        fmt::format("Couldn't create logs directory '{}': {}", dirPath.string(), error.message())
+                    };
+                }
+            }
+
+            auto const rotationSize = mbToBytes(config.get<uint32_t>("log_rotation_size"));
+            auto const maxFiles =
+                config.get<uint32_t>("log_directory_max_size") / config.get<uint32_t>("log_rotation_size");
+
+            auto fileSink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+                (dirPath / "clio.log").string(), rotationSize, maxFiles > 0 ? maxFiles : 10
+            );
+            sinks.push_back(fileSink);
+        }
+
+        // Always add stderr sink for fatal errors
+        auto stderrSink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
+        stderrSink->set_level(spdlog::level::critical);
+        sinks.push_back(stderrSink);
+
+        // Get channel severity settings
+        std::unordered_map<std::string, Severity> minSeverity;
+        for (auto const& channel : Logger::kCHANNELS)
+            minSeverity[channel] = defaultSeverity;
+        minSeverity["Alert"] = Severity::WRN;
+
+        auto const overrides = config.getArray("log_channels");
+        for (auto it = overrides.begin<util::config::ObjectView>(); it != overrides.end<util::config::ObjectView>();
+             ++it) {
+            auto const& channelConfig = *it;
+            auto const name = channelConfig.get<std::string>("channel");
+            if (std::ranges::count(Logger::kCHANNELS, name) == 0) {
                 return std::unexpected{
-                    fmt::format("Couldn't create logs directory '{}': {}", dirPath.string(), error.message())
+                    fmt::format("Can't override settings for log channel {}: invalid channel", name)
                 };
             }
+            minSeverity[name] = getSeverityLevel(channelConfig.get<std::string>("log_level"));
         }
 
-        auto const rotationPeriod = config.get<uint32_t>("log_rotation_hour_interval");
+        // Convert boost log format to spdlog format (simplified)
+        std::string format = config.get<std::string>("log_format");
+        std::string spdlogFormat = "%Y-%m-%d %H:%M:%S.%e (%s:%#) [%t] %n:%^%l%$ %v";
 
-        // the below are taken from user in MB, but boost::log::add_file_log needs it to be in bytes
-        auto const rotationSize = mbToBytes(config.get<uint32_t>("log_rotation_size"));
-        auto const dirSize = mbToBytes(config.get<uint32_t>("log_directory_max_size"));
-        auto fileSink = boost::log::add_file_log(
-            keywords::file_name = dirPath / "clio.log",
-            keywords::target_file_name = dirPath / "clio_%Y-%m-%d_%H-%M-%S.log",
-            keywords::auto_flush = true,
-            keywords::format = format,
-            keywords::open_mode = std::ios_base::app,
-            keywords::rotation_size = rotationSize,
-            keywords::time_based_rotation =
-                sinks::file::rotation_at_time_interval(boost::posix_time::hours(rotationPeriod))
-        );
-        fileSink->locked_backend()->set_file_collector(
-            sinks::file::make_collector(keywords::target = dirPath, keywords::max_size = dirSize)
-        );
-        fileSink->locked_backend()->scan_for_files();
-
-        boost::log::core::get()->set_exception_handler(
-            boost::log::make_exception_handler<std::exception>(LoggerExceptionHandler())
-        );
-    }
-
-    // get default severity, can be overridden per channel using the `log_channels` array
-    auto const defaultSeverity = getSeverityLevel(config.get<std::string>("log_level"));
-
-    std::unordered_map<std::string, Severity> minSeverity;
-    for (auto const& channel : Logger::kCHANNELS)
-        minSeverity[channel] = defaultSeverity;
-
-    auto const overrides = config.getArray("log_channels");
-
-    for (auto it = overrides.begin<util::config::ObjectView>(); it != overrides.end<util::config::ObjectView>(); ++it) {
-        auto const& channelConfig = *it;
-        auto const name = channelConfig.get<std::string>("channel");
-        if (std::ranges::count(Logger::kCHANNELS, name) == 0) {  // TODO: use std::ranges::contains when available
-            return std::unexpected{fmt::format("Can't override settings for log channel {}: invalid channel", name)};
+        // Create loggers for each channel
+        for (auto const& [channel, severity] : minSeverity) {
+            auto logger = std::make_shared<spdlog::async_logger>(
+                channel, sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block
+            );
+            logger->set_level(toSpdlogLevel(severity));
+            logger->set_pattern(spdlogFormat);
+            spdlog::register_logger(std::move(logger));
         }
 
-        minSeverity[name] = getSeverityLevel(channelConfig.get<std::string>("log_level"));
+        LOG(LogService::info()) << "Default log level = " << defaultSeverity;
+        return {};
+    } catch (spdlog::spdlog_ex const& ex) {
+        return std::unexpected{fmt::format("Log initialization failed: {}", ex.what())};
     }
-
-    auto logFilter = [minSeverity = std::move(minSeverity),
-                      defaultSeverity](boost::log::attribute_value_set const& attributes) -> bool {
-        auto const channel = attributes[LogChannel];
-        auto const severity = attributes[LogSeverity];
-        if (!channel || !severity)
-            return false;
-        if (auto const it = minSeverity.find(channel.get()); it != minSeverity.end())
-            return severity.get() >= it->second;
-        return severity.get() >= defaultSeverity;
-    };
-
-    filter = boost::log::filter{std::move(logFilter)};
-    boost::log::core::get()->set_filter(filter);
-    LOG(LogService::info()) << "Default log level = " << defaultSeverity;
-    return {};
 }
 
 bool
 LogService::enabled()
 {
-    return boost::log::core::get()->get_logging_enabled();
+    return spdlog::default_logger() != nullptr && spdlog::default_logger()->level() != spdlog::level::off;
+}
+
+// Logger constructor
+Logger::Logger(std::string channel)
+{
+    logger_ = spdlog::get(channel);
+    if (!logger_) {
+        // Create a basic logger if not found
+        logger_ = spdlog::stdout_color_mt(channel);
+    }
+}
+
+// Logger::Pump constructor
+Logger::Pump::Pump(std::shared_ptr<spdlog::logger> logger, Severity sev, SourceLocationType const& loc)
+    : logger_(std::move(logger))
+    , severity_(sev)
+    , sourceLocation_(prettyPath(loc))
+    , enabled_(logger_ && logger_->should_log(toSpdlogLevel(sev)))
+{
+}
+
+// Logger::Pump destructor
+Logger::Pump::~Pump()
+{
+    if (enabled_ && logger_) {
+        auto message = stream_.str();
+        switch (severity_) {
+            case Severity::TRC:
+                logger_->trace("{} {}", sourceLocation_, message);
+                break;
+            case Severity::DBG:
+                logger_->debug("{} {}", sourceLocation_, message);
+                break;
+            case Severity::NFO:
+                logger_->info("{} {}", sourceLocation_, message);
+                break;
+            case Severity::WRN:
+                logger_->warn("{} {}", sourceLocation_, message);
+                break;
+            case Severity::ERR:
+                logger_->error("{} {}", sourceLocation_, message);
+                break;
+            case Severity::FTL:
+                logger_->critical("{} {}", sourceLocation_, message);
+                break;
+        }
+    }
 }
 
 Logger::Pump
