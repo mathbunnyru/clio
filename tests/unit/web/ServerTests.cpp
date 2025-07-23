@@ -39,8 +39,8 @@
 #include "web/dosguard/WhitelistHandler.hpp"
 #include "web/interface/ConnectionBase.hpp"
 
+#include <boost/asio/executor_work_guard.hpp>
 #include <boost/asio/io_context.hpp>
-#include <boost/asio/io_service.hpp>
 #include <boost/beast/core/error.hpp>
 #include <boost/beast/http/field.hpp>
 #include <boost/beast/http/status.hpp>
@@ -150,7 +150,7 @@ struct WebServerTest : NoLoggerFixture {
 
     WebServerTest()
     {
-        work_.emplace(ctx);  // make sure ctx does not stop on its own
+        work_.emplace(boost::asio::make_work_guard(ctx));  // make sure ctx does not stop on its own
         runner_.emplace([this] { ctx.run(); });
     }
 
@@ -182,7 +182,7 @@ struct WebServerTest : NoLoggerFixture {
     TmpFile sslKeyFile{tests::sslKeyFile()};
 
 private:
-    std::optional<boost::asio::io_service::work> work_;
+    std::optional<boost::asio::executor_work_guard<boost::asio::io_context::executor_type>> work_;
     std::optional<std::thread> runner_;
 };
 
