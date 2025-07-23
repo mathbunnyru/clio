@@ -96,7 +96,6 @@ public:
 }  // namespace
 
 Logger LogService::generalLog = Logger{"General"};
-Logger LogService::alertLog = Logger{"Alert"};
 boost::log::filter LogService::filter{};
 
 std::ostream&
@@ -202,7 +201,6 @@ LogService::init(config::ClioConfigDefinition const& config)
     std::unordered_map<std::string, Severity> minSeverity;
     for (auto const& channel : Logger::kCHANNELS)
         minSeverity[channel] = defaultSeverity;
-    minSeverity["Alert"] = Severity::WRN;  // Channel for alerts, always warning severity
 
     auto const overrides = config.getArray("log_channels");
 
@@ -243,32 +241,32 @@ Logger::Pump
 Logger::trace(SourceLocationType const& loc) const
 {
     return {logger_, Severity::TRC, loc};
-};
+}
 Logger::Pump
 Logger::debug(SourceLocationType const& loc) const
 {
     return {logger_, Severity::DBG, loc};
-};
+}
 Logger::Pump
 Logger::info(SourceLocationType const& loc) const
 {
     return {logger_, Severity::NFO, loc};
-};
+}
 Logger::Pump
 Logger::warn(SourceLocationType const& loc) const
 {
     return {logger_, Severity::WRN, loc};
-};
+}
 Logger::Pump
 Logger::error(SourceLocationType const& loc) const
 {
     return {logger_, Severity::ERR, loc};
-};
+}
 Logger::Pump
 Logger::fatal(SourceLocationType const& loc) const
 {
     return {logger_, Severity::FTL, loc};
-};
+}
 
 std::string
 Logger::Pump::prettyPath(SourceLocationType const& loc, size_t maxDepth)
