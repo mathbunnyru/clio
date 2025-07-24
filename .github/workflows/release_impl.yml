@@ -68,7 +68,9 @@ jobs:
       - name: Create release notes
         shell: bash
         run: |
-          printf '%s\n' "${{ inputs.header }}" > "${RUNNER_TEMP}/release_notes.md"
+          echo "# Release notes" > "${RUNNER_TEMP}/release_notes.md"
+          echo "" >> "${RUNNER_TEMP}/release_notes.md"
+          printf '%s\n' "${{ inputs.header }}" >> "${RUNNER_TEMP}/release_notes.md"
 
       - name: Generate changelog
         shell: bash
@@ -77,7 +79,7 @@ jobs:
           LAST_TAG="$(gh release view --json tagName -q .tagName)"
           LAST_TAG_COMMIT="$(git rev-parse $LAST_TAG)"
           BASE_COMMIT="$(git merge-base HEAD $LAST_TAG_COMMIT)"
-          git-cliff "${BASE_COMMIT}..HEAD" --ignore-tags "nightly|-b"
+          git-cliff "${BASE_COMMIT}..HEAD" --ignore-tags "nightly|-b|-rc"
           cat CHANGELOG.md >> "${RUNNER_TEMP}/release_notes.md"
 
       - name: Prepare release artifacts
