@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 /*
     This file is part of clio: https://github.com/XRPLF/clio
-    Copyright (c) 2022, the clio developers.
+    Copyright (c) 2025, the clio developers.
 
     Permission to use, copy, modify, and distribute this software for any
     purpose with or without fee is hereby granted, provided that the above
@@ -18,38 +18,20 @@
 //==============================================================================
 
 #pragma once
-
-#include "util/StringBuffer.hpp"
-
-#include <gtest/gtest.h>
-
-#include <ostream>
+#include <sstream>
 #include <string>
 
 /**
- * @brief Fixture for LogService.
+ * @brief A simple string buffer that can be used to mock std::cout for
+ * console logging.
  */
-class LoggerFixture : virtual public ::testing::Test {
-    StringBuffer buffer_;
-    std::ostream stream_ = std::ostream{&buffer_};
-
+class StringBuffer final : public std::stringbuf {
 public:
-    // Simulates the `util::LogService::init(config)` call
-    LoggerFixture();
-
-protected:
     std::string
-    getLoggerString()
+    getStrAndReset()
     {
-        return buffer_.getStrAndReset();
+        auto value = str();
+        str("");
+        return value;
     }
-};
-
-/**
- * @brief Fixture with util::Logger support but completely disabled logging.
- *
- * This is meant to be used as a base for other fixtures.
- */
-struct NoLoggerFixture : virtual LoggerFixture {
-    NoLoggerFixture();
 };

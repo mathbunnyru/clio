@@ -1333,14 +1333,9 @@ INSTANTIATE_TEST_SUITE_P(
     RPCHelpersLogDurationTests,
     RPCHelpersLogDurationTest,
     testing::Values(
-        RPCHelpersLogDurationTestBundle{"ShortDurationLogsAsInfo", std::chrono::milliseconds(500), "RPC:NFO", true},
-        RPCHelpersLogDurationTestBundle{
-            "MediumDurationLogsAsWarning",
-            std::chrono::milliseconds(5000),
-            "RPC:WRN",
-            true
-        },
-        RPCHelpersLogDurationTestBundle{"LongDurationLogsAsError", std::chrono::milliseconds(15000), "RPC:ERR", true}
+        RPCHelpersLogDurationTestBundle{"ShortDurationLogsAsInfo", std::chrono::milliseconds(500), "RPC:I ", true},
+        RPCHelpersLogDurationTestBundle{"MediumDurationLogsAsWarning", std::chrono::milliseconds(5000), "RPC:W ", true},
+        RPCHelpersLogDurationTestBundle{"LongDurationLogsAsError", std::chrono::milliseconds(15000), "RPC:E ", true}
     ),
     tests::util::kNAME_GENERATOR
 );

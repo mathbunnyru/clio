@@ -6,18 +6,26 @@ Clio provides several logging options, which all are configurable via the config
 
 The minimum level of severity at which the log message will be outputted by default. Severity options are `trace`, `debug`, `info`, `warning`, `error`, `fatal`. Defaults to `info`.
 
-## `log_format`
+## `spdlog_format`
 
-The format of log lines produced by Clio. Defaults to `"%TimeStamp% (%SourceLocation%) [%ThreadID%] %Channel%:%Severity% %Message%"`.
+The format of log lines produced by Clio using spdlog format patterns. Defaults to `"%Y-%m-%d %H:%M:%S.%f %^(%@) [%t] %n:%L%$ %v"`.
 
 Each of the variables expands like so:
 
-- `TimeStamp`: The full date and time of the log entry
-- `SourceLocation`: A partial path to the c++ file and the line number in said file (`source/file/path:linenumber`)
-- `ThreadID`: The ID of the thread the log entry is written from
-- `Channel`: The channel that this log entry was sent to
-- `Severity`: The severity (aka log level) the entry was sent at
-- `Message`: The actual log message
+- `%^`: Start color range
+- `%Y-%m-%d %H:%M:%S.%f`: The full date and time of the log entry with microsecond precision
+- `%@`: A partial path to the c++ file and the line number in said file (`source/file/path:linenumber`)
+- `%t`: The ID of the thread the log entry is written from
+- `%n`: The logger name (channel) that this log entry was sent to
+- `%l`: The severity (aka log level) the entry was sent at
+- `%$`: End color range
+- `%v`: The actual log message
+
+For more information about spdlog format patterns, see: <https://github.com/gabime/spdlog/wiki/Custom-formatting>
+
+## `spdlog_async`
+
+Whether spdlog is asynchronous or not.
 
 ## `log_channels`
 
@@ -56,16 +64,9 @@ If the option is not specified, the logs are not written to a file.
 
 The max size of the log file in **megabytes** before it will rotate into a smaller file. Defaults to 2GB.
 
-## `log_directory_max_size`
+## `log_directory_max_files`
 
-The max size of the log directory in **megabytes** before old log files will be deleted to free up space. Defaults to 50GB.
-
-## `log_rotation_hour_interval`
-
-The time interval in **hours** after the last log rotation to automatically rotate the current log file. Defaults to 12 hours.
-
-> [!NOTE]
-> Log rotation based on time occurs in conjunction with size-based log rotation. For example, if a size-based log rotation occurs, the timer for the time-based rotation will reset.
+The max number of log files in the directory before old log files will be deleted to free up space. Defaults to 25.
 
 ## `log_tag_style`
 
