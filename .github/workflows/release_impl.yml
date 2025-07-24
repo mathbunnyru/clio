@@ -86,18 +86,6 @@ jobs:
         shell: bash
         run: .github/scripts/prepare-release-artifacts.sh release_artifacts
 
-      - name: Append sha256 checksums
-        shell: bash
-        working-directory: release_artifacts
-        run: |
-          {
-            echo '## SHA256 checksums'
-            echo
-            echo '```'
-            cat *.sha256sum
-            echo '```'
-          } >> "${RUNNER_TEMP}/release_notes.md"
-
       - name: Upload release notes
         uses: actions/upload-artifact@v4
         with:
