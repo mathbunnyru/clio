@@ -53,6 +53,12 @@ on:
         required: true
         type: boolean
 
+      expected_version:
+        description: Expected version of the clio_server binary
+        required: false
+        type: string
+        default: ""
+
     secrets:
       CODECOV_TOKEN:
         required: false
@@ -182,6 +188,20 @@ jobs:
       - name: Run code coverage
         if: ${{ inputs.code_coverage }}
         uses: ./.github/actions/code_coverage
+
+      - name: Verify expected version
+        if: ${{ inputs.expected_version != '' }}
+        run: |
+          EXPECTED_VERSION="clio-${{ inputs.expected_version }}"
+          if [[ ! -f build/clio_server ]]; then
+            echo "clio_server binary not found"
+            exit 1
+          fi
+          actual_version=$(./build/clio_server --version)
+          if [[ "$actual_version" != "$EXPECTED_VERSION" ]]; then
+            echo "Expected version '$EXPECTED_VERSION', but got '$actual_version'"
+            exit 1
+          fi
 
   # `codecov/codecov-action` will rerun `gcov` if it's available and build directory is present
   # To prevent this from happening, we run this action in a separate workflow

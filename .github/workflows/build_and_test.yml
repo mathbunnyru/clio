@@ -57,6 +57,12 @@ on:
         type: string
         default: all
 
+      expected_version:
+        description: Expected version of the clio_server binary
+        required: false
+        type: string
+        default: ""
+
 jobs:
   build:
     uses: ./.github/workflows/build_impl.yml
