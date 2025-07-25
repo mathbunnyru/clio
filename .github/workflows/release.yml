@@ -42,6 +42,7 @@ jobs:
       run_integration_tests: true
       upload_clio_server: true
       disable_cache: true
+      expected_version: ${{ github.event_name == 'push' && github.ref_name || '' }}
 
   release:
     needs: build-and-test
