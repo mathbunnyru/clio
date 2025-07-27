@@ -184,7 +184,6 @@ jobs:
 
       # This is run as part of the build job, because it requires the following:
       # - source code
-      # - generated source code (Build.cpp)
       # - conan packages
       # - .gcno files in build directory
       #
