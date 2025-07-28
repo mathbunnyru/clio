@@ -53,6 +53,7 @@ try {
             if (not app::parseConfig(run.configPath))
                 return EXIT_FAILURE;
 
+            ClioConfigDefinition& gClioConfig = getClioConfig();
             PrometheusService::init(gClioConfig);
             if (auto const initSuccess = util::LogService::init(gClioConfig); not initSuccess) {
                 std::cerr << initSuccess.error() << std::endl;
@@ -65,11 +66,11 @@ try {
             if (not app::parseConfig(migrate.configPath))
                 return EXIT_FAILURE;
 
-            if (auto const initSuccess = util::LogService::init(gClioConfig); not initSuccess) {
+            if (auto const initSuccess = util::LogService::init(getClioConfig()); not initSuccess) {
                 std::cerr << initSuccess.error() << std::endl;
                 return EXIT_FAILURE;
             }
-            app::MigratorApplication migrator{gClioConfig, migrate.subCmd};
+            app::MigratorApplication migrator{getClioConfig(), migrate.subCmd};
             return migrator.run();
         }
     );
