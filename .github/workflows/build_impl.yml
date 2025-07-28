@@ -195,12 +195,10 @@ jobs:
 
       - name: Verify expected version
         if: ${{ inputs.expected_version != '' }}
+        shell: bash
         run: |
+          set -e
           EXPECTED_VERSION="clio-${{ inputs.expected_version }}"
-          if [[ ! -f build/clio_server ]]; then
-            echo "clio_server binary not found"
-            exit 1
-          fi
           actual_version=$(./build/clio_server --version)
           if [[ "$actual_version" != "$EXPECTED_VERSION" ]]; then
             echo "Expected version '$EXPECTED_VERSION', but got '$actual_version'"
