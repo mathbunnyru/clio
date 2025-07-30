@@ -29,6 +29,10 @@ inputs:
     description: Whether to enable compiler trace reports
     required: true
     default: "false"
+  use_mold:
+    description: Whether to use mold linker
+    required: true
+    default: "false"
 
 runs:
   using: composite
@@ -45,6 +49,7 @@ runs:
         STATIC_OPTION: "${{ inputs.static == 'true' && 'True' || 'False' }}"
         INTEGRATION_TESTS_OPTION: "${{ inputs.build_integration_tests == 'true' && 'True' || 'False' }}"
         TIME_TRACE: "${{ inputs.time_trace == 'true' && 'True' || 'False' }}"
+        USE_MOLD: "${{ inputs.use_mold == 'true' && 'True' || 'False' }}"
       run: |
         cd build
         conan \
@@ -58,6 +63,7 @@ runs:
           -o "&:lint=False" \
           -o "&:coverage=${CODE_COVERAGE}" \
           -o "&:time_trace=${TIME_TRACE}" \
+          -o "&:use_mold=${USE_MOLD}" \
           --profile:all "${{ inputs.conan_profile }}"
 
     - name: Run cmake
@@ -69,11 +75,13 @@ runs:
               endsWith(inputs.conan_profile, '.tsan') && '-Dsan=thread' ||
               endsWith(inputs.conan_profile, '.ubsan') && '-Dsan=undefined' ||
               '' }}
+        USE_MOLD_OPTION: "${{ inputs.use_mold == 'true' && '-DUSE_MOLD=ON' || '' }}"
       run: |
         cd build
         cmake \
           -DCMAKE_TOOLCHAIN_FILE:FILEPATH=build/generators/conan_toolchain.cmake \
           -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+          "${USE_MOLD_OPTION}" \
           "${SANITIZER_OPTION}" \
           .. \
           -G Ninja

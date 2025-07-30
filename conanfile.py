@@ -20,7 +20,8 @@ class ClioConan(ConanFile):
         'coverage': [True, False],            # build for test coverage report; create custom target `clio_tests-ccov`
         'lint': [True, False],                # run clang-tidy checks during compilation
         'snapshot': [True, False],            # build export/import snapshot tool
-        'time_trace': [True, False]           # build using -ftime-trace to create compiler trace reports
+        'time_trace': [True, False],          # build using -ftime-trace to create compiler trace reports
+        'use_mold': [True, False],            # use mold linker for faster linking
     }
 
     requires = [
@@ -47,6 +48,7 @@ class ClioConan(ConanFile):
         'docs': False,
         'snapshot': False,
         'time_trace': False,
+        'use_mold': False,
 
         'xrpl/*:tests': False,
         'xrpl/*:rocksdb': False,
