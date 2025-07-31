@@ -33,7 +33,7 @@ jobs:
       - name: Update conan lockfile
         shell: bash
         run: |
-          conan lock create . -o '&:tests=True' -o '&:benchmark=True'
+          conan lock create . -o '&:tests=True' -o '&:benchmark=True' --profile:all ${{ env.CONAN_PROFILE }}
 
       - name: Prepare runner
         uses: ./.github/actions/prepare_runner
