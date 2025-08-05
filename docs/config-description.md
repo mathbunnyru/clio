@@ -155,7 +155,7 @@ This document provides a list of all available Clio configuration properties in 
 
 - **Required**: True
 - **Type**: boolean
-- **Default value**: `True`
+- **Default value**: `False`
 - **Constraints**: None
 - **Description**: If set to `True`, allows Clio to start without any ETL source.
 
@@ -331,7 +331,7 @@ This document provides a list of all available Clio configuration properties in 
 
 - **Required**: True
 - **Type**: boolean
-- **Default value**: `False`
+- **Default value**: `True`
 - **Constraints**: None
 - **Description**: Enables or disables Prometheus metrics.
 
@@ -339,7 +339,7 @@ This document provides a list of all available Clio configuration properties in 
 
 - **Required**: True
 - **Type**: boolean
-- **Default value**: `False`
+- **Default value**: `True`
 - **Constraints**: None
 - **Description**: Enables or disables compression of Prometheus responses.
 
@@ -451,7 +451,7 @@ This document provides a list of all available Clio configuration properties in 
 
 - **Required**: True
 - **Type**: boolean
-- **Default value**: `True`
+- **Default value**: `False`
 - **Constraints**: None
 - **Description**: Enables or disables logging to the console.
 
@@ -507,7 +507,7 @@ This document provides a list of all available Clio configuration properties in 
 
 - **Required**: True
 - **Type**: boolean
-- **Default value**: `True`
+- **Default value**: `False`
 - **Constraints**: None
 - **Description**: Indicates if the server is allowed to write data to the database.
 
