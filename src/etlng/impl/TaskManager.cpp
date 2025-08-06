@@ -183,6 +183,7 @@ TaskManager::stop()
     for (auto& loader : loaders_)
         loader.abort();
 
+    queue_.stop();
     wait();
 }
 
