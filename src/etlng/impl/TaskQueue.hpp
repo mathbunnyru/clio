@@ -22,8 +22,12 @@
 #include "etlng/Models.hpp"
 #include "util/Mutex.hpp"
 
+#include <boost/atomic/atomic.hpp>
+
+#include <condition_variable>
 #include <cstddef>
 #include <cstdint>
+#include <mutex>
 #include <optional>
 #include <queue>
 #include <utility>
@@ -57,6 +61,8 @@ class TaskQueue {
     };
 
     util::Mutex<Data> data_;
+    std::condition_variable cv_;
+    boost::atomics::atomic_bool stopping_ = false;
 
 public:
     struct Settings {
@@ -75,6 +81,13 @@ public:
     {
     }
 
+    ~TaskQueue()
+    {
+        // unblock all waiters
+        stopping_ = true;
+        cv_.notify_all();
+    }
+
     /**
      * @brief Enqueue a new item onto the queue if space is available
      * @note This function blocks until the item is attempted to be added to the queue
@@ -89,6 +102,8 @@ public:
 
         if (limit_ == 0uz or lock->forwardLoadQueue.size() < limit_) {
             lock->forwardLoadQueue.push(std::move(item));
+            cv_.notify_all();
+
             return true;
         }
 
@@ -125,6 +140,17 @@ public:
     empty()
     {
         return data_.lock()->forwardLoadQueue.empty();
+    }
+
+    /**
+     * @brief Awaits for the queue to become non-empty
+     * @note This function blocks until there is a task or the queue is being destroyed
+     */
+    void
+    awaitTask()
+    {
+        auto lock = data_.lock<std::unique_lock>();
+        cv_.wait(lock, [&] { return stopping_ or not lock->forwardLoadQueue.empty(); });
     }
 };
 
