@@ -32,7 +32,7 @@
 #include "rpc/common/Types.hpp"
 #include "util/JsonUtils.hpp"
 #include "util/Taggable.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "web/Context.hpp"
 
 #include <boost/asio/spawn.hpp>

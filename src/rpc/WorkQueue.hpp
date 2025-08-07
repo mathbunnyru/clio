@@ -23,7 +23,7 @@
 #include "util/Mutex.hpp"
 #include "util/Spawn.hpp"
 #include "util/config/ConfigDefinition.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "util/prometheus/Counter.hpp"
 #include "util/prometheus/Gauge.hpp"
 

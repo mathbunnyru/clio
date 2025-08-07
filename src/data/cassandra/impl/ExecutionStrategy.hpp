@@ -26,7 +26,7 @@
 #include "data/cassandra/impl/AsyncExecutor.hpp"
 #include "util/Assert.hpp"
 #include "util/Batching.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/asio.hpp>
 #include <boost/asio/associated_executor.hpp>

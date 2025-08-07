@@ -23,7 +23,7 @@
 #include "util/config/ConfigFileJson.hpp"
 #include "util/config/ConfigValue.hpp"
 #include "util/config/Types.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "web/dosguard/WhitelistHandler.hpp"
 
 #include <boost/json/parse.hpp>

@@ -19,7 +19,7 @@
 
 #include "util/LogServiceFixture.hpp"
 
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/log/core/core.hpp>
 #include <boost/log/expressions/predicates/channel_severity_filter.hpp>

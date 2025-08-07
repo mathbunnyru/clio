@@ -53,7 +53,7 @@
 #include "util/async/AnyExecutionContext.hpp"
 #include "util/async/AnyOperation.hpp"
 #include "util/config/ConfigDefinition.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/asio/io_context.hpp>
 #include <boost/json/object.hpp>

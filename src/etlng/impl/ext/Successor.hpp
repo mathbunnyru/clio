@@ -23,7 +23,7 @@
 #include "data/LedgerCacheInterface.hpp"
 #include "data/Types.hpp"
 #include "etlng/Models.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <xrpl/basics/base_uint.h>
 #include <xrpl/basics/strHex.h>

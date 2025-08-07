@@ -24,7 +24,7 @@
 #include "etlng/LoadBalancerInterface.hpp"
 #include "feed/SubscriptionManagerInterface.hpp"
 #include "util/CoroutineGroup.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "web/ng/Server.hpp"
 
 #include <boost/asio/executor_work_guard.hpp>

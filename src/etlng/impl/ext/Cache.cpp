@@ -21,7 +21,7 @@
 
 #include "etlng/CacheUpdaterInterface.hpp"
 #include "etlng/Models.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <cstdint>
 #include <memory>

@@ -24,7 +24,7 @@
 #include "util/Taggable.hpp"
 #include "util/config/ConfigDefinition.hpp"
 #include "util/config/ObjectView.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "web/ng/Connection.hpp"
 #include "web/ng/MessageHandler.hpp"
 #include "web/ng/ProcessingPolicy.hpp"

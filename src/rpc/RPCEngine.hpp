@@ -29,7 +29,7 @@
 #include "rpc/common/impl/ForwardingProxy.hpp"
 #include "util/OverloadSet.hpp"
 #include "util/ResponseExpirationCache.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "web/Context.hpp"
 #include "web/dosguard/DOSGuardInterface.hpp"
 

@@ -23,7 +23,7 @@
 #include "etl/NetworkValidatedLedgersInterface.hpp"
 #include "util/Assert.hpp"
 #include "util/async/AnyExecutionContext.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/signals2/connection.hpp>
 

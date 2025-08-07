@@ -22,7 +22,7 @@
 #include "data/cassandra/impl/ManagedObject.hpp"
 #include "data/cassandra/impl/SslContext.hpp"
 #include "util/OverloadSet.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <cassandra.h>
 #include <fmt/format.h>

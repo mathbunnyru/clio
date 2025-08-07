@@ -24,7 +24,7 @@
 #include "etl/impl/BaseCursorProvider.hpp"
 #include "util/async/AnyExecutionContext.hpp"
 #include "util/async/AnyOperation.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/context/detail/config.hpp>

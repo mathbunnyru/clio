@@ -20,7 +20,7 @@
 #pragma once
 
 #include "data/cassandra/impl/ManagedObject.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <cassandra.h>
 

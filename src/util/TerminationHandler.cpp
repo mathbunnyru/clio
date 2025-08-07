@@ -19,7 +19,7 @@
 
 #include "util/TerminationHandler.hpp"
 
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #ifndef CLIO_WITHOUT_STACKTRACE
 #include <boost/stacktrace/stacktrace.hpp>

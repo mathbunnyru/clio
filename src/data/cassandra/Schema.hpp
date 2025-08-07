@@ -22,7 +22,7 @@
 #include "data/cassandra/Concepts.hpp"
 #include "data/cassandra/Handle.hpp"
 #include "data/cassandra/Types.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <fmt/compile.h>
 

@@ -22,7 +22,7 @@
 #include "cluster/ClioNode.hpp"
 #include "data/BackendInterface.hpp"
 #include "util/Spawn.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/asio/spawn.hpp>
 #include <boost/asio/steady_timer.hpp>

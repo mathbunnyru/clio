@@ -21,7 +21,7 @@
 
 #include "etlng/InitialLoadObserverInterface.hpp"
 #include "etlng/LoadBalancerInterface.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/asio/spawn.hpp>
 #include <grpcpp/support/status.h>

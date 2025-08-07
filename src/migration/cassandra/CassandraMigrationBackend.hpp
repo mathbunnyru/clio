@@ -24,7 +24,7 @@
 #include "data/cassandra/SettingsProvider.hpp"
 #include "migration/cassandra/impl/CassandraMigrationSchema.hpp"
 #include "migration/cassandra/impl/Spec.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/asio/spawn.hpp>
 

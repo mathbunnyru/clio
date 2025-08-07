@@ -19,7 +19,7 @@
 
 #include "util/Assert.hpp"
 
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <cstdlib>
 #include <iostream>

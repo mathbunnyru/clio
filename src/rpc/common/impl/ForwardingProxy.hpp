@@ -24,7 +24,7 @@
 #include "rpc/RPCCenter.hpp"
 #include "rpc/RPCHelpers.hpp"
 #include "rpc/common/Types.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "web/Context.hpp"
 
 #include <xrpl/protocol/ErrorCodes.h>

@@ -21,7 +21,7 @@
 
 #include "util/Assert.hpp"
 #include "util/config/ConfigDefinition.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <chrono>
 #include <csignal>

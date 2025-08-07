@@ -21,7 +21,7 @@
 
 #include "etl/SystemState.hpp"
 #include "util/async/AnyExecutionContext.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <chrono>
 #include <functional>

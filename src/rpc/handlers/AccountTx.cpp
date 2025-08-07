@@ -28,7 +28,7 @@
 #include "util/Assert.hpp"
 #include "util/JsonUtils.hpp"
 #include "util/Profiler.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/json/conversion.hpp>
 #include <boost/json/object.hpp>

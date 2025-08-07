@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "util/prometheus/Bool.hpp"
 #include "util/prometheus/Counter.hpp"
 #include "util/prometheus/Gauge.hpp"

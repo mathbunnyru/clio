@@ -21,7 +21,7 @@
 
 #include "feed/Types.hpp"
 #include "rpc/RPCHelpers.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/json/object.hpp>
 #include <boost/json/serialize.hpp>

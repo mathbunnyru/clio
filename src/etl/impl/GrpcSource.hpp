@@ -20,7 +20,7 @@
 #pragma once
 
 #include "data/BackendInterface.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <grpcpp/support/status.h>
 #include <org/xrpl/rpc/v1/get_ledger.pb.h>

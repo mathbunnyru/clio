@@ -23,7 +23,7 @@
 #include "etlng/LoadBalancerInterface.hpp"
 #include "etlng/impl/AsyncGrpcCall.hpp"
 #include "util/Assert.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "web/Resolver.hpp"
 
 #include <boost/asio/spawn.hpp>

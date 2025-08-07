@@ -22,7 +22,7 @@
 #include "util/Assert.hpp"
 #include "util/CoroutineGroup.hpp"
 #include "util/Taggable.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "web/SubscriptionContextInterface.hpp"
 #include "web/ng/Connection.hpp"
 #include "web/ng/Error.hpp"

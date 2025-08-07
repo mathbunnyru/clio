@@ -22,7 +22,7 @@
 #include "util/StopHelper.hpp"
 #include "util/StringHash.hpp"
 #include "util/Taggable.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "util/prometheus/Gauge.hpp"
 #include "util/prometheus/Label.hpp"
 #include "util/prometheus/Prometheus.hpp"

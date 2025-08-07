@@ -34,7 +34,7 @@
 #include "util/config/ArrayView.hpp"
 #include "util/config/ConfigDefinition.hpp"
 #include "util/config/ObjectView.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "util/prometheus/Label.hpp"
 #include "util/prometheus/Prometheus.hpp"
 

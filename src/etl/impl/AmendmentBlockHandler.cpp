@@ -20,7 +20,7 @@
 #include "etl/impl/AmendmentBlockHandler.hpp"
 
 #include "etl/SystemState.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/asio/io_context.hpp>
 

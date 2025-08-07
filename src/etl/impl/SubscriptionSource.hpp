@@ -25,7 +25,7 @@
 #include "util/Mutex.hpp"
 #include "util/Retry.hpp"
 #include "util/StopHelper.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "util/prometheus/Gauge.hpp"
 #include "util/requests/Types.hpp"
 #include "util/requests/WsConnection.hpp"

@@ -23,7 +23,7 @@
 #include "etl/impl/LedgerFetcher.hpp"
 #include "etlng/ExtractorInterface.hpp"
 #include "etlng/Models.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <google/protobuf/repeated_ptr_field.h>
 #include <sys/types.h>

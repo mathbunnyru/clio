@@ -19,7 +19,7 @@
 
 #include "util/requests/WsConnection.hpp"
 
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "util/requests/Types.hpp"
 #include "util/requests/impl/StreamData.hpp"
 #include "util/requests/impl/WsConnectionImpl.hpp"

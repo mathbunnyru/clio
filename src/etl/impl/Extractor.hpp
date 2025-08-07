@@ -23,7 +23,7 @@
 #include "etl/SystemState.hpp"
 #include "util/Assert.hpp"
 #include "util/Profiler.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <xrpl/beast/core/CurrentThreadName.h>
 

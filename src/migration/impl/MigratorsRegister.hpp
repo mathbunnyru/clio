@@ -25,7 +25,7 @@
 #include "util/Assert.hpp"
 #include "util/Concepts.hpp"
 #include "util/config/ObjectView.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <algorithm>
 #include <array>

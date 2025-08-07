@@ -40,7 +40,7 @@
 #include "util/async/context/BasicExecutionContext.hpp"
 #include "util/build/Build.hpp"
 #include "util/config/ConfigDefinition.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "web/AdminVerificationStrategy.hpp"
 #include "web/RPCServerHandler.hpp"
 #include "web/Server.hpp"

@@ -20,7 +20,7 @@
 #include "etl/impl/ForwardingSource.hpp"
 
 #include "rpc/Errors.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/asio/spawn.hpp>
 #include <boost/beast/http/field.hpp>

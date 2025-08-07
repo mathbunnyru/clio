@@ -28,7 +28,7 @@
 #include "feed/impl/Util.hpp"
 #include "util/async/AnyExecutionContext.hpp"
 #include "util/async/AnyStrand.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "util/prometheus/Gauge.hpp"
 
 #include <boost/asio/io_context.hpp>

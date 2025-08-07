@@ -20,7 +20,7 @@
 #pragma once
 
 #include "etlng/InitialLoadObserverInterface.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <grpcpp/client_context.h>
 #include <grpcpp/support/status.h>

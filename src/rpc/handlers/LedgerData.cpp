@@ -26,7 +26,7 @@
 #include "rpc/common/Types.hpp"
 #include "util/Assert.hpp"
 #include "util/LedgerUtils.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/json/conversion.hpp>
 #include <boost/json/object.hpp>

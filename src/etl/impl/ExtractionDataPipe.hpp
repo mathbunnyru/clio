@@ -20,7 +20,7 @@
 #pragma once
 
 #include "etl/ETLHelpers.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <cstddef>
 #include <cstdint>

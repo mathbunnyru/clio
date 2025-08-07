@@ -20,7 +20,7 @@
 #pragma once
 
 #include "rpc/Errors.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "util/requests/WsConnection.hpp"
 
 #include <boost/asio/spawn.hpp>

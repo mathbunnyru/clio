@@ -27,7 +27,7 @@
 #include "rpc/common/AnyHandler.hpp"
 #include "rpc/common/HandlerProvider.hpp"
 #include "rpc/common/Types.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <memory>
 #include <optional>

@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "util/requests/Types.hpp"
 
 #include <boost/asio/spawn.hpp>

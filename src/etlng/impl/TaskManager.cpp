@@ -31,7 +31,7 @@
 #include "util/Profiler.hpp"
 #include "util/async/AnyExecutionContext.hpp"
 #include "util/async/AnyOperation.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <chrono>
 #include <cstddef>

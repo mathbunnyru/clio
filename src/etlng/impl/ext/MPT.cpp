@@ -23,7 +23,7 @@
 #include "data/DBHelpers.hpp"
 #include "etl/MPTHelpers.hpp"
 #include "etlng/Models.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <xrpl/basics/strHex.h>
 

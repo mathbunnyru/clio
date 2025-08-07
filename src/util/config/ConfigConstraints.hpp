@@ -22,7 +22,7 @@
 #include "rpc/common/APIVersion.hpp"
 #include "util/config/Error.hpp"
 #include "util/config/Types.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <fmt/format.h>
 #include <fmt/ranges.h>

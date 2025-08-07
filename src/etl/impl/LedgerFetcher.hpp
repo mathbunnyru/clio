@@ -22,7 +22,7 @@
 #include "data/BackendInterface.hpp"
 #include "etl/LedgerFetcherInterface.hpp"
 #include "etlng/LoadBalancerInterface.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <grpcpp/grpcpp.h>
 #include <xrpl/proto/org/xrpl/rpc/v1/xrp_ledger.grpc.pb.h>

@@ -22,7 +22,7 @@
 #include "cluster/ClioNode.hpp"
 #include "cluster/ClusterCommunicationServiceInterface.hpp"
 #include "data/BackendInterface.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "util/prometheus/Bool.hpp"
 #include "util/prometheus/Gauge.hpp"
 #include "util/prometheus/Prometheus.hpp"

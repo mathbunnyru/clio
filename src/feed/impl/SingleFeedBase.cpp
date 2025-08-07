@@ -23,7 +23,7 @@
 #include "feed/impl/TrackableSignal.hpp"
 #include "feed/impl/Util.hpp"
 #include "util/async/AnyExecutionContext.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <cstdint>
 #include <memory>

@@ -17,7 +17,7 @@
 */
 //==============================================================================
 
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include "util/Assert.hpp"
 #include "util/BytesConverter.hpp"

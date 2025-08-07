@@ -21,7 +21,7 @@
 
 #include "data/Types.hpp"
 #include "util/Taggable.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "web/SubscriptionContextInterface.hpp"
 
 #include <boost/asio/spawn.hpp>

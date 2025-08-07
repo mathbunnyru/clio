@@ -32,7 +32,7 @@
 #include "util/async/AnyExecutionContext.hpp"
 #include "util/async/context/BasicExecutionContext.hpp"
 #include "util/config/ConfigDefinition.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/asio/executor_work_guard.hpp>
 #include <boost/asio/io_context.hpp>

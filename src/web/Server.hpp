@@ -20,7 +20,7 @@
 #pragma once
 
 #include "util/Taggable.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "web/AdminVerificationStrategy.hpp"
 #include "web/HttpSession.hpp"
 #include "web/SslHttpSession.hpp"

@@ -24,7 +24,7 @@
 #include "util/config/ConfigFileJson.hpp"
 #include "util/config/ConfigValue.hpp"
 #include "util/config/Types.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/json/array.hpp>
 #include <boost/json/object.hpp>

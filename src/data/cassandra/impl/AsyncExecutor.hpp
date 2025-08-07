@@ -24,7 +24,7 @@
 #include "data/cassandra/Types.hpp"
 #include "data/cassandra/impl/RetryPolicy.hpp"
 #include "util/Mutex.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/asio.hpp>
 #include <boost/asio/io_context.hpp>

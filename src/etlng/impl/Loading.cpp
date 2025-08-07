@@ -30,7 +30,7 @@
 #include "util/Constants.hpp"
 #include "util/LedgerUtils.hpp"
 #include "util/Profiler.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <xrpl/protocol/LedgerHeader.h>
 

@@ -30,7 +30,7 @@
 #include "util/Profiler.hpp"
 #include "util/Taggable.hpp"
 #include "util/config/ConfigDefinition.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "web/dosguard/DOSGuardInterface.hpp"
 #include "web/impl/ErrorHandling.hpp"
 #include "web/interface/ConnectionBase.hpp"

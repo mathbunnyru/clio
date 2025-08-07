@@ -24,7 +24,7 @@
 #include "etlng/Models.hpp"
 #include "etlng/impl/Extraction.hpp"
 #include "util/Assert.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <grpcpp/client_context.h>
 #include <grpcpp/grpcpp.h>

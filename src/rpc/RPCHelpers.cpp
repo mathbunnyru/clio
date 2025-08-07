@@ -29,7 +29,7 @@
 #include "util/AccountUtils.hpp"
 #include "util/Assert.hpp"
 #include "util/Profiler.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "web/Context.hpp"
 
 #include <boost/algorithm/string/case_conv.hpp>

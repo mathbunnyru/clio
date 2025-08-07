@@ -7,7 +7,7 @@ target_sources(
   PRIVATE Assert.cpp
           Coroutine.cpp
           CoroutineGroup.cpp
-          log/Logger.cpp
+          log/LogService.cpp
           prometheus/Http.cpp
           prometheus/Label.cpp
           prometheus/MetricBase.cpp

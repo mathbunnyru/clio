@@ -37,7 +37,7 @@
 #include "etlng/impl/TaskManagerProvider.hpp"
 #include "feed/SubscriptionManagerInterface.hpp"
 #include "util/async/AnyExecutionContext.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/asio/io_context.hpp>
 #include <boost/json/object.hpp>

@@ -20,7 +20,7 @@
 #pragma once
 
 #include "rpc/Errors.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "web/AdminVerificationStrategy.hpp"
 #include "web/SubscriptionContextInterface.hpp"
 #include "web/dosguard/DOSGuardInterface.hpp"

@@ -27,7 +27,7 @@
 #include "etlng/LoaderInterface.hpp"
 #include "etlng/Models.hpp"
 #include "etlng/RegistryInterface.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <org/xrpl/rpc/v1/ledger.pb.h>
 #include <xrpl/basics/Slice.h>

@@ -26,7 +26,7 @@
 #include "util/async/AnyExecutionContext.hpp"
 #include "util/async/AnyOperation.hpp"
 #include "util/async/AnyStrand.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/signals2/connection.hpp>
 #include <xrpl/protocol/TxFormats.h>

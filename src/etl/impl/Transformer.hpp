@@ -28,7 +28,7 @@
 #include "util/Assert.hpp"
 #include "util/LedgerUtils.hpp"
 #include "util/Profiler.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <grpcpp/grpcpp.h>
 #include <xrpl/basics/base_uint.h>

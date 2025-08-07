@@ -24,7 +24,7 @@
 #include "data/Types.hpp"
 #include "etl/CorruptionDetector.hpp"
 #include "util/Spawn.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/asio/executor_work_guard.hpp>
 #include <boost/asio/io_context.hpp>

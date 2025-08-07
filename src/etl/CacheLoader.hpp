@@ -29,7 +29,7 @@
 #include "etlng/CacheLoaderInterface.hpp"
 #include "util/Assert.hpp"
 #include "util/async/context/BasicExecutionContext.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <cstdint>
 #include <functional>

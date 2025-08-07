@@ -31,7 +31,7 @@
 #include "util/JsonUtils.hpp"
 #include "util/Profiler.hpp"
 #include "util/Taggable.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "web/SubscriptionContextInterface.hpp"
 #include "web/dosguard/DOSGuardInterface.hpp"
 #include "web/ng/Connection.hpp"

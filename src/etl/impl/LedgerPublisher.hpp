@@ -27,7 +27,7 @@
 #include "etlng/LedgerPublisherInterface.hpp"
 #include "feed/SubscriptionManagerInterface.hpp"
 #include "util/Assert.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "util/prometheus/Counter.hpp"
 #include "util/prometheus/Prometheus.hpp"
 

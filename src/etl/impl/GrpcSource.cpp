@@ -22,7 +22,7 @@
 #include "data/BackendInterface.hpp"
 #include "etl/impl/AsyncData.hpp"
 #include "util/Assert.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>

@@ -24,7 +24,7 @@
 #include "rpc/common/impl/HandlerProvider.hpp"
 #include "util/TerminationHandler.hpp"
 #include "util/config/ConfigDefinition.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "util/prometheus/Prometheus.hpp"
 
 #include <cstdlib>

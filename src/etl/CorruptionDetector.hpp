@@ -21,7 +21,7 @@
 
 #include "data/LedgerCacheInterface.hpp"
 #include "etl/SystemState.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <functional>
 

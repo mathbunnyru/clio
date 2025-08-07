@@ -28,7 +28,7 @@
 #include "etlng/impl/TaskQueue.hpp"
 #include "util/async/AnyExecutionContext.hpp"
 #include "util/async/AnyOperation.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <xrpl/protocol/TxFormats.h>
 

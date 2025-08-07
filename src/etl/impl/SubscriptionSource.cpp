@@ -24,7 +24,7 @@
 #include "rpc/JS.hpp"
 #include "util/Retry.hpp"
 #include "util/Spawn.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 #include "util/prometheus/Label.hpp"
 #include "util/prometheus/Prometheus.hpp"
 #include "util/requests/Types.hpp"

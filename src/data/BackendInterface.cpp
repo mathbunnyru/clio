@@ -21,7 +21,7 @@
 
 #include "data/Types.hpp"
 #include "util/Assert.hpp"
-#include "util/log/Logger.hpp"
+#include "util/log/LogService.hpp"
 
 #include <boost/asio/spawn.hpp>
 #include <xrpl/basics/base_uint.h>
