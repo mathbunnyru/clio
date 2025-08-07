@@ -27,6 +27,7 @@
 
 #include <barrier>
 #include <chrono>
+#include <cstddef>
 #include <filesystem>
 #include <string>
 #include <thread>
@@ -52,8 +53,10 @@ std::string
 uniqueLogDir()
 {
     auto const epochTime = std::chrono::high_resolution_clock::now().time_since_epoch();
-    return "/tmp/clio_benchmark_logs_" +
-        std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(epochTime).count());
+    auto const tmpDir = std::filesystem::temp_directory_path();
+    std::string const dirName =
+        "logs_" + std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(epochTime).count());
+    return tmpDir / "clio_benchmark" / dirName;
 }
 
 }  // anonymous namespace
@@ -61,8 +64,8 @@ uniqueLogDir()
 static void
 benchmarkConcurrentFileLogging(benchmark::State& state)
 {
-    auto const numThreads = state.range(0);
-    auto const messagesPerThread = state.range(1);
+    auto const numThreads = static_cast<size_t>(state.range(0));
+    auto const messagesPerThread = static_cast<size_t>(state.range(1));
 
     PrometheusService::init(config::getClioConfig());
 
@@ -71,9 +74,12 @@ benchmarkConcurrentFileLogging(benchmark::State& state)
         state.PauseTiming();
         std::filesystem::remove_all(logDir);
 
-        BenchmarkLoggingInitializer::initFileLogging(
-            {.logDir = logDir, .rotationSizeMB = 1, .dirMaxSizeMB = 10, .rotationHours = 24}
-        );
+        BenchmarkLoggingInitializer::initFileLogging({
+            .logDir = logDir,
+            .rotationSizeMB = 1,
+            .dirMaxSizeMB = 10,
+            .rotationHours = 24,
+        });
         state.ResumeTiming();
 
         std::vector<std::thread> threads;
@@ -82,14 +88,14 @@ benchmarkConcurrentFileLogging(benchmark::State& state)
         std::chrono::high_resolution_clock::time_point start;
         std::barrier barrier(numThreads, [&start]() { start = std::chrono::high_resolution_clock::now(); });
 
-        for (int t = 0; t < numThreads; ++t) {
-            threads.emplace_back([t, messagesPerThread, &barrier]() {
+        for (size_t threadNum = 0; threadNum < numThreads; ++threadNum) {
+            threads.emplace_back([threadNum, messagesPerThread, &barrier]() {
                 barrier.arrive_and_wait();
 
-                Logger threadLogger("Thread_" + std::to_string(t));
+                Logger threadLogger("Thread_" + std::to_string(threadNum));
 
-                for (int i = 0; i < messagesPerThread; ++i) {
-                    LOG(threadLogger.info()) << "Test log message #" << i;
+                for (size_t messageNum = 0; messageNum < messagesPerThread; ++messageNum) {
+                    LOG(threadLogger.info()) << "Test log message #" << messageNum;
                 }
             });
         }
@@ -99,7 +105,7 @@ benchmarkConcurrentFileLogging(benchmark::State& state)
         }
         boost::log::core::get()->flush();
 
-        auto end = std::chrono::high_resolution_clock::now();
+        auto const end = std::chrono::high_resolution_clock::now();
 
         state.SetIterationTime(std::chrono::duration_cast<std::chrono::duration<double>>(end - start).count());
     }
