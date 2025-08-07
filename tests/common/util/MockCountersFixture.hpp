@@ -19,13 +19,13 @@
 
 #pragma once
 
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockCounters.hpp"
 
 /**
  * @brief Fixture with mock counters
  */
-struct MockCountersTest : virtual public NoLoggerFixture {
+struct MockCountersTest : virtual public NoLogServiceFixture {
 protected:
     std::shared_ptr<MockCounters> mockCountersPtr_ = std::make_shared<MockCounters>();
 };

@@ -33,7 +33,7 @@
 #include "migration/impl/MigrationManagerBase.hpp"
 #include "migration/impl/MigratorsRegister.hpp"
 #include "util/CassandraDBHelper.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockPrometheus.hpp"
 #include "util/config/ConfigConstraints.hpp"
 #include "util/config/ConfigDefinition.hpp"
@@ -86,7 +86,7 @@ makeMigrationTestManagerAndBackend(ClioConfigDefinition const& config)
 }
 }  // namespace
 
-class MigrationCassandraSimpleTest : public WithPrometheus, public NoLoggerFixture {
+class MigrationCassandraSimpleTest : public WithPrometheus, public NoLogServiceFixture {
     // This function is used to prepare the database before running the tests
     // It is called in the SetUp function. Different tests can override this function to prepare the database
     // differently

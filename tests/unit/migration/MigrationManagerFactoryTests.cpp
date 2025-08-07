@@ -18,7 +18,7 @@
 //==============================================================================
 
 #include "migration/impl/MigrationManagerFactory.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockLedgerCache.hpp"
 #include "util/config/ConfigDefinition.hpp"
 #include "util/config/ConfigValue.hpp"
@@ -26,7 +26,7 @@
 
 #include <gtest/gtest.h>
 
-struct MigrationManagerFactoryTests : public NoLoggerFixture {};
+struct MigrationManagerFactoryTests : public NoLogServiceFixture {};
 
 TEST_F(MigrationManagerFactoryTests, InvalidDBType)
 {

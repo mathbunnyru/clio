@@ -17,7 +17,7 @@
 */
 //==============================================================================
 
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockAssert.hpp"
 #include "util/config/ConfigConstraints.hpp"
 #include "util/config/ConfigValue.hpp"
@@ -35,7 +35,7 @@
 
 using namespace util::config;
 
-struct ConfigValueTest : common::util::WithMockAssert, NoLoggerFixture {};
+struct ConfigValueTest : common::util::WithMockAssert, NoLogServiceFixture {};
 
 TEST_F(ConfigValueTest, construct)
 {
@@ -138,7 +138,7 @@ TEST_F(ConfigValueConstraintTest, defaultValueWithConstraintCheckError)
 }
 
 // A test for each constraint so it's easy to change in the future
-struct ConstraintTest : NoLoggerFixture {};
+struct ConstraintTest : NoLogServiceFixture {};
 
 TEST_F(ConstraintTest, PortConstraint)
 {

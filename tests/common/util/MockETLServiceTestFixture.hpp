@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockAmendmentBlockHandler.hpp"
 #include "util/MockETLService.hpp"
 #include "util/MockLedgerFetcher.hpp"
@@ -33,7 +33,7 @@
  * @brief Fixture with a mock etl service
  */
 template <template <typename> typename MockType = ::testing::NiceMock>
-struct MockETLServiceTestBase : virtual public NoLoggerFixture {
+struct MockETLServiceTestBase : virtual public NoLogServiceFixture {
     using Mock = MockType<MockETLService>;
 
 protected:
@@ -63,7 +63,7 @@ using MockETLServiceTestStrict = MockETLServiceTestBase<::testing::StrictMock>;
 /**
  * @brief Fixture with a mock etl balancer
  */
-struct MockLoadBalancerTest : virtual public NoLoggerFixture {
+struct MockLoadBalancerTest : virtual public NoLogServiceFixture {
 protected:
     std::shared_ptr<MockLoadBalancer> mockLoadBalancerPtr_ = std::make_shared<MockLoadBalancer>();
 };
@@ -71,7 +71,7 @@ protected:
 /**
  * @brief Fixture with a mock NG etl balancer
  */
-struct MockNgLoadBalancerTest : virtual public NoLoggerFixture {
+struct MockNgLoadBalancerTest : virtual public NoLogServiceFixture {
 protected:
     std::shared_ptr<MockNgLoadBalancer> mockLoadBalancerPtr_ = std::make_shared<MockNgLoadBalancer>();
 };
@@ -79,7 +79,7 @@ protected:
 /**
  * @brief Fixture with a mock ledger fetcher
  */
-struct MockLedgerFetcherTest : virtual public NoLoggerFixture {
+struct MockLedgerFetcherTest : virtual public NoLogServiceFixture {
 protected:
     std::shared_ptr<MockNgLedgerFetcher> mockLedgerFetcherPtr_ = std::make_shared<MockNgLedgerFetcher>();
 };
@@ -87,7 +87,7 @@ protected:
 /**
  * @brief Fixture with a mock ledger fetcher
  */
-struct MockAmendmentBlockHandlerTest : virtual public NoLoggerFixture {
+struct MockAmendmentBlockHandlerTest : virtual public NoLogServiceFixture {
 protected:
     std::shared_ptr<MockAmendmentBlockHandler> mockAmendmentBlockHandlerPtr_ =
         std::make_shared<MockAmendmentBlockHandler>();

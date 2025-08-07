@@ -24,7 +24,7 @@
 #include "rpc/common/Types.hpp"
 #include "rpc/common/ValidationHelpers.hpp"
 #include "rpc/common/Validators.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 
 #include <boost/json/array.hpp>
 #include <boost/json/object.hpp>
@@ -49,7 +49,7 @@ using namespace rpc::modifiers;
 
 namespace json = boost::json;
 
-class RPCBaseTest : public NoLoggerFixture {};
+class RPCBaseTest : public NoLogServiceFixture {};
 
 TEST_F(RPCBaseTest, CheckType)
 {

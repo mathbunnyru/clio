@@ -19,7 +19,7 @@
 
 #include "etl/SystemState.hpp"
 #include "etlng/impl/AmendmentBlockHandler.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockPrometheus.hpp"
 #include "util/async/context/BasicExecutionContext.hpp"
 
@@ -59,7 +59,7 @@ TEST_F(AmendmentBlockHandlerNgTests, CallTonotifyAmendmentBlockedSetsStateAndRep
     EXPECT_TRUE(state_.isAmendmentBlocked);
 }
 
-struct DefaultAmendmentBlockActionNgTest : LoggerFixture {};
+struct DefaultAmendmentBlockActionNgTest : LogServiceFixture {};
 
 TEST_F(DefaultAmendmentBlockActionNgTest, Call)
 {

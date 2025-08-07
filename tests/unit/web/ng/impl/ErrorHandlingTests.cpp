@@ -18,7 +18,7 @@
 //==============================================================================
 
 #include "rpc/Errors.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/NameGenerator.hpp"
 #include "web/ng/Request.hpp"
 #include "web/ng/impl/ErrorHandling.hpp"
@@ -43,7 +43,7 @@ using namespace web::ng;
 
 namespace http = boost::beast::http;
 
-struct NgErrorHandlingTests : NoLoggerFixture {
+struct NgErrorHandlingTests : NoLogServiceFixture {
     static Request
     makeRequest(bool isHttp, std::optional<std::string> body = std::nullopt)
     {

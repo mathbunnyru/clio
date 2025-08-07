@@ -22,7 +22,7 @@
 #include "etlng/MonitorInterface.hpp"
 #include "etlng/impl/Registry.hpp"
 #include "util/BinaryTestObject.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockPrometheus.hpp"
 #include "util/TestObject.hpp"
 
@@ -254,7 +254,7 @@ struct MockExtNftBurnReadonly {
     }
 };
 
-struct RegistryTest : NoLoggerFixture, util::prometheus::WithPrometheus {
+struct RegistryTest : NoLogServiceFixture, util::prometheus::WithPrometheus {
     RegistryTest()
     {
         state_.isWriting = true;

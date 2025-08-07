@@ -17,7 +17,7 @@
 */
 //==============================================================================
 
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockAssert.hpp"
 #include "util/config/Array.hpp"
 #include "util/config/ArrayView.hpp"
@@ -327,7 +327,7 @@ TEST_F(IncorrectOverrideValues, InvalidJsonErrors)
     EXPECT_EQ(expectedErrors, actualErrors);
 }
 
-struct ClioConfigDefinitionParseArrayTest : NoLoggerFixture {
+struct ClioConfigDefinitionParseArrayTest : NoLogServiceFixture {
     ClioConfigDefinition config{
         {"array.[].int", Array{ConfigValue{ConfigType::Integer}}},
         {"array.[].string", Array{ConfigValue{ConfigType::String}.optional()}}

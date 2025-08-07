@@ -18,7 +18,7 @@
 //==============================================================================
 
 #include "rpc/WorkQueue.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockPrometheus.hpp"
 #include "util/config/ConfigDefinition.hpp"
 #include "util/config/ConfigValue.hpp"
@@ -39,7 +39,7 @@ using namespace util::config;
 using namespace rpc;
 using namespace util::prometheus;
 
-struct RPCWorkQueueTestBase : NoLoggerFixture {
+struct RPCWorkQueueTestBase : NoLogServiceFixture {
     ClioConfigDefinition cfg = {
         {"server.max_queue_size", ConfigValue{ConfigType::Integer}.defaultValue(2)},
         {"workers", ConfigValue{ConfigType::Integer}.defaultValue(4)}

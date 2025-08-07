@@ -17,7 +17,7 @@
 */
 //==============================================================================
 
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/Taggable.hpp"
 #include "util/config/ConfigDefinition.hpp"
 #include "util/config/ConfigValue.hpp"
@@ -35,7 +35,7 @@
 using namespace web;
 using namespace util::config;
 
-struct SubscriptionContextTests : NoLoggerFixture {
+struct SubscriptionContextTests : NoLogServiceFixture {
 protected:
     util::TagDecoratorFactory tagFactory_{ClioConfigDefinition{
         {"log_tag_style", ConfigValue{ConfigType::String}.defaultValue("uint")},

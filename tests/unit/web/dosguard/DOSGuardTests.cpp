@@ -17,7 +17,7 @@
 */
 //==============================================================================
 
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/config/Array.hpp"
 #include "util/config/ConfigDefinition.hpp"
 #include "util/config/ConfigValue.hpp"
@@ -40,7 +40,7 @@ using namespace std;
 using namespace util::config;
 using namespace web::dosguard;
 
-struct DOSGuardTest : NoLoggerFixture {
+struct DOSGuardTest : NoLogServiceFixture {
     static constexpr auto kJSON_DATA = R"JSON({
         "dos_guard": {
             "max_fetches": 100,

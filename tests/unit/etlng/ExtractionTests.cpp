@@ -23,7 +23,7 @@
 #include "etlng/Models.hpp"
 #include "etlng/impl/Extraction.hpp"
 #include "util/BinaryTestObject.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockAssert.hpp"
 #include "util/TestObject.hpp"
 
@@ -50,7 +50,7 @@ constinit auto const kLEDGER_HASH2 = "1B8590C01B0006EDFA9ED60296DD052DC5E90F9965
 constinit auto const kSEQ = 30;
 }  // namespace
 
-struct ExtractionModelNgTests : NoLoggerFixture {};
+struct ExtractionModelNgTests : NoLogServiceFixture {};
 
 TEST_F(ExtractionModelNgTests, LedgerDataCopyableAndEquatable)
 {
@@ -178,7 +178,7 @@ TEST_F(ExtractionModelNgTests, BookSuccessorCopyableAndEquatable)
     }
 }
 
-struct ExtractionNgTests : NoLoggerFixture {};
+struct ExtractionNgTests : NoLogServiceFixture {};
 
 TEST_F(ExtractionNgTests, ModType)
 {
@@ -360,7 +360,7 @@ TEST_F(ExtractionNgTests, SuccessorsWithNoNeighborsIncluded)
     ASSERT_FALSE(res.has_value());
 }
 
-struct ExtractionAssertTest : common::util::WithMockAssert, NoLoggerFixture {};
+struct ExtractionAssertTest : common::util::WithMockAssert, NoLogServiceFixture {};
 
 TEST_F(ExtractionAssertTest, InvalidModTypeAsserts)
 {

@@ -24,7 +24,7 @@
 #include "rpc/RPCHelpers.hpp"
 #include "rpc/common/Types.hpp"
 #include "util/AsioContextTestFixture.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockAmendmentCenter.hpp"
 #include "util/MockBackendTestFixture.hpp"
 #include "util/MockPrometheus.hpp"
@@ -1290,7 +1290,7 @@ struct RPCHelpersLogDurationTestBundle {
     bool expectDuration;
 };
 
-struct RPCHelpersLogDurationTest : LoggerFixture, testing::WithParamInterface<RPCHelpersLogDurationTestBundle> {
+struct RPCHelpersLogDurationTest : LogServiceFixture, testing::WithParamInterface<RPCHelpersLogDurationTestBundle> {
     boost::json::object const request = {
         {"method", "account_info"},
         {"params",

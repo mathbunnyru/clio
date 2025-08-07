@@ -18,7 +18,7 @@
 //==============================================================================
 
 #include "migration/cassandra/impl/FullTableScanner.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockAssert.hpp"
 
 #include <boost/asio/spawn.hpp>
@@ -76,7 +76,7 @@ TEST_F(FullTableScannerAssertTest, cursorsPerWorkerZero)
     );
 }
 
-struct FullTableScannerTests : NoLoggerFixture {};
+struct FullTableScannerTests : NoLogServiceFixture {};
 
 TEST_F(FullTableScannerTests, SingleThreadCtx)
 {

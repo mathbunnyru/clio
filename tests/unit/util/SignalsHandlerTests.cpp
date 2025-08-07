@@ -17,7 +17,7 @@
 */
 //==============================================================================
 
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockAssert.hpp"
 #include "util/SignalsHandler.hpp"
 #include "util/config/ConfigDefinition.hpp"
@@ -39,7 +39,7 @@ using namespace util::config;
 using testing::MockFunction;
 using testing::StrictMock;
 
-struct SignalsHandlerTestsBase : NoLoggerFixture {
+struct SignalsHandlerTestsBase : NoLogServiceFixture {
     void
     allowTestToFinish()
     {

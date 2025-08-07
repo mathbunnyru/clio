@@ -20,7 +20,7 @@
 #pragma once
 
 #include "data/BackendInterface.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockBackend.hpp"
 #include "util/config/ConfigDefinition.hpp"
 
@@ -29,7 +29,7 @@
 #include <memory>
 
 template <template <typename> typename MockType = ::testing::NiceMock>
-struct MockBackendTestBase : virtual public NoLoggerFixture {
+struct MockBackendTestBase : virtual public NoLogServiceFixture {
     class BackendProxy {
         std::shared_ptr<MockType<MockBackend>> backend_ =
             std::make_shared<MockType<MockBackend>>(util::config::ClioConfigDefinition{{}});

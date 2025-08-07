@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockMigrationBackend.hpp"
 #include "util/config/ConfigDefinition.hpp"
 
@@ -28,7 +28,7 @@
 #include <memory>
 
 template <template <typename> typename MockType = ::testing::NiceMock>
-struct MockMigrationBackendTestBase : virtual public NoLoggerFixture {
+struct MockMigrationBackendTestBase : virtual public NoLogServiceFixture {
     class BackendProxy {
         std::shared_ptr<MockType<MockMigrationBackend>> backend_ =
             std::make_shared<MockType<MockMigrationBackend>>(util::config::ClioConfigDefinition{});

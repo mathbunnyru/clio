@@ -17,7 +17,7 @@
 */
 //==============================================================================
 
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 
 #include "util/log/Logger.hpp"
 
@@ -31,7 +31,7 @@
 #include <algorithm>
 #include <mutex>
 
-LoggerFixture::LoggerFixture()
+LogServiceFixture::LogServiceFixture()
 {
     static std::once_flag kONCE;
     std::call_once(kONCE, [] {
@@ -58,7 +58,7 @@ LoggerFixture::LoggerFixture()
     core->set_logging_enabled(true);
 }
 
-NoLoggerFixture::NoLoggerFixture()
+NoLogServiceFixture::NoLogServiceFixture()
 {
     boost::log::core::get()->set_logging_enabled(false);
 }

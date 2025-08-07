@@ -20,7 +20,7 @@
 #pragma once
 
 #include "util/Coroutine.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/Spawn.hpp"
 
 #include <boost/asio/executor_work_guard.hpp>
@@ -40,7 +40,7 @@
  *
  * This is meant to be used as a base for other fixtures.
  */
-struct AsyncAsioContextTest : virtual public NoLoggerFixture {
+struct AsyncAsioContextTest : virtual public NoLogServiceFixture {
     AsyncAsioContextTest()
     {
         work_.emplace(boost::asio::make_work_guard(ctx_));  // make sure ctx does not stop on its own
@@ -79,7 +79,7 @@ private:
  * Use `run_for(duration)` etc. directly on `ctx`.
  * This is meant to be used as a base for other fixtures.
  */
-struct SyncAsioContextTest : virtual public NoLoggerFixture {
+struct SyncAsioContextTest : virtual public NoLogServiceFixture {
     template <util::CoroutineFunction F>
     void
     runCoroutine(F&& f, bool allowMockLeak = false)

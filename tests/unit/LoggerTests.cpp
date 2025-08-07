@@ -17,7 +17,7 @@
 */
 //==============================================================================
 
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/config/Array.hpp"
 #include "util/config/ConfigConstraints.hpp"
 #include "util/config/ConfigDefinition.hpp"
@@ -42,10 +42,10 @@
 using namespace util;
 
 // Used as a fixture for tests with enabled logging
-class LoggerTest : public LoggerFixture {};
+class LoggerTest : public LogServiceFixture {};
 
 // Used as a fixture for tests with disabled logging
-class NoLoggerTest : public NoLoggerFixture {};
+class NoLoggerTest : public NoLogServiceFixture {};
 
 TEST_F(LoggerTest, Basic)
 {

@@ -17,7 +17,7 @@
 */
 //==============================================================================
 
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockAssert.hpp"
 #include "util/NameGenerator.hpp"
 #include "util/OverloadSet.hpp"
@@ -51,7 +51,7 @@ struct ConfigFileJsonParseTestBundle {
     ValidationMap validationMap;
 };
 
-struct ConfigFileJsonParseTest : NoLoggerFixture, testing::WithParamInterface<ConfigFileJsonParseTestBundle> {};
+struct ConfigFileJsonParseTest : NoLogServiceFixture, testing::WithParamInterface<ConfigFileJsonParseTestBundle> {};
 
 TEST_P(ConfigFileJsonParseTest, parseValues)
 {
@@ -308,7 +308,7 @@ INSTANTIATE_TEST_CASE_P(
     tests::util::kNAME_GENERATOR
 );
 
-struct ConfigFileJsonTest : NoLoggerFixture {};
+struct ConfigFileJsonTest : NoLogServiceFixture {};
 
 TEST_F(ConfigFileJsonTest, getValue)
 {

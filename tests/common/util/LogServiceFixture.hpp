@@ -32,7 +32,7 @@
 /**
  * @brief Fixture with util::Logger support.
  */
-class LoggerFixture : virtual public ::testing::Test {
+class LogServiceFixture : virtual public ::testing::Test {
     /**
      * @brief A simple string buffer that can be used to mock std::cout for
      * console logging.
@@ -53,7 +53,7 @@ class LoggerFixture : virtual public ::testing::Test {
 
 public:
     // Simulates the `util::Logger::init(config)` call
-    LoggerFixture();
+    LogServiceFixture();
 
 protected:
     void
@@ -81,6 +81,6 @@ protected:
  *
  * This is meant to be used as a base for other fixtures.
  */
-struct NoLoggerFixture : virtual LoggerFixture {
-    NoLoggerFixture();
+struct NoLogServiceFixture : virtual LogServiceFixture {
+    NoLogServiceFixture();
 };

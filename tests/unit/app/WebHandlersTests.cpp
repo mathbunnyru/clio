@@ -20,7 +20,7 @@
 #include "app/WebHandlers.hpp"
 #include "rpc/Errors.hpp"
 #include "util/AsioContextTestFixture.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockPrometheus.hpp"
 #include "util/Taggable.hpp"
 #include "util/config/ConfigDefinition.hpp"
@@ -54,7 +54,7 @@ using namespace app;
 namespace http = boost::beast::http;
 using namespace util::config;
 
-struct WebHandlersTest : virtual NoLoggerFixture {
+struct WebHandlersTest : virtual NoLogServiceFixture {
     DOSGuardStrictMock dosGuardMock;
     util::TagDecoratorFactory const tagFactory{
         ClioConfigDefinition{{"log_tag_style", ConfigValue{ConfigType::String}.defaultValue("uint")}}

@@ -5,7 +5,7 @@ target_sources(
   PRIVATE util/AssignRandomPort.cpp
           util/BinaryTestObject.cpp
           util/CallWithTimeout.cpp
-          util/LoggerFixtures.cpp
+          util/LogServiceFixture.cpp
           util/MockAssert.cpp
           util/StringUtils.cpp
           util/TestHttpClient.cpp

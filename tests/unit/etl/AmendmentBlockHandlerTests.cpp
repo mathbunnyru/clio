@@ -20,7 +20,7 @@
 #include "etl/SystemState.hpp"
 #include "etl/impl/AmendmentBlockHandler.hpp"
 #include "util/AsioContextTestFixture.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockPrometheus.hpp"
 
 #include <gmock/gmock.h>
@@ -48,7 +48,7 @@ TEST_F(AmendmentBlockHandlerTest, CallTonotifyAmendmentBlockedSetsStateAndRepeat
     runContextFor(std::chrono::milliseconds{1});
 }
 
-struct DefaultAmendmentBlockActionTest : LoggerFixture {};
+struct DefaultAmendmentBlockActionTest : LogServiceFixture {};
 
 TEST_F(DefaultAmendmentBlockActionTest, Call)
 {

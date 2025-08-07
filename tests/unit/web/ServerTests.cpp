@@ -18,7 +18,7 @@
 //==============================================================================
 
 #include "util/AssignRandomPort.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockPrometheus.hpp"
 #include "util/TestHttpClient.hpp"
 #include "util/TestWebSocketClient.hpp"
@@ -139,7 +139,7 @@ getParseServerConfig(boost::json::value val)
     return config;
 };
 
-struct WebServerTest : NoLoggerFixture {
+struct WebServerTest : NoLogServiceFixture {
     ~WebServerTest() override
     {
         work_.reset();

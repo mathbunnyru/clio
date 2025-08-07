@@ -19,7 +19,7 @@
 
 #include "util/AsioContextTestFixture.hpp"
 #include "util/AssignRandomPort.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockPrometheus.hpp"
 #include "util/NameGenerator.hpp"
 #include "util/Spawn.hpp"
@@ -71,7 +71,7 @@ struct MakeServerTestBundle {
 };
 
 struct MakeServerTest : util::prometheus::WithPrometheus,
-                        NoLoggerFixture,
+                        NoLogServiceFixture,
                         testing::WithParamInterface<MakeServerTestBundle> {
 protected:
     boost::asio::io_context ioContext_;

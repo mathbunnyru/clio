@@ -20,7 +20,7 @@
 #include "etl/NetworkValidatedLedgers.hpp"
 #include "etl/NetworkValidatedLedgersInterface.hpp"
 #include "etlng/impl/AmendmentBlockHandler.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/async/context/BasicExecutionContext.hpp"
 
 #include <gmock/gmock.h>
@@ -32,7 +32,7 @@
 
 using namespace etlng::impl;
 
-struct NetworkValidatedLedgersTests : NoLoggerFixture {
+struct NetworkValidatedLedgersTests : NoLogServiceFixture {
 protected:
     util::async::CoroExecutionContext ctx_{2};
     std::shared_ptr<etl::NetworkValidatedLedgersInterface> ledgers_ =

@@ -21,7 +21,7 @@
 #include "etlng/SchedulerInterface.hpp"
 #include "etlng/impl/Loading.hpp"
 #include "etlng/impl/Scheduling.hpp"
-#include "util/LoggerFixtures.hpp"
+#include "util/LogServiceFixture.hpp"
 #include "util/MockNetworkValidatedLedgers.hpp"
 
 #include <gmock/gmock.h>
@@ -52,7 +52,7 @@ public:
 };
 }  // namespace
 
-struct ForwardSchedulerTests : NoLoggerFixture {
+struct ForwardSchedulerTests : NoLogServiceFixture {
 protected:
     MockNetworkValidatedLedgersPtr networkValidatedLedgers_;
 };
