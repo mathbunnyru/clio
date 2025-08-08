@@ -443,7 +443,7 @@ This document provides a list of all available Clio configuration properties in 
 
 - **Required**: True
 - **Type**: string
-- **Default value**: `%Y-%m-%d %H:%M:%S.%f %^(%@) [%t] %n:%L%$ %v`
+- **Default value**: `%Y-%m-%d %H:%M:%S.%f %^%3!l:%n%$ - %v`
 - **Constraints**: None
 - **Description**: The format string for log messages using spdlog format patterns. Documentation can be found at: <https://github.com/gabime/spdlog/wiki/Custom-formatting>.
 

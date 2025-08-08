@@ -358,8 +358,7 @@ getClioConfig()
 
          {"log_level", ConfigValue{ConfigType::String}.defaultValue("info").withConstraint(gValidateLogLevelName)},
 
-         {"spdlog_format",
-          ConfigValue{ConfigType::String}.defaultValue(R"(%Y-%m-%d %H:%M:%S.%f %^(%@) [%t] %n:%L%$ %v)")},
+         {"spdlog_format", ConfigValue{ConfigType::String}.defaultValue(R"(%Y-%m-%d %H:%M:%S.%f %^%3!l:%n%$ - %v)")},
 
          {"spdlog_async", ConfigValue{ConfigType::Boolean}.defaultValue(true)},
 

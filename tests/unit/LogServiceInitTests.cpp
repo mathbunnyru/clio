@@ -58,8 +58,7 @@ protected:
 
         {"log_level", ConfigValue{ConfigType::String}.defaultValue("info")},
 
-        {"spdlog_format",
-         ConfigValue{ConfigType::String}.defaultValue(R"(%Y-%m-%d %H:%M:%S.%f %^(%@) [%t] %n:%L%$ %v)")},
+        {"spdlog_format", ConfigValue{ConfigType::String}.defaultValue(R"(%Y-%m-%d %H:%M:%S.%f %^%3!l:%n%$ - %v)")},
         {"spdlog_async", ConfigValue{ConfigType::Boolean}.defaultValue(false)},
 
         {"log_to_console", ConfigValue{ConfigType::Boolean}.defaultValue(false)},

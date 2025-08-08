@@ -8,18 +8,21 @@ The minimum level of severity at which the log message will be outputted by defa
 
 ## `spdlog_format`
 
-The format of log lines produced by Clio using spdlog format patterns. Defaults to `"%Y-%m-%d %H:%M:%S.%f %^(%@) [%t] %n:%L%$ %v"`.
+The format of log lines produced by Clio using spdlog format patterns. Defaults to `"%Y-%m-%d %H:%M:%S.%f %^%3!l:%n%$ - %v"`.
 
 Each of the variables expands like so:
 
-- `%^`: Start color range
 - `%Y-%m-%d %H:%M:%S.%f`: The full date and time of the log entry with microsecond precision
-- `%@`: A partial path to the C++ file and the line number in the said file (`src/file/path:linenumber`)
-- `%t`: The ID of the thread the log entry is written from
+- `%^`: Start color range
+- `%3!l`: The severity (aka log level) the entry was sent at stripped to 3 characters
 - `%n`: The logger name (channel) that this log entry was sent to
-- `%l`: The severity (aka log level) the entry was sent at
 - `%$`: End color range
 - `%v`: The actual log message
+
+Some additional variables might be useful:
+
+- `%@`: A partial path to the C++ file and the line number in the said file (`src/file/path:linenumber`)
+- `%t`: The ID of the thread the log entry is written from
 
 For more information about spdlog format patterns, see: <https://github.com/gabime/spdlog/wiki/Custom-formatting>
 

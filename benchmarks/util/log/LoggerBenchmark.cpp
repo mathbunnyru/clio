@@ -38,7 +38,7 @@
 
 using namespace util;
 
-static constexpr auto kLOG_FORMAT = "%Y-%m-%d %H:%M:%S.%f %^(%@) [%t] %n:%L%$ %v";
+static constexpr auto kLOG_FORMAT = "%Y-%m-%d %H:%M:%S.%f %^%3!l:%n%$ - %v";
 
 struct BenchmarkLoggingInitializer {
     static std::shared_ptr<spdlog::sinks::sink>
