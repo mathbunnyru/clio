@@ -28,6 +28,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 // Forward declaration of spdlog::logger
@@ -112,7 +113,7 @@ class Logger final {
         operator=(Pump&&) = delete;
 
         /**
-         * @brief Perfectly forwards any incoming data into the underlying stream if the pump is available.
+         * @brief Perfectly forwards any incoming data into the underlying stream if data should be logged.
          *
          * @tparam T Type of data to pump
          * @param data The data to pump
@@ -136,7 +137,7 @@ class Logger final {
         }
 
     private:
-        [[nodiscard]] static char const*
+        [[nodiscard]] static std::string_view
         prettyPath(SourceLocationType const& loc, size_t maxDepth = 3);
     };
 

@@ -77,10 +77,10 @@ toSpdlogLevel(Severity sev)
     return spdlog::level::info;
 }
 
-char const*
+std::string_view
 toString(Severity sev)
 {
-    static constexpr std::array<char const*, 6> kLABELS = {
+    static constexpr std::array<std::string_view, 6> kLABELS = {
         "TRC",
         "DBG",
         "NFO",
@@ -348,7 +348,7 @@ Logger::Pump::Pump(std::shared_ptr<spdlog::logger> logger, Severity sev, SourceL
 Logger::Pump::~Pump()
 {
     if (enabled_) {
-        spdlog::source_loc sourceLocation{prettyPath(sourceLocation_), sourceLocation_.line(), nullptr};
+        spdlog::source_loc sourceLocation{prettyPath(sourceLocation_).cbegin(), sourceLocation_.line(), nullptr};
         logger_->log(sourceLocation, toSpdlogLevel(severity_), std::move(stream_).str());
     }
 }
@@ -388,7 +388,7 @@ Logger::Logger(std::shared_ptr<spdlog::logger> logger) : logger_(std::move(logge
 {
 }
 
-char const*
+std::string_view
 Logger::Pump::prettyPath(SourceLocationType const& loc, size_t maxDepth)
 {
     std::string_view filePath{loc.file_name()};
@@ -398,7 +398,7 @@ Logger::Pump::prettyPath(SourceLocationType const& loc, size_t maxDepth)
         if (idx == std::string::npos || idx == 0)
             break;
     }
-    return filePath.begin() + (idx == std::string::npos ? 0 : idx + 1);
+    return filePath.substr(idx == std::string::npos ? 0 : idx + 1);
 }
 
 }  // namespace util

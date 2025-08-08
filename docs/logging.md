@@ -14,7 +14,7 @@ Each of the variables expands like so:
 
 - `%^`: Start color range
 - `%Y-%m-%d %H:%M:%S.%f`: The full date and time of the log entry with microsecond precision
-- `%@`: A partial path to the c++ file and the line number in said file (`source/file/path:linenumber`)
+- `%@`: A partial path to the C++ file and the line number in the said file (`src/file/path:linenumber`)
 - `%t`: The ID of the thread the log entry is written from
 - `%n`: The logger name (channel) that this log entry was sent to
 - `%l`: The severity (aka log level) the entry was sent at
