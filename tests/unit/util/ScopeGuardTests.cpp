@@ -19,13 +19,14 @@
 
 #include "util/ScopeGuard.hpp"
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 TEST(ScopeGuardTest, IsCalled)
 {
-    bool called = false;
+    testing::StrictMock<testing::MockFunction<void()>> mockFunction;
+    EXPECT_CALL(mockFunction, Call());
     {
-        util::ScopeGuard guard([&called] { called = true; });
+        util::ScopeGuard guard([&mockFunction] { mockFunction.Call(); });
     }
-    EXPECT_TRUE(called);
 }
