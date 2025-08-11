@@ -94,7 +94,7 @@ protected:
             logger->sinks().push_back(ostreamSink);
         }
 
-        spdlog::set_pattern("%n:%L %v");
+        spdlog::set_pattern("%^%3!l:%n%$ - %v");
     }
 
 private:
@@ -123,10 +123,10 @@ TEST_F(LogServiceInitTests, DefaultLogLevel)
         ASSERT_TRUE(getLoggerString().empty());
 
         log.warn() << logString;
-        ASSERT_EQ(fmt::format("{}:W {}\n", channel, logString), getLoggerString());
+        ASSERT_EQ(fmt::format("war:{} - {}\n", channel, logString), getLoggerString());
 
         log.error() << logString;
-        ASSERT_EQ(fmt::format("{}:E {}\n", channel, logString), getLoggerString());
+        ASSERT_EQ(fmt::format("err:{} - {}\n", channel, logString), getLoggerString());
     }
 }
 
@@ -164,13 +164,13 @@ TEST_F(LogServiceInitTests, ChannelLogLevel)
 
         log.warn() << logString;
         if (std::string_view{channel} == "Backend") {
-            ASSERT_EQ(fmt::format("{}:W {}\n", channel, logString), getLoggerString());
+            ASSERT_EQ(fmt::format("war:{} - {}\n", channel, logString), getLoggerString());
         } else {
             ASSERT_TRUE(getLoggerString().empty());
         }
 
         log.error() << logString;
-        ASSERT_EQ(fmt::format("{}:E {}\n", channel, logString), getLoggerString());
+        ASSERT_EQ(fmt::format("err:{} - {}\n", channel, logString), getLoggerString());
     }
 }
 

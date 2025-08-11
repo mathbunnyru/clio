@@ -51,7 +51,7 @@ LoggerFixture::LoggerFixture()
 
     spdlog::set_default_logger(spdlog::get("General"));
 
-    spdlog::set_pattern("%n:%L %v");
+    spdlog::set_pattern("%^%3!l:%n%$ - %v");
 }
 
 NoLoggerFixture::NoLoggerFixture()

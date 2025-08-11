@@ -38,13 +38,13 @@ TEST_F(LoggerTest, Basic)
 {
     Logger const log{"General"};
     log.info() << "Info line logged";
-    ASSERT_EQ(getLoggerString(), "General:I Info line logged\n");
+    ASSERT_EQ(getLoggerString(), "inf:General - Info line logged\n");
 
     LogService::debug() << "Debug line with numbers " << 12345;
-    ASSERT_EQ(getLoggerString(), "General:D Debug line with numbers 12345\n");
+    ASSERT_EQ(getLoggerString(), "deb:General - Debug line with numbers 12345\n");
 
     LogService::warn() << "Warning is logged";
-    ASSERT_EQ(getLoggerString(), "General:W Warning is logged\n");
+    ASSERT_EQ(getLoggerString(), "war:General - Warning is logged\n");
 }
 
 TEST_F(LoggerTest, Filtering)
@@ -54,11 +54,11 @@ TEST_F(LoggerTest, Filtering)
     ASSERT_TRUE(getLoggerString().empty());
 
     log.warn() << "Warning is logged";
-    ASSERT_EQ(getLoggerString(), "General:W Warning is logged\n");
+    ASSERT_EQ(getLoggerString(), "war:General - Warning is logged\n");
 
     Logger const tlog{"Trace"};
     tlog.trace() << "Trace line logged for 'Trace' component";
-    ASSERT_EQ(getLoggerString(), "Trace:T Trace line logged for 'Trace' component\n");
+    ASSERT_EQ(getLoggerString(), "tra:Trace - Trace line logged for 'Trace' component\n");
 }
 
 #ifndef COVERAGE_ENABLED
