@@ -174,6 +174,7 @@ target_sources(
           util/RepeatTests.cpp
           util/ResponseExpirationCacheTests.cpp
           util/RetryTests.cpp
+          util/ScopeGuardTests.cpp
           util/SignalsHandlerTests.cpp
           util/SpawnTests.cpp
           util/StopHelperTests.cpp
