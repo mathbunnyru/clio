@@ -19,7 +19,7 @@ Each of the variables expands like so:
 - `%$`: End color range
 - `%v`: The actual log message
 
-Some additional variables might be useful:
+Some additional variables that might be useful:
 
 - `%@`: A partial path to the C++ file and the line number in the said file (`src/file/path:linenumber`)
 - `%t`: The ID of the thread the log entry is written from

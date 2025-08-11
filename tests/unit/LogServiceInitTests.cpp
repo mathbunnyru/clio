@@ -211,10 +211,12 @@ TEST_F(LogServiceInitTests, LogSizeAndHourRotationCannotBeZero)
     std::vector<std::string_view> const keys{"log_directory_max_files", "log_rotation_size"};
 
     auto const jsonStr = fmt::format(
-        R"JSON({{
-        "{}": 0,
-        "{}": 0
-    }})JSON",
+        R"JSON(
+            {{
+                "{}": 0,
+                "{}": 0
+            }}
+        )JSON",
         keys[0],
         keys[1]
     );

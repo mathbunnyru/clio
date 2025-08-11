@@ -22,6 +22,7 @@
 #include "util/prometheus/Prometheus.hpp"
 
 #include <benchmark/benchmark.h>
+#include <fmt/format.h>
 #include <spdlog/async.h>
 #include <spdlog/async_logger.h>
 #include <spdlog/spdlog.h>
@@ -62,7 +63,7 @@ uniqueLogDir()
     auto const epochTime = std::chrono::high_resolution_clock::now().time_since_epoch();
     auto const tmpDir = std::filesystem::temp_directory_path();
     std::string const dirName =
-        "logs_" + std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(epochTime).count());
+        fmt::format("logs_{}", std::chrono::duration_cast<std::chrono::microseconds>(epochTime).count());
     return tmpDir / "clio_benchmark" / dirName;
 }
 
@@ -102,7 +103,7 @@ benchmarkConcurrentFileLogging(benchmark::State& state)
 
         for (size_t threadNum = 0; threadNum < numThreads; ++threadNum) {
             threads.emplace_back([threadNum, messagesPerThread, fileSink, &barrier]() {
-                std::string const channel = "Thread_" + std::to_string(threadNum);
+                std::string const channel = fmt::format("Thread_{}", threadNum);
                 auto logger = std::make_shared<spdlog::async_logger>(
                     channel, fileSink, spdlog::thread_pool(), spdlog::async_overflow_policy::block
                 );

@@ -235,8 +235,7 @@ LogService::init(config::ClioConfigDefinition const& config)
 
     data.allSinks = createConsoleSinks(config.get<bool>("log_to_console"));
 
-    auto const logDir = config.maybeValue<std::string>("log_directory");
-    if (logDir) {
+    if (auto const logDir = config.maybeValue<std::string>("log_directory"); logDir.has_value()) {
         std::filesystem::path const dirPath{logDir.value()};
         if (not std::filesystem::exists(dirPath)) {
             if (std::error_code error; not std::filesystem::create_directories(dirPath, error)) {
@@ -264,8 +263,8 @@ LogService::init(config::ClioConfigDefinition const& config)
 
     // Create loggers for each channel
     for (auto const& channel : Logger::kCHANNELS) {
-        auto it = minSeverity.find(channel);
-        auto severity = (it != minSeverity.end()) ? it->second : defaultSeverity;
+        auto const it = minSeverity.find(channel);
+        auto const severity = (it != minSeverity.end()) ? it->second : defaultSeverity;
         registerLogger(channel, severity);
     }
 
@@ -327,7 +326,6 @@ LogService::enabled()
     return spdlog::get_level() != spdlog::level::off;
 }
 
-// Logger constructor
 Logger::Logger(std::string channel) : logger_(spdlog::get(channel))
 {
     if (!logger_) {
@@ -335,7 +333,6 @@ Logger::Logger(std::string channel) : logger_(spdlog::get(channel))
     }
 }
 
-// Logger::Pump constructor
 Logger::Pump::Pump(std::shared_ptr<spdlog::logger> logger, Severity sev, SourceLocationType const& loc)
     : logger_(std::move(logger))
     , severity_(sev)
@@ -344,7 +341,6 @@ Logger::Pump::Pump(std::shared_ptr<spdlog::logger> logger, Severity sev, SourceL
 {
 }
 
-// Logger::Pump destructor
 Logger::Pump::~Pump()
 {
     if (enabled_) {

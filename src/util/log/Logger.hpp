@@ -31,7 +31,8 @@
 #include <string_view>
 #include <vector>
 
-// Forward declaration of spdlog::logger
+// We forward declare spdlog::logger and spdlog::sinks::sink
+// to avoid including the spdlog headers in this header file.
 namespace spdlog {
 
 class logger;

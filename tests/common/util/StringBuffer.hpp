@@ -18,12 +18,12 @@
 //==============================================================================
 
 #pragma once
+
 #include <sstream>
 #include <string>
 
 /**
- * @brief A simple string buffer that can be used to mock std::cout for
- * console logging.
+ * @brief A simple string buffer that can be used to mock std::cout for console logging.
  */
 class StringBuffer final : public std::stringbuf {
 public:
