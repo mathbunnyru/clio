@@ -27,7 +27,7 @@
 #include <string>
 
 /**
- * @brief Fixture for LogService.
+ * @brief A fixture for testing LogService and Logger.
  */
 class LoggerFixture : virtual public ::testing::Test {
     StringBuffer buffer_;
