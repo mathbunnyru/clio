@@ -35,10 +35,10 @@
 // to avoid including the spdlog headers in this header file.
 namespace spdlog {
 
-class logger;
+class logger;  // NOLINT(readability-identifier-naming)
 
 namespace sinks {
-class sink;
+class sink;  // NOLINT(readability-identifier-naming)
 }  // namespace sinks
 
 }  // namespace spdlog
