@@ -39,28 +39,20 @@
 using EmptyMigratorRegister = migration::impl::MigratorsRegister<MockMigrationBackend>;
 
 namespace {
-
-util::config::ClioConfigDefinition const&
-getConfigDefinition()
-{
-    static util::config::ClioConfigDefinition const gCfg{
-        {{"migration.full_scan_threads",
-          util::config::ConfigValue{util::config::ConfigType::Integer}.defaultValue(2).withConstraint(
-              util::config::gValidateUint32
-          )},
-         {"migration.full_scan_jobs",
-          util::config::ConfigValue{util::config::ConfigType::Integer}.defaultValue(4).withConstraint(
-              util::config::gValidateUint32
-          )},
-         {"migration.cursors_per_job",
-          util::config::ConfigValue{util::config::ConfigType::Integer}.defaultValue(100).withConstraint(
-              util::config::gValidateUint32
-          )}}
-    };
-
-    return gCfg;
-}
-
+util::config::ClioConfigDefinition gCfg{
+    {{"migration.full_scan_threads",
+      util::config::ConfigValue{util::config::ConfigType::Integer}.defaultValue(2).withConstraint(
+          util::config::gValidateUint32
+      )},
+     {"migration.full_scan_jobs",
+      util::config::ConfigValue{util::config::ConfigType::Integer}.defaultValue(4).withConstraint(
+          util::config::gValidateUint32
+      )},
+     {"migration.cursors_per_job",
+      util::config::ConfigValue{util::config::ConfigType::Integer}.defaultValue(100).withConstraint(
+          util::config::gValidateUint32
+      )}}
+};
 }  // namespace
 
 struct MigratorRegisterTests : public util::prometheus::WithMockPrometheus, public MockMigrationBackendTest {};
@@ -71,7 +63,7 @@ TEST_F(MigratorRegisterTests, EmptyMigratorRegister)
     EXPECT_EQ(migratorRegister.getMigratorsStatus().size(), 0);
     EXPECT_EQ(migratorRegister.getMigratorNames().size(), 0);
     EXPECT_EQ(migratorRegister.getMigratorStatus("unknown"), migration::MigratorStatus::NotKnown);
-    EXPECT_NO_THROW(migratorRegister.runMigrator("unknown", getConfigDefinition().getObject("migration")));
+    EXPECT_NO_THROW(migratorRegister.runMigrator("unknown", gCfg.getObject("migration")));
     EXPECT_EQ(migratorRegister.getMigratorDescription("unknown"), "No Description");
 }
 
@@ -196,13 +188,13 @@ TEST_F(MultipleMigratorRegisterTests, Description)
 TEST_F(MultipleMigratorRegisterTests, RunUnknownMigrator)
 {
     EXPECT_CALL(*backend_, writeMigratorStatus(testing::_, testing::_)).Times(0);
-    EXPECT_NO_THROW(migratorRegister->runMigrator("unknown", getConfigDefinition().getObject("migration")));
+    EXPECT_NO_THROW(migratorRegister->runMigrator("unknown", gCfg.getObject("migration")));
 }
 
 TEST_F(MultipleMigratorRegisterTests, MigrateNormalMigrator)
 {
     EXPECT_CALL(*backend_, writeMigratorStatus("SimpleTestMigrator", "Migrated")).Times(1);
-    EXPECT_NO_THROW(migratorRegister->runMigrator("SimpleTestMigrator", getConfigDefinition().getObject("migration")));
+    EXPECT_NO_THROW(migratorRegister->runMigrator("SimpleTestMigrator", gCfg.getObject("migration")));
 }
 
 TEST_F(MultipleMigratorRegisterTests, canBlock)
