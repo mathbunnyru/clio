@@ -279,7 +279,6 @@ LogService::init(config::ClioConfigDefinition const& config)
 void
 LogService::shutdown()
 {
-    LOG(LogService::info()) << "Shutting down logger";
     spdlog::shutdown();
 }
 
