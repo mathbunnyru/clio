@@ -45,7 +45,12 @@ TEST_F(AmendmentBlockHandlerTest, CallTonotifyAmendmentBlockedSetsStateAndRepeat
     handler.notifyAmendmentBlocked();
     EXPECT_TRUE(state.isAmendmentBlocked);
 
+// Code runs significantly slower when assertions are enabled
+#ifdef _GLIBCXX_ASSERTIONS
+    runContextFor(std::chrono::milliseconds{10});
+#else
     runContextFor(std::chrono::milliseconds{1});
+#endif
 }
 
 struct DefaultAmendmentBlockActionTest : LoggerFixture {};
