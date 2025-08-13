@@ -163,7 +163,7 @@ To generate the API docs:
 It is also possible to build Clio using [Docker](https://www.docker.com/) if you don't want to install all the dependencies on your machine.
 
 ```sh
-docker run -it ghcr.io/xrplf/clio-ci:de9b79adf037bbdb7364b4a8bd8bbd955cb547a7
+docker run -it ghcr.io/xrplf/clio-ci:0d262e74bcd286ccd6fc36e45990ff2e6b8d8430
 git clone https://github.com/XRPLF/clio
 mkdir build && cd build
 conan install .. --output-folder . --build missing --settings build_type=Release -o '&:tests=True'
