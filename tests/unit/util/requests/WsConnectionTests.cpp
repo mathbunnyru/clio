@@ -180,9 +180,9 @@ TEST_F(WsConnectionTests, WriteTimeout)
         // Write is success even if the other side is not reading.
         // It seems we need to fill some socket buffer before the timeout occurs.
         while (not error.has_value()) {
-            // LOG(logger.fatal()) << "Writing hello";
-            error = connection->write("hello", yield, std::chrono::milliseconds{1});
-            // LOG(logger.fatal()) << "Writing hello done, have_error: " << error.has_value();
+            std::cerr << "Writing hello\n";
+            error = connection->write(std::string(100'000, 'a'), yield, std::chrono::milliseconds{1});
+            std::cerr << "Writing hello done, have_error: " << error.has_value() << '\n';
         }
         ASSERT_TRUE(error.has_value());
         std::cerr << "Writing hello done, error: " << error->errorCode().value() << '\n';
