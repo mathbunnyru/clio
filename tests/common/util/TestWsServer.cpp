@@ -19,6 +19,8 @@
 
 #include "util/TestWsServer.hpp"
 
+#include "util/LoggerFixtures.hpp"
+#include "util/log/Logger.hpp"
 #include "util/requests/Types.hpp"
 
 #include <boost/asio/buffer.hpp>
@@ -146,11 +148,15 @@ TestWsServer::port() const
 std::expected<TestWsConnection, util::requests::RequestError>
 TestWsServer::acceptConnection(asio::yield_context yield)
 {
+    std::cerr << "Listening on port " << this->port() << '\n';
     acceptor_.listen(asio::socket_base::max_listen_connections);
 
     boost::beast::error_code errorCode;
+    std::cerr << "Creating socket\n";
     asio::ip::tcp::socket socket(acceptor_.get_executor());
+    std::cerr << "Socket created\n";
     acceptor_.async_accept(socket, yield[errorCode]);
+    std::cerr << "Socket accepted\n";
     if (errorCode)
         return std::unexpected{util::requests::RequestError{"Accept error", errorCode}};
 

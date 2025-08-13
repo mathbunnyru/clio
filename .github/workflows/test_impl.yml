@@ -64,7 +64,7 @@ jobs:
 
       - name: Run clio_tests (regular)
         if: env.SANITIZER_IGNORE_ERRORS == 'false'
-        run: ./clio_tests
+        run: ./clio_tests --gtest_filter=WsConnectionTests.WriteTimeout
 
       - name: Run clio_tests (sanitizer errors ignored)
         if: env.SANITIZER_IGNORE_ERRORS == 'true'

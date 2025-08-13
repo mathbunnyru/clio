@@ -20,6 +20,8 @@
 #include "util/AsioContextTestFixture.hpp"
 #include "util/Spawn.hpp"
 #include "util/TestWsServer.hpp"
+#include "util/config/ConfigDefinition.hpp"
+#include "util/log/Logger.hpp"
 #include "util/requests/Types.hpp"
 #include "util/requests/WsConnection.hpp"
 
@@ -159,21 +161,31 @@ TEST_F(WsConnectionTests, ReadWithTimeoutWorksFine)
 
 TEST_F(WsConnectionTests, WriteTimeout)
 {
+    std::cerr << "Starting WriteTimeout test\n";
+
     TestWsConnectionPtr serverConnection;
     util::spawn(ctx_, [&](asio::yield_context yield) {
+        std::cerr << "Creating server connection\n";
         serverConnection = std::make_unique<TestWsConnection>(unwrap(server.acceptConnection(yield)));
+        std::cerr << "Server connection created\n";
     });
 
+    std::cerr << "Running runSpawn\n";
     runSpawn([&](asio::yield_context yield) {
+        std::cerr << "Inside runSpawn\n";
         auto connection = unwrap(builder.plainConnect(yield));
+        std::cerr << "Inside runSpawn, connection created\n";
         std::optional<RequestError> error;
 
         // Write is success even if the other side is not reading.
         // It seems we need to fill some socket buffer before the timeout occurs.
         while (not error.has_value()) {
+            // LOG(logger.fatal()) << "Writing hello";
             error = connection->write("hello", yield, std::chrono::milliseconds{1});
+            // LOG(logger.fatal()) << "Writing hello done, have_error: " << error.has_value();
         }
         ASSERT_TRUE(error.has_value());
+        std::cerr << "Writing hello done, error: " << error->errorCode().value() << '\n';
         EXPECT_EQ(error->errorCode().value().value(), asio::error::timed_out);
     });
 }
