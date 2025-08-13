@@ -23,7 +23,6 @@ on:
       - .github/actions/generate/action.yml
       - .github/actions/prepare_runner/action.yml
       - ".github/scripts/conan/**"
-      - "!.github/scripts/conan/apple-clang-local.profile"
 
       - conanfile.py
       - conan.lock
@@ -35,7 +34,6 @@ on:
       - .github/actions/generate/action.yml
       - .github/actions/prepare_runner/action.yml
       - ".github/scripts/conan/**"
-      - "!.github/scripts/conan/apple-clang-local.profile"
 
       - conanfile.py
       - conan.lock
