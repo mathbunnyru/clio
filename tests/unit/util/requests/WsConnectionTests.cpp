@@ -171,7 +171,7 @@ TEST_F(WsConnectionTests, WriteTimeout)
         // Write is success even if the other side is not reading.
         // It seems we need to fill some socket buffer before the timeout occurs.
         while (not error.has_value()) {
-            error = connection->write("hello", yield, std::chrono::milliseconds{1});
+            error = connection->write(std::string(100'000, 'a'), yield, std::chrono::milliseconds{1});
         }
         ASSERT_TRUE(error.has_value());
         EXPECT_EQ(error->errorCode().value().value(), asio::error::timed_out);
