@@ -69,7 +69,7 @@ jobs:
         with:
           images: |
             ${{ needs.repo.outputs.GHCR_REPO }}/clio-gcc
-            rippleci/clio_gcc
+            ${{ github.repository_owner == 'XRPLF' && 'rippleci/clio_gcc' || '' }}
           push_image: ${{ github.event_name != 'pull_request' }}
           directory: docker/compilers/gcc
           tags: |
@@ -81,7 +81,7 @@ jobs:
           build_args: |
             GCC_MAJOR_VERSION=${{ env.GCC_MAJOR_VERSION }}
             GCC_VERSION=${{ env.GCC_VERSION }}
-          dockerhub_repo: ${{ github.repo_owner == 'XRPLF' && 'rippleci/clio_gcc' || '' }}
+          dockerhub_repo: ${{ github.repository_owner == 'XRPLF' && 'rippleci/clio_gcc' || '' }}
           dockerhub_description: GCC compiler for XRPLF/clio.
 
   gcc-arm64:
@@ -107,7 +107,7 @@ jobs:
         with:
           images: |
             ${{ needs.repo.outputs.GHCR_REPO }}/clio-gcc
-            rippleci/clio_gcc
+            ${{ github.repository_owner == 'XRPLF' && 'rippleci/clio_gcc' || '' }}
           push_image: ${{ github.event_name != 'pull_request' }}
           directory: docker/compilers/gcc
           tags: |
@@ -119,7 +119,7 @@ jobs:
           build_args: |
             GCC_MAJOR_VERSION=${{ env.GCC_MAJOR_VERSION }}
             GCC_VERSION=${{ env.GCC_VERSION }}
-          dockerhub_repo: ${{ github.repo_owner == 'XRPLF' && 'rippleci/clio_gcc' || '' }}
+          dockerhub_repo: ${{ github.repository_owner == 'XRPLF' && 'rippleci/clio_gcc' || '' }}
           dockerhub_description: GCC compiler for XRPLF/clio.
 
   gcc-merge:
@@ -196,7 +196,7 @@ jobs:
         with:
           images: |
             ${{ needs.repo.outputs.GHCR_REPO }}/clio-clang
-            rippleci/clio_clang
+            ${{ github.repository_owner == 'XRPLF' && 'rippleci/clio_clang' || '' }}
           push_image: ${{ github.event_name != 'pull_request' }}
           directory: docker/compilers/clang
           tags: |
@@ -206,7 +206,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           build_args: |
             CLANG_MAJOR_VERSION=${{ env.CLANG_MAJOR_VERSION }}
-          dockerhub_repo: ${{ github.repo_owner == 'XRPLF' && 'rippleci/clio_clang' || '' }}
+          dockerhub_repo: ${{ github.repository_owner == 'XRPLF' && 'rippleci/clio_clang' || '' }}
           dockerhub_description: Clang compiler for XRPLF/clio.
 
   tools-amd64:
@@ -321,7 +321,7 @@ jobs:
         with:
           images: |
             ${{ needs.repo.outputs.GHCR_REPO }}/clio-ci
-            rippleci/clio_ci
+            ${{ github.repository_owner == 'XRPLF' && 'rippleci/clio_ci' || '' }}
           push_image: ${{ github.event_name != 'pull_request' }}
           directory: docker/ci
           tags: |
@@ -334,5 +334,5 @@ jobs:
             CLANG_MAJOR_VERSION=${{ env.CLANG_MAJOR_VERSION }}
             GCC_MAJOR_VERSION=${{ env.GCC_MAJOR_VERSION }}
             GCC_VERSION=${{ env.GCC_VERSION }}
-          dockerhub_repo: ${{ github.repo_owner == 'XRPLF' && 'rippleci/clio_ci' || '' }}
+          dockerhub_repo: ${{ github.repository_owner == 'XRPLF' && 'rippleci/clio_ci' || '' }}
           dockerhub_description: CI image for XRPLF/clio.
