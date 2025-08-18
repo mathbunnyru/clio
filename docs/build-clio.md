@@ -14,13 +14,14 @@
 We use our Docker image `ghcr.io/XRPLF/clio-ci` to build `Clio`, see [Building Clio with Docker](#building-clio-with-docker).
 You can find information about exact compiler versions and tools in the [image's README](https://github.com/XRPLF/clio/blob/develop/docker/ci/README.md).
 
-Compilers below the following versions are unlikely to work without drastic changes to the codebase:
+The following compiler version are guaranteed to work.
+Any compiler with lower version may not be able to build Clio.:
 
 | Compiler    | Version |
 | ----------- | ------- |
-| GCC         | 12.3    |
-| Clang       | 16      |
-| Apple Clang | 15      |
+| GCC         | 15.2    |
+| Clang       | 19      |
+| Apple Clang | 17      |
 
 ### Conan Configuration
 
