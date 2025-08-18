@@ -15,7 +15,7 @@ We use our Docker image `ghcr.io/XRPLF/clio-ci` to build `Clio`, see [Building C
 You can find information about exact compiler versions and tools in the [image's README](https://github.com/XRPLF/clio/blob/develop/docker/ci/README.md).
 
 The following compiler version are guaranteed to work.
-Any compiler with lower version may not be able to build Clio.:
+Any compiler with lower version may not be able to build Clio:
 
 | Compiler    | Version |
 | ----------- | ------- |
