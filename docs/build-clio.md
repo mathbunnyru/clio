@@ -11,6 +11,11 @@
 - [**Optional**] [GCovr](https://gcc.gnu.org/onlinedocs/gcc/Gcov.html): needed for code coverage generation
 - [**Optional**] [CCache](https://ccache.dev/): speeds up compilation if you are going to compile Clio often
 
+We use our Docker image `ghcr.io/XRPLF/clio-ci` to build `Clio`, see [Building Clio with Docker](#building-clio-with-docker).
+You can find information about exact compiler versions and tools in the [image's README](https://github.com/XRPLF/clio/blob/develop/docker/ci/README.md).
+
+Compilers below the following versions are unlikely to work without drastic changes to the codebase:
+
 | Compiler    | Version |
 | ----------- | ------- |
 | GCC         | 12.3    |
