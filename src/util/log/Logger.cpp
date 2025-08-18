@@ -227,6 +227,7 @@ LogService::init(config::ClioConfigDefinition const& config)
     spdlog::drop_all();
 
     data.isAsync = config.get<bool>("log.is_async");
+    data.defaultSeverity = getSeverityLevel(config.get<std::string>("log.level"));
 
     if (data.isAsync) {
         spdlog::init_thread_pool(8192, 1);
@@ -252,9 +253,8 @@ LogService::init(config::ClioConfigDefinition const& config)
         data.allSinks.push_back(createFileSink(params));
     }
 
-    // get default severity, can be overridden per channel using the `log.channels` array
-    auto const defaultSeverity = getSeverityLevel(config.get<std::string>("log.level"));
-    auto const maybeMinSeverity = getMinSeverity(config, defaultSeverity);
+    // get min severity per channel, can be overridden using the `log.channels` array
+    auto const maybeMinSeverity = getMinSeverity(config, data.defaultSeverity);
     if (!maybeMinSeverity) {
         return std::unexpected{maybeMinSeverity.error()};
     }
@@ -263,7 +263,7 @@ LogService::init(config::ClioConfigDefinition const& config)
     // Create loggers for each channel
     for (auto const& channel : Logger::kCHANNELS) {
         auto const it = minSeverity.find(channel);
-        auto const severity = (it != minSeverity.end()) ? it->second : defaultSeverity;
+        auto const severity = (it != minSeverity.end()) ? it->second : data.defaultSeverity;
         registerLogger(channel, severity);
     }
 
@@ -272,7 +272,7 @@ LogService::init(config::ClioConfigDefinition const& config)
     std::string const format = config.get<std::string>("log.format");
     spdlog::set_pattern(format);
 
-    LOG(LogService::info()) << "Default log level = " << toString(defaultSeverity);
+    LOG(LogService::info()) << "Default log level = " << toString(data.defaultSeverity);
     return {};
 }
 
