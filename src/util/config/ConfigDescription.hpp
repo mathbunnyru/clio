@@ -110,13 +110,7 @@ public:
     static void
     writeConfigDescriptionToFile(std::ostream& file)
     {
-        file << "# Clio Config Description\n\n";
-        file << "This document provides a list of all available Clio configuration properties in detail.\n\n";
-        file << "> [!NOTE]\n";
-        file << "> Dot notation in configuration key names represents nested fields. For example, "
-                "**database.scylladb** refers to the _scylladb_ field inside the _database_ object. If a key name "
-                "includes \"[]\", it indicates that the nested field is an array (e.g., etl_sources.[]).\n\n";
-        file << "## Configuration Details\n";
+        file << kCONFIG_DESCRIPTION_HEADER;
 
         for (auto const& [key, val] : kCONFIG_DESCRIPTION) {
             file << "\n### " << key << "\n\n";
@@ -133,6 +127,19 @@ public:
     }
 
 private:
+    static constexpr auto kCONFIG_DESCRIPTION_HEADER =
+        R"(# Clio Config Description
+
+This document provides a list of all available Clio configuration properties in detail.
+
+> [!NOTE]
+> Dot notation in configuration key names represents nested fields.
+> For example, **database.scylladb** refers to the _scylladb_ field inside the _database_ object.
+> If a key name includes "[]", it indicates that the nested field is an array (e.g., etl_sources.[]).
+
+## Configuration Details
+)";
+
     static constexpr auto kCONFIG_DESCRIPTION = std::array{
         KV{
             .key = "database.type",
