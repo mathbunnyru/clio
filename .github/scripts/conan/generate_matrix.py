@@ -3,7 +3,7 @@ import itertools
 import json
 
 LINUX_OS = ["heavy", "heavy-arm64"]
-LINUX_CONTAINERS = ['{ "image": "ghcr.io/xrplf/clio-ci:8ad111655c4d04bfedb7e7cb3bbfba6d4204852d" }']
+LINUX_CONTAINERS = ['{ "image": "ghcr.io/mathbunnyru/clio-ci:b4f5d27718699f59f4ca879a221dfb929b8d77c4" }']
 LINUX_COMPILERS = ["gcc", "clang"]
 
 MACOS_OS = ["macos15"]
