@@ -22,7 +22,7 @@ inputs:
     required: true
     default: "true"
   code_coverage:
-    description: Whether conan's coverage option should be on or not
+    description: Whether to enable code coverage
     required: true
     default: "false"
   static:
@@ -56,7 +56,7 @@ runs:
               '' }}
         INTEGRATION_TESTS: "${{ inputs.integration_tests == 'true' && 'ON' || 'OFF' }}"
         BENCHMARK: "${{ inputs.benchmark == 'true' && 'ON' || 'OFF' }}"
-        CODE_COVERAGE: "${{ inputs.code_coverage == 'true' && 'ON' || 'OFF' }}"
+        COVERAGE: "${{ inputs.code_coverage == 'true' && 'ON' || 'OFF' }}"
         STATIC: "${{ inputs.static == 'true' && 'ON' || 'OFF' }}"
         TIME_TRACE: "${{ inputs.time_trace == 'true' && 'ON' || 'OFF' }}"
         USE_MOLD: "${{ inputs.use_mold == 'true' && 'ON' || 'OFF' }}"
@@ -71,7 +71,7 @@ runs:
           "${SANITIZER_OPTION}" \
           -Dintegration_tests="${INTEGRATION_TESTS}" \
           -Dbenchmark="${BENCHMARK}" \
-          -Dcode_coverage="${CODE_COVERAGE}" \
+          -Dcoverage="${COVERAGE}" \
           -Dstatic="${STATIC}" \
           -Dtime_trace="${TIME_TRACE}" \
           -Duse_mold="${USE_MOLD}" \
