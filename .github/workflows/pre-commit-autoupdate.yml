@@ -12,8 +12,11 @@ on:
 
 jobs:
   auto-update:
-    uses: XRPLF/actions/.github/workflows/pre-commit-autoupdate.yml@ebfdb73e1a22763b44da3697484eb134d9441231
+    uses: XRPLF/actions/.github/workflows/pre-commit-autoupdate.yml@afbcbdafbe0ce5439492fb87eda6441371086386
     with:
       sign_commit: true
       committer: "Clio CI <skuznetsov@ripple.com>"
       reviewers: "godexsoft,kuznetsss,PeterChen13579,mathbunnyru"
+    secrets:
+      GPG_PRIVATE_KEY: ${{ secrets.ACTIONS_GPG_PRIVATE_KEY }}
+      GPG_PASSPHRASE: ${{ secrets.ACTIONS_GPG_PASSPHRASE }}
