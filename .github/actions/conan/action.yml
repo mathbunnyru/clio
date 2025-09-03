@@ -1,5 +1,5 @@
-name: Run conan and cmake
-description: Run conan and cmake
+name: Run Conan
+description: Run conan to install dependencies
 
 inputs:
   build_dir:

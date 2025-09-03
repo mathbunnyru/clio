@@ -1,5 +1,5 @@
-name: Run conan and cmake
-description: Run conan and cmake
+name: Run CMake
+description: Run CMake to generate build files
 
 inputs:
   build_dir:
