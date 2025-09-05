@@ -124,8 +124,7 @@ conan lock create .
    conan install .. --output-folder . --build missing --settings build_type=Release
    ```
 
-   > [!TIP]
-   > You can use `--profile:all <PROFILE_NAME>` to choose a specific conan profile.
+   > You can add `--profile:all <PROFILE_NAME>` to choose a specific conan profile.
 
 3. Configure and generate build files with CMake
 
@@ -133,8 +132,7 @@ conan lock create .
    cmake -DCMAKE_TOOLCHAIN_FILE:FILEPATH=build/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release    ..
    ```
 
-   > [!TIP]
-   > You can also add `-GNinja` to use Ninja build system instead of Make.
+   > You can add `-GNinja` to use the Ninja build system (instead of Make).
 
 4. Now, you can build all targets or specific ones:
 
@@ -145,7 +143,7 @@ conan lock create .
    cmake --build . --parallel 8 --target clio_server
    ```
 
-   You should see `clio_server` and `clio_tests` in the `build` directory (the current directory).
+   You should see `clio_server` and `clio_tests` in the current directory.
 
 > [!NOTE]
 > If you've built Clio before and the build is now failing, it's likely due to updated dependencies. Try deleting the build folder and then rerunning the Conan and CMake commands mentioned above.
