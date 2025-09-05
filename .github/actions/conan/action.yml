@@ -40,6 +40,4 @@ runs:
           -of build \
           -b "$CONAN_BUILD_OPTION" \
           -s "build_type=${{ inputs.build_type }}" \
-          -o "&:tests=True" \
-          -o "&:benchmark=${BUILD_BENCHMARK}" \
           --profile:all "${{ inputs.conan_profile }}"
