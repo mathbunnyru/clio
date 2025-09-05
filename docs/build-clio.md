@@ -129,7 +129,7 @@ conan lock create .
 3. Configure and generate build files with CMake
 
    ```sh
-   cmake -DCMAKE_TOOLCHAIN_FILE:FILEPATH=build/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release    ..
+   cmake -DCMAKE_TOOLCHAIN_FILE:FILEPATH=build/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release ..
    ```
 
    > You can add `-GNinja` to use the Ninja build system (instead of Make).
