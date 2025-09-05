@@ -62,8 +62,6 @@ class ClioConan(ConanFile):
 
     def generate(self):
         tc = CMakeToolchain(self)
-        for option_name, option_value in self.options.items():
-            tc.variables[option_name] = option_value
         tc.generate()
 
     def build(self):
