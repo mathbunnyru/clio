@@ -112,8 +112,7 @@ conan lock create .
 
 ## Building Clio
 
-1. Create build directory
-   Navigate to Clio's root directory and run:
+1. Navigate to Clio's root directory and run:
 
    ```sh
    mkdir build && cd build
@@ -122,18 +121,20 @@ conan lock create .
 2. Install dependencies through conan
 
    ```sh
-   # You can also specify profile explicitly by adding `--profile:all <PROFILE_NAME>`
    conan install .. --output-folder . --build missing --settings build_type=Release
    ```
 
-   If successful, `conan install` will find the required packages and `cmake` will do the rest.
+   > [!TIP]
+   > You can use `--profile:all <PROFILE_NAME>` to choose a specific conan profile.
 
 3. Configure and generate build files with CMake
 
    ```sh
-   # You can also add -GNinja to use Ninja build system instead of Make
    cmake -DCMAKE_TOOLCHAIN_FILE:FILEPATH=build/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release    ..
    ```
+
+   > [!TIP]
+   > You can also add `-GNinja` to use Ninja build system instead of Make.
 
 4. Now, you can build all targets or specific ones:
 
