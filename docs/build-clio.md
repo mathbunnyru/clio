@@ -118,7 +118,7 @@ conan lock create .
    mkdir build && cd build
    ```
 
-2. Install dependencies through conan
+2. Install dependencies through conan.
 
    ```sh
    conan install .. --output-folder . --build missing --settings build_type=Release
@@ -126,7 +126,7 @@ conan lock create .
 
    > You can add `--profile:all <PROFILE_NAME>` to choose a specific conan profile.
 
-3. Configure and generate build files with CMake
+3. Configure and generate build files with CMake.
 
    ```sh
    cmake -DCMAKE_TOOLCHAIN_FILE:FILEPATH=build/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release ..
@@ -184,7 +184,7 @@ git clone https://github.com/XRPLF/clio
 cd clio
 ```
 
-And then follow the same steps as in [Building Clio](#building-clio), use `--profile:all gcc` or `--profile:all clang` with `conan install` command to choose the desired compiler.
+Follow the same steps in the [Building Clio](#building-clio) section. You can use `--profile:all gcc` or `--profile:all clang` with the `conan install` command to choose the desired compiler.
 
 ## Developing against `rippled` in standalone mode
 
