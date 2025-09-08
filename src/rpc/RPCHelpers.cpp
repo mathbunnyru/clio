@@ -102,11 +102,6 @@
 #include <utility>
 #include <vector>
 
-// local to compilation unit loggers
-namespace {
-util::Logger gLog{"RPC"};
-}  // namespace
-
 namespace rpc {
 
 std::optional<AccountCursor>
@@ -209,6 +204,8 @@ accountFromStringStrict(std::string const& account)
 std::pair<std::shared_ptr<ripple::STTx const>, std::shared_ptr<ripple::STObject const>>
 deserializeTxPlusMeta(data::TransactionAndMetadata const& blobs)
 {
+    static util::Logger const log{"RPC"};  // NOLINT(readability-identifier-naming)
+
     try {
         std::pair<std::shared_ptr<ripple::STTx const>, std::shared_ptr<ripple::STObject const>> result;
         {
@@ -225,9 +222,9 @@ deserializeTxPlusMeta(data::TransactionAndMetadata const& blobs)
         std::stringstream meta;
         std::ranges::copy(blobs.transaction, std::ostream_iterator<unsigned char>(txn));
         std::ranges::copy(blobs.metadata, std::ostream_iterator<unsigned char>(meta));
-        LOG(gLog.error()) << "Failed to deserialize transaction. txn = " << txn.str() << " - meta = " << meta.str()
-                          << " txn length = " << std::to_string(blobs.transaction.size())
-                          << " meta length = " << std::to_string(blobs.metadata.size());
+        LOG(log.error()) << "Failed to deserialize transaction. txn = " << txn.str() << " - meta = " << meta.str()
+                         << " txn length = " << std::to_string(blobs.transaction.size())
+                         << " meta length = " << std::to_string(blobs.metadata.size());
         throw e;
     }
 }
@@ -804,7 +801,9 @@ traverseOwnedNodes(
     }
     auto end = std::chrono::system_clock::now();
 
-    LOG(gLog.debug()) << fmt::format(
+    static util::Logger const log{"RPC"};  // NOLINT(readability-identifier-naming)
+
+    LOG(log.debug()) << fmt::format(
         "Time loading owned directories: {} milliseconds, entries size: {}",
         std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count(),
         keys.size()
@@ -812,7 +811,7 @@ traverseOwnedNodes(
 
     auto [objects, timeDiff] = util::timed([&]() { return backend.fetchLedgerObjects(keys, sequence, yield); });
 
-    LOG(gLog.debug()) << "Time loading owned entries: " << timeDiff << " milliseconds";
+    LOG(log.debug()) << "Time loading owned entries: " << timeDiff << " milliseconds";
 
     for (auto i = 0u; i < objects.size(); ++i) {
         ripple::SerialIter it{objects[i].data(), objects[i].size()};
@@ -1300,7 +1299,8 @@ postProcessOrderBook(
 
             jsonOffers.push_back(offerJson);
         } catch (std::exception const& e) {
-            LOG(gLog.error()) << "caught exception: " << e.what();
+            util::Logger const log{"RPC"};
+            LOG(log.error()) << "caught exception: " << e.what();
         }
     }
     return jsonOffers;
