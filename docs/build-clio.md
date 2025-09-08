@@ -152,16 +152,16 @@ conan lock create .
 
 There are several CMake options you can use to customize the build:
 
-| CMake Option          | Default | CMake Target                   | Description                           |
-| --------------------- | ------- | ------------------------------ | ------------------------------------- |
-| `-Dcoverage`          | OFF     | `clio_tests-ccov`              | Enables code coverage generation      |
-| `-Dtests`             | OFF     | `clio_tests`                   | Enables unit tests                    |
-| `-Dintegration_tests` | OFF     | `clio_integration_tests`       | Enables integration tests             |
-| `-Dbenchmark`         | OFF     | `clio_benchmark`               | Enables benchmark executable          |
-| `-Ddocs`              | OFF     | `docs`                         | Enables API documentation generation  |
-| `-Dlint`              | OFF     | See [#clang-tidy](#clang-tidy) | Enables `clang-tidy` static analysis  |
-| `-Dsan`               | N/A     | N/A                            | Enables Sanitizer (asan, tsan, ubsan) |
-| `-Dpackage`           | OFF     | N/A                            | Creates a debian package              |
+| CMake Option          | Default | CMake Target                                             | Description                           |
+| --------------------- | ------- | -------------------------------------------------------- | ------------------------------------- |
+| `-Dcoverage`          | OFF     | `clio_tests-ccov`                                        | Enables code coverage generation      |
+| `-Dtests`             | OFF     | `clio_tests`                                             | Enables unit tests                    |
+| `-Dintegration_tests` | OFF     | `clio_integration_tests`                                 | Enables integration tests             |
+| `-Dbenchmark`         | OFF     | `clio_benchmark`                                         | Enables benchmark executable          |
+| `-Ddocs`              | OFF     | `docs`                                                   | Enables API documentation generation  |
+| `-Dlint`              | OFF     | See [#clang-tidy](#using-clang-tidy-for-static-analysis) | Enables `clang-tidy` static analysis  |
+| `-Dsan`               | N/A     | N/A                                                      | Enables Sanitizer (asan, tsan, ubsan) |
+| `-Dpackage`           | OFF     | N/A                                                      | Creates a debian package              |
 
 ### Generating API docs for Clio
 
@@ -235,7 +235,7 @@ Sometimes, during development, you need to build against a custom version of `li
 
    See [Building Clio](#building-clio) for details.
 
-## Using `clang-tidy` for static analysis {#clang-tidy}
+## Using `clang-tidy` for static analysis
 
 Clang-tidy can be run by CMake when building the project.
 To achieve this, you just need to provide the option `-Dlint=ON` when generating CMake files:
