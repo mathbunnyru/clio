@@ -28,6 +28,7 @@
 #include "rpc/common/Types.hpp"
 #include "util/AccountUtils.hpp"
 #include "util/Assert.hpp"
+#include "util/JsonUtils.hpp"
 #include "util/Profiler.hpp"
 #include "util/log/Logger.hpp"
 #include "web/Context.hpp"
@@ -433,8 +434,8 @@ ledgerHeaderFromRequest(std::shared_ptr<data::BackendInterface const> const& bac
             } else {
                 ledgerSequence = parseStringAsUInt(stringIndex);
             }
-        } else if (indexValue.is_int64()) {
-            ledgerSequence = indexValue.as_int64();
+        } else if (indexValue.is_int64() or indexValue.is_uint64()) {
+            ledgerSequence = util::integralValueAs<uint32_t>(indexValue);
         }
     } else {
         ledgerSequence = ctx.range.maxSequence;
