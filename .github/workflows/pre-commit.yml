@@ -12,3 +12,13 @@ jobs:
     with:
       runs_on: heavy
       container: '{ "image": "ghcr.io/xrplf/clio-ci:384e79cd32f5f6c0ab9be3a1122ead41c5a7e67d" }'
+
+  test-download:
+    container:
+      image: ghcr.io/xrplf/clio-ci:384e79cd32f5f6c0ab9be3a1122ead41c5a7e67d
+
+    runs-on: heavy
+    steps:
+      - name: Try to download a build artifact
+        run: |
+          wget 'https://artifactory.ops.ripple.com/ui/api/v1/download?repoKey=rippled-deb&path=pool%252Fnightly%252Fclio_20250218154313%7E25296f8-1_amd64.deb&jfLoader=true'
