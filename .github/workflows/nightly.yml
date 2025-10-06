@@ -15,7 +15,7 @@ on:
       - .github/workflows/build-clio-docker-image.yml
 
       - ".github/actions/**"
-      - "!.github/actions/code_coverage/**"
+      - "!.github/actions/code-coverage/**"
       - .github/scripts/prepare-release-artifacts.sh
 
 concurrency:
@@ -133,7 +133,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Create an issue
-        uses: ./.github/actions/create_issue
+        uses: ./.github/actions/create-issue
         env:
           GH_TOKEN: ${{ github.token }}
         with:

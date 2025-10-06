@@ -51,7 +51,7 @@ jobs:
           conan_profile: ${{ env.CONAN_PROFILE }}
 
       - name: Build Clio
-        uses: ./.github/actions/build_clio
+        uses: ./.github/actions/build-clio
 
       - name: Strip tests
         run: strip build/clio_tests
@@ -93,7 +93,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Create an issue
-        uses: ./.github/actions/create_issue
+        uses: ./.github/actions/create-issue
         env:
           GH_TOKEN: ${{ github.token }}
         with:
