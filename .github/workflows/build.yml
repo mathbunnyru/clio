@@ -14,8 +14,8 @@ on:
       - .github/workflows/reusable-upload-coverage-report.yml
 
       - ".github/actions/**"
-      - "!.github/actions/build_docker_image/**"
-      - "!.github/actions/create_issue/**"
+      - "!.github/actions/build-docker-image/**"
+      - "!.github/actions/create-issue/**"
 
       - CMakeLists.txt
       - conanfile.py

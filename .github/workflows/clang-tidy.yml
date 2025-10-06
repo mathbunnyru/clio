@@ -45,7 +45,7 @@ jobs:
           disable_ccache: true
 
       - name: Restore cache
-        uses: ./.github/actions/restore_cache
+        uses: ./.github/actions/restore-cache
         id: restore_cache
         with:
           conan_profile: ${{ env.CONAN_PROFILE }}
@@ -62,7 +62,7 @@ jobs:
           conan_profile: ${{ env.CONAN_PROFILE }}
 
       - name: Get number of threads
-        uses: ./.github/actions/get_number_of_threads
+        uses: ./.github/actions/get-threads-number
         id: number_of_threads
 
       - name: Run clang-tidy
@@ -90,7 +90,7 @@ jobs:
       - name: Create an issue
         if: ${{ steps.run_clang_tidy.outcome != 'success' && github.event_name != 'pull_request' }}
         id: create_issue
-        uses: ./.github/actions/create_issue
+        uses: ./.github/actions/create-issue
         env:
           GH_TOKEN: ${{ github.token }}
         with:
