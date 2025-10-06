@@ -18,7 +18,7 @@ jobs:
 
       - name: Check if message starts with upper-case letter
         run: |
-          if [[ ! "${{ github.event.pull_request.title }}" =~ ^[a-z]+:\ [A-Z] ]]; then
+          if [[ ! "${{ github.event.pull_request.title }}" =~ ^[a-z]+:\ [\[A-Z] ]]; then
             echo "Error: PR title must start with an upper-case letter."
             exit 1
           fi
