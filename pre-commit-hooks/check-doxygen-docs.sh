@@ -45,7 +45,7 @@ if [[ "1.14.0" > "$version" ]]; then
 
                                     ERROR
 -----------------------------------------------------------------------------
-        A minimum of version 1.14 of `doxygen` is required.
+        A minimum of version 1.14 of `which doxygen` is required.
         Your version is $version. Please upgrade it.
 
         Your changes may fail CI checks.
