@@ -99,4 +99,6 @@ jobs:
 
       - name: Upload Conan packages
         if: ${{ github.repository_owner == 'XRPLF' && github.event_name != 'pull_request' && github.event_name != 'schedule' }}
-        run: conan upload "*" -r=xrplf --confirm ${{ github.event.inputs.force_upload == 'true' && '--force' || '' }}
+        env:
+          FORCE_OPTION: ${{ github.event.inputs.force_upload == 'true' && '--force' || '' }}
+        run: conan upload "*" -r=xrplf --confirm ${FORCE_OPTION}
