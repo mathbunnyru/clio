@@ -221,12 +221,14 @@ jobs:
       - name: Verify expected version
         if: ${{ inputs.expected_version != '' }}
         shell: bash
+        env:
+          INPUT_EXPECTED_VERSION: ${{ inputs.expected_version }}
         run: |
           set -e
-          EXPECTED_VERSION="clio-${{ inputs.expected_version }}"
+          EXPECTED_VERSION="clio-${INPUT_EXPECTED_VERSION}"
           actual_version=$(./build/clio_server --version)
           if [[ "$actual_version" != "$EXPECTED_VERSION" ]]; then
-            echo "Expected version '$EXPECTED_VERSION', but got '$actual_version'"
+            echo "Expected version '${EXPECTED_VERSION}', but got '${actual_version}'"
             exit 1
           fi
 
