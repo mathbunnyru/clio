@@ -25,16 +25,6 @@ on:
 
       - conanfile.py
       - conan.lock
-  push:
-    branches: [develop]
-    paths:
-      - .github/workflows/upload-conan-deps.yml
-
-      - .github/actions/conan/action.yml
-      - ".github/scripts/conan/**"
-
-      - conanfile.py
-      - conan.lock
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
