@@ -46,7 +46,6 @@ jobs:
       expected_version: ${{ github.event_name == 'push' && github.ref_name || '' }}
 
   release:
-    needs: build-and-test
     uses: ./.github/workflows/reusable-release.yml
     with:
       delete_pattern: ""
@@ -55,5 +54,5 @@ jobs:
       version: "${{ github.ref_name }}"
       header: >
         ${{ contains(github.ref_name, '-') && '> **Note:** Please remember that this is a release candidate and it is not recommended for production use.' || '' }}
-      generate_changelog: ${{ !contains(github.ref_name, '-') }}
+      generate_changelog: false
       draft: ${{ !contains(github.ref_name, '-') }}
