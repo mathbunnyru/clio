@@ -84,24 +84,20 @@ jobs:
           git-cliff "${BASE_COMMIT}..HEAD" --ignore-tags "nightly|-b|-rc"
           cat CHANGELOG.md >> "${RUNNER_TEMP}/release_notes.md"
 
-      - name: Prepare release artifacts
-        shell: bash
-        run: .github/scripts/prepare-release-artifacts.sh release_artifacts
-
-      - name: Upload release notes
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
-        with:
-          name: release_notes_${{ inputs.version }}
-          path: "${RUNNER_TEMP}/release_notes.md"
-
       - name: Remove current release and tag
         if: ${{ github.event_name != 'pull_request' && inputs.overwrite_release }}
         shell: bash
         env:
           RELEASE_VERSION: ${{ inputs.version }}
         run: |
-          gh release delete "${RELEASE_VERSION}" --yes || true
-          git push origin :"${RELEASE_VERSION}" || true
+          echo "Removing existing release and tag for version ${RELEASE_VERSION} if they exist"
+          gh release delete "${RELEASE_VERSION}" --cleanup-tag --yes || true
+
+          echo "Tagging"
+          git tag "${RELEASE_VERSION}"
+
+          echo "Pushing tag"
+          git push origin "${RELEASE_VERSION}"
 
       - name: Publish release
         if: ${{ github.event_name != 'pull_request' }}
@@ -117,5 +113,4 @@ jobs:
             --title "${RELEASE_TITLE}" \
             --target "${GITHUB_SHA}" \
             ${DRAFT_OPTION} \
-            --notes-file "${RUNNER_TEMP}/release_notes.md" \
-            ./release_artifacts/clio_server*
+            --notes-file "${RUNNER_TEMP}/release_notes.md"

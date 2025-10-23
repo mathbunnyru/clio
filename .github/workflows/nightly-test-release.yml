@@ -1,0 +1,25 @@
+name: Nightly release
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - .github/workflows/nightly-test-release.yml
+
+jobs:
+  nightly_release:
+    permissions:
+      contents: write
+    uses: ./.github/workflows/reusable-release.yml
+    with:
+      overwrite_release: true
+      prerelease: true
+      title: "Clio development (nightly) build"
+      version: nightly
+      header: >
+        > **Note:** Please remember that this is a development release and it is not recommended for production use.
+
+        Changelog (including previous releases): <https://github.com/XRPLF/clio/commits/nightly>
+      generate_changelog: false
+      draft: false
