@@ -105,7 +105,7 @@ jobs:
           echo "date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
 
   nightly_release:
-    needs: [build-and-test, get_date]
+    needs: [get_date]
     uses: ./.github/workflows/reusable-release.yml
     with:
       delete_pattern: "nightly-*"
