@@ -84,10 +84,6 @@ jobs:
           git-cliff "${BASE_COMMIT}..HEAD" --ignore-tags "nightly|-b|-rc"
           cat CHANGELOG.md >> "${RUNNER_TEMP}/release_notes.md"
 
-      - name: Prepare release artifacts
-        shell: bash
-        run: .github/scripts/prepare-release-artifacts.sh release_artifacts
-
       - name: Upload release notes
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
@@ -122,5 +118,4 @@ jobs:
             --title "${RELEASE_TITLE}" \
             --target "${GITHUB_SHA}" \
             ${DRAFT_OPTION} \
-            --notes-file "${RUNNER_TEMP}/release_notes.md" \
-            ./release_artifacts/clio_server*
+            --notes-file "${RUNNER_TEMP}/release_notes.md"
