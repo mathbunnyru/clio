@@ -115,7 +115,7 @@ jobs:
       header: >
         > **Note:** Please remember that this is a development release and it is not recommended for production use.
 
-        Changelog (including previous releases): <https://github.com/XRPLF/clio/commits/nightly>
+        Changelog (including previous releases): <https://github.com/XRPLF/clio/commits/nightly-${{ needs.get_date.outputs.date }}>
       generate_changelog: false
       draft: false
 
