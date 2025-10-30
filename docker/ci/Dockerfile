@@ -55,7 +55,7 @@ RUN pip install -q --no-cache-dir \
         # lxml 6.0.0 is not compatible with our image
         'lxml<6.0.0' \
         cmake \
-        conan==2.22.0 \
+        conan==2.22.1 \
         gcovr
 
 # Install LLVM tools
