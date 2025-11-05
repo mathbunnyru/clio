@@ -127,7 +127,6 @@ public:
      * Creates and runs the ETL service.
      *
      * @param config The configuration to use
-     * @param ioc io context to run on
      * @param ctx Execution context for asynchronous operations
      * @param backend BackendInterface implementation
      * @param subscriptions Subscription manager
@@ -138,7 +137,6 @@ public:
     static std::shared_ptr<ETLServiceInterface>
     makeETLService(
         util::config::ClioConfigDefinition const& config,
-        boost::asio::io_context& ioc,  // TODO: remove (LedgerPublisher needs to be changed)
         util::async::AnyExecutionContext ctx,
         std::shared_ptr<BackendInterface> backend,
         std::shared_ptr<feed::SubscriptionManagerInterface> subscriptions,

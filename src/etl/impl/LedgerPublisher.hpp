@@ -27,6 +27,8 @@
 #include "feed/SubscriptionManagerInterface.hpp"
 #include "util/Assert.hpp"
 #include "util/Mutex.hpp"
+#include "util/async/AnyExecutionContext.hpp"
+#include "util/async/AnyStrand.hpp"
 #include "util/log/Logger.hpp"
 #include "util/prometheus/Counter.hpp"
 #include "util/prometheus/Prometheus.hpp"
@@ -72,7 +74,7 @@ namespace etl::impl {
 class LedgerPublisher : public LedgerPublisherInterface {
     util::Logger log_{"ETL"};
 
-    boost::asio::strand<boost::asio::io_context::executor_type> publishStrand_;
+    util::async::AnyStrand publishStrand_;
 
     std::shared_ptr<BackendInterface> backend_;
     std::shared_ptr<feed::SubscriptionManagerInterface> subscriptions_;
@@ -93,12 +95,12 @@ public:
      * @brief Create an instance of the publisher
      */
     LedgerPublisher(
-        boost::asio::io_context& ioc,  // TODO: replace with AsyncContext shared with ETLService
+        util::async::AnyExecutionContext ctx,
         std::shared_ptr<BackendInterface> backend,
         std::shared_ptr<feed::SubscriptionManagerInterface> subscriptions,
         SystemState const& state
     )
-        : publishStrand_{boost::asio::make_strand(ioc)}
+        : publishStrand_{ctx.makeStrand()}
         , backend_{std::move(backend)}
         , subscriptions_{std::move(subscriptions)}
         , state_{std::cref(state)}
@@ -161,7 +163,7 @@ public:
     void
     publish(ripple::LedgerHeader const& lgrInfo)
     {
-        boost::asio::post(publishStrand_, [this, lgrInfo = lgrInfo]() {
+        publishStrand_.submit([this, lgrInfo = lgrInfo] {
             LOG(log_.info()) << "Publishing ledger " << std::to_string(lgrInfo.seq);
 
             setLastClose(lgrInfo.closeTime);
