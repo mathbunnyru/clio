@@ -9,10 +9,6 @@ inputs:
     description: Current build type (e.g. Release, Debug)
     required: true
     default: Release
-  code_coverage:
-    description: Whether code coverage is on
-    required: true
-    default: "false"
 
 outputs:
   key:
@@ -33,4 +29,4 @@ runs:
       id: key_without_commit
       shell: bash
       run: |
-        echo "key=clio-ccache-${{ runner.os }}-${{ inputs.build_type }}${{ inputs.code_coverage == 'true' && '-code_coverage' || '' }}-${{ inputs.conan_profile }}-develop" >> "${GITHUB_OUTPUT}"
+        echo "key=clio-ccache-${{ runner.os }}-${{ inputs.build_type }}-${{ inputs.conan_profile }}-develop" >> "${GITHUB_OUTPUT}"
