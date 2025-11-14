@@ -82,7 +82,7 @@ jobs:
       container: '{ "image": "ghcr.io/xrplf/clio-ci:62369411404eb32b0140603a785ff05e1dc36ce8" }'
       conan_profile: gcc
       build_type: Debug
-      download_ccache: false
+      download_ccache: true
       upload_ccache: false
       code_coverage: true
       static: true
