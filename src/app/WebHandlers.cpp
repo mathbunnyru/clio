@@ -19,6 +19,7 @@
 
 #include "app/WebHandlers.hpp"
 
+#include "rpc/Errors.hpp"
 #include "rpc/WorkQueue.hpp"
 #include "util/Assert.hpp"
 #include "util/CoroutineGroup.hpp"
@@ -117,7 +118,11 @@ MetricsHandler::operator()(
         rpc::WorkQueue::Priority::High
     );
 
-    ASSERT(postSuccessful, "Posting Prometheus request to WorkQueue failed");
+    if (!postSuccessful) {
+        return web::ng::Response{
+            boost::beast::http::status::too_many_requests, rpc::makeError(rpc::RippledError::rpcTOO_BUSY), request
+        };
+    }
 
     // Put the coroutine to sleep until the foreign task is done
     coroutineGroup.asyncWait(yield);
