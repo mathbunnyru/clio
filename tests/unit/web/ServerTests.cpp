@@ -231,25 +231,7 @@ makeServerSync(
     std::reference_wrapper<data::LedgerCacheInterface const> cache
 )
 {
-    auto server = std::shared_ptr<web::HttpServer<Executor>>();
-
-    std::mutex m;
-    std::condition_variable cv;
-    bool ready = false;
-
-    boost::asio::dispatch(ioc.get_executor(), [&]() mutable {
-        server = web::makeHttpServer(config, ioc, dosGuard, handler, cache);
-        {
-            std::lock_guard const lk(m);
-            ready = true;
-        }
-        cv.notify_one();
-    });
-    {
-        std::unique_lock lk(m);
-        cv.wait(lk, [&] { return ready; });
-    }
-    return server;
+    return web::makeHttpServer(config, ioc, dosGuard, handler, cache);
 }
 
 }  // namespace
