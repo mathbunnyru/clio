@@ -40,7 +40,7 @@ RUN wget --progress=dot:giga "https://github.com/ccache/ccache/releases/download
     && cd "ccache-${CCACHE_VERSION}" \
     && mkdir build \
     && cd build \
-    && cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=False .. \
+    && cmake -GNinja -DCMAKE_LINKER_TYPE=MOLD -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTING=False .. \
     && ninja install \
     && rm -rf /tmp/* /var/tmp/*
 
@@ -57,7 +57,7 @@ RUN wget --progress=dot:giga "https://github.com/doxygen/doxygen/releases/downlo
     && cd "doxygen-${DOXYGEN_VERSION}" \
     && mkdir build \
     && cd build \
-    && cmake -GNinja -DCMAKE_BUILD_TYPE=Release .. \
+    && cmake -GNinja -DCMAKE_LINKER_TYPE=MOLD -DCMAKE_BUILD_TYPE=Release .. \
     && ninja install \
     && rm -rf /tmp/* /var/tmp/*
 
@@ -67,7 +67,7 @@ RUN wget --progress=dot:giga "https://github.com/aras-p/ClangBuildAnalyzer/archi
     && cd "ClangBuildAnalyzer-${CLANG_BUILD_ANALYZER_VERSION}" \
     && mkdir build \
     && cd build \
-    && cmake -GNinja -DCMAKE_BUILD_TYPE=Release .. \
+    && cmake -GNinja -DCMAKE_LINKER_TYPE=MOLD -DCMAKE_BUILD_TYPE=Release .. \
     && ninja install \
     && rm -rf /tmp/* /var/tmp/*
 
@@ -96,7 +96,7 @@ ARG GDB_VERSION=16.3
 RUN wget --progress=dot:giga "https://sourceware.org/pub/gdb/releases/gdb-${GDB_VERSION}.tar.gz" \
     && tar xf "gdb-${GDB_VERSION}.tar.gz" \
     && cd "gdb-${GDB_VERSION}" \
-    && ./configure --prefix=/usr/local \
+    && ./configure LDFLAGS="-fuse-ld=mold" --prefix=/usr/local \
     && make -j "$(nproc)" \
     && make install-gdb \
     && rm -rf /tmp/* /var/tmp/*
