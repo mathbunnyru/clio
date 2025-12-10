@@ -54,6 +54,7 @@ AccountMPTokensHandler::addMPToken(std::vector<MPTokenResponse>& mpts, ripple::S
     MPTokenResponse token{};
     auto const flags = sle.getFieldU32(ripple::sfFlags);
 
+    token.MPTokenID = ripple::strHex(sle.key());
     token.account = ripple::to_string(sle.getAccountID(ripple::sfAccount));
     token.MPTokenIssuanceID = ripple::strHex(sle.getFieldH192(ripple::sfMPTokenIssuanceID));
     token.MPTAmount = sle.getFieldU64(ripple::sfMPTAmount);
@@ -139,8 +140,11 @@ tag_invoke(boost::json::value_to_tag<AccountMPTokensHandler::Input>, boost::json
     if (jsonObject.contains(JS(ledger_hash)))
         input.ledgerHash = boost::json::value_to<std::string>(jv.at(JS(ledger_hash)));
 
-    if (jsonObject.contains(JS(ledger_index)))
-        input.ledgerIndex = util::getLedgerIndex(jv.at(JS(ledger_index)));
+    if (jsonObject.contains(JS(ledger_index))) {
+        auto const expectedLedgerIndex = util::getLedgerIndex(jv.at(JS(ledger_index)));
+        if (expectedLedgerIndex.has_value())
+            input.ledgerIndex = *expectedLedgerIndex;
+    }
 
     return input;
 }
@@ -167,6 +171,7 @@ void
 tag_invoke(boost::json::value_from_tag, boost::json::value& jv, AccountMPTokensHandler::MPTokenResponse const& mptoken)
 {
     auto obj = boost::json::object{
+        {"mpt_id", mptoken.MPTokenID},
         {JS(account), mptoken.account},
         {JS(mpt_issuance_id), mptoken.MPTokenIssuanceID},
         {JS(mpt_amount), mptoken.MPTAmount},
