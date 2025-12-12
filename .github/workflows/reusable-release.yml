@@ -69,6 +69,11 @@ jobs:
           path: release_artifacts
           pattern: clio_server_*
 
+      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        with:
+          path: release_artifacts
+          pattern: clio_deb_package_*
+
       - name: Create release notes
         env:
           RELEASE_HEADER: ${{ inputs.header }}
