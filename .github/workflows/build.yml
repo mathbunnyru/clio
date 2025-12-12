@@ -92,24 +92,6 @@ jobs:
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  package:
-    name: Build packages
-
-    uses: ./.github/workflows/reusable-build.yml
-    with:
-      runs_on: heavy
-      container: '{ "image": "ghcr.io/xrplf/clio-ci:067449c3f8ae6755ea84752ea2962b589fe56c8f" }'
-      conan_profile: gcc
-      build_type: Release
-      download_ccache: true
-      upload_ccache: false
-      code_coverage: false
-      static: true
-      upload_clio_server: false
-      package: true
-      targets: package
-      analyze_build_time: false
-
   check_config:
     name: Check Config Description
     needs: build-and-test
