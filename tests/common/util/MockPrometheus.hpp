@@ -185,7 +185,6 @@ struct MockPrometheusImpl : PrometheusInterface {
     }
 
     std::unordered_map<std::string, std::unique_ptr<MetricBase>> metrics;
-
     std::unordered_map<std::string, ::testing::StrictMock<MockCounterImplInt>> counterIntImpls;
     std::unordered_map<std::string, ::testing::StrictMock<MockCounterImplUint>> counterUintImpls;
     std::unordered_map<std::string, ::testing::StrictMock<MockCounterImplDouble>> counterDoubleImpls;

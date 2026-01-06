@@ -23,7 +23,6 @@
 #include "util/MockPrometheus.hpp"
 #include "util/prometheus/Counter.hpp"
 
-#include <boost/json/object.hpp>
 #include <boost/json/value_to.hpp>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -38,15 +37,9 @@ using util::prometheus::CounterInt;
 using util::prometheus::WithMockPrometheus;
 using util::prometheus::WithPrometheus;
 
-struct RPCCountersBaseTest {
-    struct WorkQueueMock : Reportable {
-        MOCK_METHOD(boost::json::object, report, (), (const, override));
-    };
-    testing::StrictMock<WorkQueueMock> workQueueMock;
-};
-
-struct RPCCountersTest : WithPrometheus, RPCCountersBaseTest {
-    Counters counters{workQueueMock};
+struct RPCCountersTest : WithPrometheus {
+    WorkQueue queue{4u, 1024u};  // todo: mock instead
+    Counters counters{queue};
 };
 
 TEST_F(RPCCountersTest, CheckThatCountersAddUp)
@@ -64,7 +57,6 @@ TEST_F(RPCCountersTest, CheckThatCountersAddUp)
         counters.onInternalError();
     }
 
-    EXPECT_CALL(workQueueMock, report);
     auto const report = counters.report();
     auto const& rpc = report.at(JS(rpc)).as_object();
 
@@ -111,10 +103,13 @@ TEST_F(RPCCountersTest, CheckThatCountersAddUp)
     EXPECT_EQ(boost::json::value_to<std::string>(report.at("bad_syntax_errors")), "512");
     EXPECT_EQ(boost::json::value_to<std::string>(report.at("unknown_command_errors")), "512");
     EXPECT_EQ(boost::json::value_to<std::string>(report.at("internal_errors")), "512");
+
+    EXPECT_EQ(report.at("work_queue"), queue.report());  // Counters report includes queue report
 }
 
-struct RPCCountersMockPrometheusTests : WithMockPrometheus, RPCCountersBaseTest {
-    Counters counters{workQueueMock};
+struct RPCCountersMockPrometheusTests : WithMockPrometheus {
+    WorkQueue queue{4u, 1024u};  // todo: mock instead
+    Counters counters{queue};
 };
 
 TEST_F(RPCCountersMockPrometheusTests, rpcFailed)
