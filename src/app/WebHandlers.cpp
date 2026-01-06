@@ -19,10 +19,7 @@
 
 #include "app/WebHandlers.hpp"
 
-#include "rpc/Errors.hpp"
-#include "rpc/WorkQueue.hpp"
 #include "util/Assert.hpp"
-#include "util/CoroutineGroup.hpp"
 #include "util/prometheus/Http.hpp"
 #include "web/AdminVerificationStrategy.hpp"
 #include "web/SubscriptionContextInterface.hpp"
@@ -34,7 +31,6 @@
 #include <boost/asio/spawn.hpp>
 #include <boost/beast/http/status.hpp>
 
-#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -80,8 +76,8 @@ DisconnectHook::operator()(web::ng::Connection const& connection)
     dosguard_.get().decrement(connection.ip());
 }
 
-MetricsHandler::MetricsHandler(std::shared_ptr<web::AdminVerificationStrategy> adminVerifier, rpc::WorkQueue& workQueue)
-    : adminVerifier_{std::move(adminVerifier)}, workQueue_{std::ref(workQueue)}
+MetricsHandler::MetricsHandler(std::shared_ptr<web::AdminVerificationStrategy> adminVerifier)
+    : adminVerifier_{std::move(adminVerifier)}
 {
 }
 
@@ -90,45 +86,19 @@ MetricsHandler::operator()(
     web::ng::Request const& request,
     web::ng::ConnectionMetadata& connectionMetadata,
     web::SubscriptionContextPtr,
-    boost::asio::yield_context yield
+    boost::asio::yield_context
 )
 {
-    std::optional<web::ng::Response> response;
-    util::CoroutineGroup coroutineGroup{yield, 1};
-    auto const onTaskComplete = coroutineGroup.registerForeign(yield);
-    ASSERT(onTaskComplete.has_value(), "Coroutine group can't be full");
+    auto const maybeHttpRequest = request.asHttpRequest();
+    ASSERT(maybeHttpRequest.has_value(), "Got not a http request in Get");
+    auto const& httpRequest = maybeHttpRequest->get();
 
-    bool const postSuccessful = workQueue_.get().postCoro(
-        [this, &request, &response, &onTaskComplete = onTaskComplete.value(), &connectionMetadata](
-            boost::asio::yield_context
-        ) mutable {
-            auto const maybeHttpRequest = request.asHttpRequest();
-            ASSERT(maybeHttpRequest.has_value(), "Got not a http request in Get");
-            auto const& httpRequest = maybeHttpRequest->get();
-
-            auto maybeResponse = util::prometheus::handlePrometheusRequest(
-                httpRequest, adminVerifier_->isAdmin(httpRequest, connectionMetadata.ip())
-            );
-            ASSERT(maybeResponse.has_value(), "Got unexpected request for Prometheus");
-            response = web::ng::Response{std::move(maybeResponse).value(), request};
-            // notify the coroutine group that the foreign task is done
-            onTaskComplete();
-        },
-        /* isWhiteListed= */ true,
-        rpc::WorkQueue::Priority::High
+    // FIXME(#1702): Using veb server thread to handle prometheus request. Better to post on work queue.
+    auto maybeResponse = util::prometheus::handlePrometheusRequest(
+        httpRequest, adminVerifier_->isAdmin(httpRequest, connectionMetadata.ip())
     );
-
-    if (!postSuccessful) {
-        return web::ng::Response{
-            boost::beast::http::status::too_many_requests, rpc::makeError(rpc::RippledError::rpcTOO_BUSY), request
-        };
-    }
-
-    // Put the coroutine to sleep until the foreign task is done
-    coroutineGroup.asyncWait(yield);
-    ASSERT(response.has_value(), "Woke up coroutine without setting response");
-
-    return std::move(response).value();
+    ASSERT(maybeResponse.has_value(), "Got unexpected request for Prometheus");
+    return web::ng::Response{std::move(maybeResponse).value(), request};
 }
 
 web::ng::Response

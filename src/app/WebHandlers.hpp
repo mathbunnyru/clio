@@ -21,7 +21,6 @@
 
 #include "data/LedgerCacheInterface.hpp"
 #include "rpc/Errors.hpp"
-#include "rpc/WorkQueue.hpp"
 #include "util/log/Logger.hpp"
 #include "web/AdminVerificationStrategy.hpp"
 #include "web/SubscriptionContextInterface.hpp"
@@ -120,23 +119,20 @@ public:
  */
 class MetricsHandler {
     std::shared_ptr<web::AdminVerificationStrategy> adminVerifier_;
-    std::reference_wrapper<rpc::WorkQueue> workQueue_;
 
 public:
     /**
      * @brief Construct a new MetricsHandler object
      *
      * @param adminVerifier The AdminVerificationStrategy to use for verifying the connection for admin access.
-     * @param workQueue The WorkQueue to use for handling the request.
      */
-    MetricsHandler(std::shared_ptr<web::AdminVerificationStrategy> adminVerifier, rpc::WorkQueue& workQueue);
+    MetricsHandler(std::shared_ptr<web::AdminVerificationStrategy> adminVerifier);
 
     /**
      * @brief The call of the function object.
      *
      * @param request The request to handle.
      * @param connectionMetadata The connection metadata.
-     * @param yield The yield context.
      * @return The response to the request.
      */
     web::ng::Response
@@ -144,7 +140,7 @@ public:
         web::ng::Request const& request,
         web::ng::ConnectionMetadata& connectionMetadata,
         web::SubscriptionContextPtr,
-        boost::asio::yield_context yield
+        boost::asio::yield_context
     );
 };
 
