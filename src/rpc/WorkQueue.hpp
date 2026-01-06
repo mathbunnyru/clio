@@ -38,9 +38,7 @@
 #include <cstdint>
 #include <functional>
 #include <limits>
-#include <optional>
 #include <queue>
-#include <utility>
 
 namespace rpc {
 
@@ -81,7 +79,6 @@ private:
         QueueType normal;
 
         bool isIdle = false;
-        size_t highPriorityCounter = 0;
 
         void
         push(Priority priority, auto&& task)
@@ -98,26 +95,6 @@ private:
         empty() const
         {
             return high.empty() and normal.empty();
-        }
-
-        [[nodiscard]] std::optional<TaskType>
-        popNext()
-        {
-            if (not high.empty() and (highPriorityCounter < kTAKE_HIGH_PRIO or normal.empty())) {
-                auto task = std::move(high.front());
-                high.pop();
-                ++highPriorityCounter;
-                return task;
-            }
-
-            if (not normal.empty()) {
-                auto task = std::move(normal.front());
-                normal.pop();
-                highPriorityCounter = 0;
-                return task;
-            }
-
-            return std::nullopt;
         }
     };
 
