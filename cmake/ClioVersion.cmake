@@ -2,8 +2,7 @@ find_package(Git REQUIRED)
 
 if (DEFINED ENV{GITHUB_BRANCH_NAME})
   set(GIT_BUILD_BRANCH $ENV{GITHUB_BRANCH_NAME})
-  set(GITHUB_HEAD_SHA $ENV{GITHUB_HEAD_SHA})
-  string(SUBSTRING ${GITHUB_HEAD_SHA} 0 7 GIT_COMMIT_HASH)
+  set(GIT_COMMIT_HASH $ENV{GITHUB_HEAD_SHA})
 else ()
   set(GIT_COMMAND branch --show-current)
   execute_process(
@@ -11,7 +10,7 @@ else ()
     OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY
   )
 
-  set(GIT_COMMAND rev-parse --short HEAD)
+  set(GIT_COMMAND rev-parse HEAD)
   execute_process(
     COMMAND ${GIT_EXECUTABLE} ${GIT_COMMAND} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE GIT_COMMIT_HASH
     OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY
@@ -41,9 +40,11 @@ if (RC EQUAL 0)
   set(DOC_CLIO_VERSION "${TAG}")
 else ()
   message(STATUS "Error finding tag in git: ${ERR}")
-  message(STATUS "Will use 'YYYYMMDDHMS-<branch>-<git-rev>' as Clio version")
+  message(STATUS "Will use 'YYYYMMDDHMS-<branch>-<git short rev>' as Clio version")
 
-  set(CLIO_VERSION "${BUILD_DATE}-${GIT_BUILD_BRANCH}-${GIT_COMMIT_HASH}")
+  string(SUBSTRING ${GIT_COMMIT_HASH} 0 7 GIT_COMMIT_HASH_SHORT)
+
+  set(CLIO_VERSION "${BUILD_DATE}-${GIT_BUILD_BRANCH}-${GIT_COMMIT_HASH_SHORT}")
   set(DOC_CLIO_VERSION "develop")
 endif ()
 
