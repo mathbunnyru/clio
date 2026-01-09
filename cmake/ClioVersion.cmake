@@ -1,5 +1,29 @@
 find_package(Git REQUIRED)
 
+if (DEFINED ENV{GITHUB_BRANCH_NAME})
+  set(GIT_BUILD_BRANCH $ENV{GITHUB_BRANCH_NAME})
+  set(GITHUB_HEAD_SHA $ENV{GITHUB_HEAD_SHA})
+  string(SUBSTRING ${GITHUB_HEAD_SHA} 0 7 GIT_COMMIT_HASH)
+else ()
+  set(GIT_COMMAND branch --show-current)
+  execute_process(
+    COMMAND ${GIT_EXECUTABLE} ${GIT_COMMAND} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE GIT_BUILD_BRANCH
+    OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY
+  )
+
+  set(GIT_COMMAND rev-parse --short HEAD)
+  execute_process(
+    COMMAND ${GIT_EXECUTABLE} ${GIT_COMMAND} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE GIT_COMMIT_HASH
+    OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY
+  )
+endif ()
+
+set(GIT_COMMAND show -s --date=format:%Y%m%d%H%M%S --format=%cd)
+execute_process(
+  COMMAND ${GIT_EXECUTABLE} ${GIT_COMMAND} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE BUILD_DATE
+  OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY
+)
+
 set(GIT_COMMAND describe --tags --exact-match)
 execute_process(
   COMMAND ${GIT_EXECUTABLE} ${GIT_COMMAND}
@@ -12,38 +36,14 @@ execute_process(
 
 if (RC EQUAL 0)
   message(STATUS "Found tag '${TAG}' in git. Will use it as Clio version")
+
   set(CLIO_VERSION "${TAG}")
   set(DOC_CLIO_VERSION "${TAG}")
 else ()
   message(STATUS "Error finding tag in git: ${ERR}")
   message(STATUS "Will use 'YYYYMMDDHMS-<branch>-<git-rev>' as Clio version")
 
-  set(GIT_COMMAND show -s --date=format:%Y%m%d%H%M%S --format=%cd)
-  execute_process(
-    COMMAND ${GIT_EXECUTABLE} ${GIT_COMMAND} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE DATE
-    OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY
-  )
-
-  if (DEFINED ENV{GITHUB_BRANCH_NAME})
-    # Please, see .github/actions/cmake/action.yml for details
-    set(BRANCH $ENV{GITHUB_BRANCH_NAME})
-    set(GITHUB_HEAD_SHA $ENV{GITHUB_HEAD_SHA})
-    string(SUBSTRING ${GITHUB_HEAD_SHA} 0 7 REV)
-  else ()
-    set(GIT_COMMAND branch --show-current)
-    execute_process(
-      COMMAND ${GIT_EXECUTABLE} ${GIT_COMMAND} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE BRANCH
-      OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY
-    )
-
-    set(GIT_COMMAND rev-parse --short HEAD)
-    execute_process(
-      COMMAND ${GIT_EXECUTABLE} ${GIT_COMMAND} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE REV
-      OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY
-    )
-  endif ()
-
-  set(CLIO_VERSION "${DATE}-${BRANCH}-${REV}")
+  set(CLIO_VERSION "${BUILD_DATE}-${GIT_BUILD_BRANCH}-${GIT_COMMIT_HASH}")
   set(DOC_CLIO_VERSION "develop")
 endif ()
 
