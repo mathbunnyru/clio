@@ -23,6 +23,10 @@ execute_process(
   OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY
 )
 
+message(STATUS "Git branch: ${GIT_BUILD_BRANCH}")
+message(STATUS "Git commit hash: ${GIT_COMMIT_HASH}")
+message(STATUS "Build date: ${BUILD_DATE}")
+
 set(GIT_COMMAND describe --tags --exact-match)
 execute_process(
   COMMAND ${GIT_EXECUTABLE} ${GIT_COMMAND}
