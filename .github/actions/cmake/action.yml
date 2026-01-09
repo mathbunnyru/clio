@@ -57,6 +57,16 @@ runs:
         STATIC: "${{ inputs.static == 'true' && 'ON' || 'OFF' }}"
         TIME_TRACE: "${{ inputs.time_trace == 'true' && 'ON' || 'OFF' }}"
         PACKAGE: "${{ inputs.package == 'true' && 'ON' || 'OFF' }}"
+        # GitHub creates a merge commit for a PR
+        # https://www.kenmuse.com/blog/the-many-shas-of-a-github-pull-request/
+        #
+        # We:
+        # - explicitly provide branch name
+        # - use `github.head_ref` to get the SHA of last commit in the PR branch
+        #
+        # This way it works both for PRs and pushes to branches.
+        GITHUB_BRANCH_NAME: "${{ github.head_ref || github.ref_name }}"
+        GITHUB_HEAD_SHA: "${{ github.event.pull_request.head.sha || github.sha }}"
       run: |
         cmake \
           -B "${BUILD_DIR}" \
