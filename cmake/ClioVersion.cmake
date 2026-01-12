@@ -27,11 +27,11 @@ message(STATUS "Git branch: ${GIT_BUILD_BRANCH}")
 message(STATUS "Git commit hash: ${GIT_COMMIT_HASH}")
 message(STATUS "Build date: ${BUILD_DATE}")
 
-if (DEFINED ENV{FORCE_VERSION} AND NOT "$ENV{FORCE_VERSION}" STREQUAL "")
-  message(STATUS "Using explicitly provided '${FORCE_VERSION}' as Clio version")
+if (DEFINED ENV{FORCE_CLIO_VERSION} AND NOT "$ENV{FORCE_CLIO_VERSION}" STREQUAL "")
+  message(STATUS "Using explicitly provided '${FORCE_CLIO_VERSION}' as Clio version")
 
-  set(CLIO_VERSION "$ENV{FORCE_VERSION}")
-  set(DOC_CLIO_VERSION "$ENV{FORCE_VERSION}")
+  set(CLIO_VERSION "$ENV{FORCE_CLIO_VERSION}")
+  set(DOC_CLIO_VERSION "$ENV{FORCE_CLIO_VERSION}")
 else ()
   message(STATUS "Using 'YYYYMMDDHMS-<branch>-<git short rev>' as Clio version")
 
