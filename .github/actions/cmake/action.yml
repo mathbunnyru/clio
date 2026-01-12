@@ -38,7 +38,7 @@ inputs:
     required: true
     default: "false"
   version:
-    description: Version to set in the build
+    description: Version of the clio_server binary
     required: false
     default: ""
 
