@@ -162,7 +162,7 @@ jobs:
       - name: Show ccache's statistics and zero it
         if: ${{ inputs.download_ccache }}
         run: |
-          ccache --show-stats
+          ccache --show-stats -vv
           ccache --zero-stats
 
       - name: Save ccache cache
