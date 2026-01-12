@@ -43,7 +43,7 @@ jobs:
       upload_clio_server: true
       download_ccache: false
       upload_ccache: false
-      expected_version: ${{ github.event_name == 'push' && github.ref_name || '' }}
+      version: ${{ github.event_name == 'push' && github.ref_name || '' }}
 
   package:
     name: Build debian package
@@ -60,6 +60,7 @@ jobs:
       static: true
       upload_clio_server: false
       package: true
+      version: ${{ github.event_name == 'push' && github.ref_name || '' }}
       targets: package
       analyze_build_time: false
 

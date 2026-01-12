@@ -28,8 +28,20 @@ defaults:
     shell: bash
 
 jobs:
+  get_date:
+    name: Get Date
+    runs-on: ubuntu-latest
+    outputs:
+      date: ${{ steps.get_date.outputs.date }}
+    steps:
+      - name: Get current date
+        id: get_date
+        run: |
+          echo "date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+
   build-and-test:
     name: Build and Test
+    needs: get_date
 
     strategy:
       fail-fast: false
@@ -67,9 +79,11 @@ jobs:
       upload_clio_server: true
       download_ccache: false
       upload_ccache: false
+      version: nightly-${{ needs.get_date.outputs.date }}
 
   package:
     name: Build debian package
+    needs: get_date
 
     uses: ./.github/workflows/reusable-build.yml
     with:
@@ -83,11 +97,13 @@ jobs:
       static: true
       upload_clio_server: false
       package: true
+      version: nightly-${{ needs.get_date.outputs.date }}
       targets: package
       analyze_build_time: false
 
   analyze_build_time:
     name: Analyze Build Time
+    needs: get_date
 
     strategy:
       fail-fast: false
@@ -114,17 +130,7 @@ jobs:
       upload_clio_server: false
       targets: all
       analyze_build_time: true
-
-  get_date:
-    name: Get Date
-    runs-on: ubuntu-latest
-    outputs:
-      date: ${{ steps.get_date.outputs.date }}
-    steps:
-      - name: Get current date
-        id: get_date
-        run: |
-          echo "date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+      version: nightly-${{ needs.get_date.outputs.date }}
 
   nightly_release:
     needs: [build-and-test, package, get_date]

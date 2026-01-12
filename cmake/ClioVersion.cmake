@@ -27,24 +27,13 @@ message(STATUS "Git branch: ${GIT_BUILD_BRANCH}")
 message(STATUS "Git commit hash: ${GIT_COMMIT_HASH}")
 message(STATUS "Build date: ${BUILD_DATE}")
 
-set(GIT_COMMAND describe --tags --exact-match)
-execute_process(
-  COMMAND ${GIT_EXECUTABLE} ${GIT_COMMAND}
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE TAG
-  RESULT_VARIABLE RC
-  ERROR_VARIABLE ERR
-  OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_STRIP_TRAILING_WHITESPACE
-)
+if (DEFINED ENV{FORCE_CLIO_VERSION} AND NOT "$ENV{FORCE_CLIO_VERSION}" STREQUAL "")
+  message(STATUS "Using explicitly provided '${FORCE_CLIO_VERSION}' as Clio version")
 
-if (RC EQUAL 0)
-  message(STATUS "Found tag '${TAG}' in git. Will use it as Clio version")
-
-  set(CLIO_VERSION "${TAG}")
-  set(DOC_CLIO_VERSION "${TAG}")
+  set(CLIO_VERSION "$ENV{FORCE_CLIO_VERSION}")
+  set(DOC_CLIO_VERSION "$ENV{FORCE_CLIO_VERSION}")
 else ()
-  message(STATUS "Error finding tag in git: ${ERR}")
-  message(STATUS "Will use 'YYYYMMDDHMS-<branch>-<git short rev>' as Clio version")
+  message(STATUS "Using 'YYYYMMDDHMS-<branch>-<git short rev>' as Clio version")
 
   string(SUBSTRING ${GIT_COMMIT_HASH} 0 7 GIT_COMMIT_HASH_SHORT)
 

@@ -37,6 +37,10 @@ inputs:
     description: Whether to generate Debian package
     required: true
     default: "false"
+  version:
+    description: Version of the clio_server binary
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -67,6 +71,9 @@ runs:
         # This way it works both for PRs and pushes to branches.
         GITHUB_BRANCH_NAME: "${{ github.head_ref || github.ref_name }}"
         GITHUB_HEAD_SHA: "${{ github.event.pull_request.head.sha || github.sha }}"
+        #
+        # If tag is being pushed, or it's a nightly release, we use that version.
+        FORCE_CLIO_VERSION: ${{ inputs.version }}
       run: |
         cmake \
           -B "${BUILD_DIR}" \
