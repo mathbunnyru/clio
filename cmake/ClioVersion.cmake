@@ -28,13 +28,12 @@ message(STATUS "Git commit hash: ${GIT_COMMIT_HASH}")
 message(STATUS "Build date: ${BUILD_DATE}")
 
 if (DEFINED ENV{FORCE_VERSION} AND NOT "$ENV{FORCE_VERSION}" STREQUAL "")
-  message(STATUS "Found tag '${TAG}' in git. Will use it as Clio version")
+  message(STATUS "Using explicitly provided '${FORCE_VERSION}' as Clio version")
 
   set(CLIO_VERSION "$ENV{FORCE_VERSION}")
   set(DOC_CLIO_VERSION "$ENV{FORCE_VERSION}")
 else ()
-  message(STATUS "Version was not provided via FORCE_VERSION environment variable.")
-  message(STATUS "Will use 'YYYYMMDDHMS-<branch>-<git short rev>' as Clio version")
+  message(STATUS "Using 'YYYYMMDDHMS-<branch>-<git short rev>' as Clio version")
 
   string(SUBSTRING ${GIT_COMMIT_HASH} 0 7 GIT_COMMIT_HASH_SHORT)
 
