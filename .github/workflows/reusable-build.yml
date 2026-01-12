@@ -222,6 +222,10 @@ jobs:
         run: |
           set -e
           EXPECTED_VERSION="clio-${INPUT_VERSION}"
+          if [[ ${{ inputs.build_type }} == "Debug" ]]; then
+            EXPECTED_VERSION="${EXPECTED_VERSION}+DEBUG"
+          fi
+
           actual_version=$(./build/clio_server --version | head -n 1)
           if [[ "${actual_version}" != "${EXPECTED_VERSION}" ]]; then
             echo "Expected version '${EXPECTED_VERSION}', but got '${actual_version}'"
