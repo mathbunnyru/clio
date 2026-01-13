@@ -46,7 +46,7 @@ jobs:
   release:
     runs-on: heavy
     container:
-      image: ghcr.io/xrplf/clio-ci:067449c3f8ae6755ea84752ea2962b589fe56c8f
+      image: ghcr.io/xrplf/clio-ci:14342e087ceb8b593027198bf9ef06a43833c696
     env:
       GH_REPO: ${{ github.repository }}
       GH_TOKEN: ${{ github.token }}
@@ -60,7 +60,7 @@ jobs:
           fetch-depth: 0
 
       - name: Prepare runner
-        uses: XRPLF/actions/prepare-runner@65da1c59e81965eeb257caa3587b9d45066fb925
+        uses: XRPLF/actions/prepare-runner@f05cab7b8541eee6473aa42beb9d2fe35608a190
         with:
           enable_ccache: false
 
@@ -91,8 +91,7 @@ jobs:
           LAST_TAG="$(gh release view --json tagName -q .tagName --repo XRPLF/clio)"
           LAST_TAG_COMMIT="$(git rev-parse $LAST_TAG)"
           BASE_COMMIT="$(git merge-base HEAD $LAST_TAG_COMMIT)"
-          git-cliff "${BASE_COMMIT}..HEAD" --ignore-tags "nightly|-b|-rc"
-          cat CHANGELOG.md >> "${RUNNER_TEMP}/release_notes.md"
+          git-cliff "${BASE_COMMIT}..HEAD" --ignore-tags "nightly|-b|-rc" >> "${RUNNER_TEMP}/release_notes.md"
 
       - name: Upload release notes
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
