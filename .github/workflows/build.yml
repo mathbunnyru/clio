@@ -23,6 +23,7 @@ on:
       - "cmake/**"
       - "src/**"
       - "tests/**"
+      - "benchmarks/**"
 
       - docs/config-description.md
   workflow_dispatch:
