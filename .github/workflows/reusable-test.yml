@@ -126,6 +126,12 @@ jobs:
         if: ${{ runner.os == 'macOS' }}
         uses: XRPLF/actions/cleanup-workspace@cf0433aa74563aead044a1e395610c96d65a37cf
 
+      - name: Restart colima
+        if: ${{ runner.os == 'macOS' }}
+        run: |
+          colima delete --force
+          colima start
+
       - name: Spin up scylladb
         if: ${{ runner.os == 'macOS' }}
         timeout-minutes: 3
