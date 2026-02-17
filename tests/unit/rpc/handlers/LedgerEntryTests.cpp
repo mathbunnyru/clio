@@ -3526,12 +3526,26 @@ TEST_F(RPCLedgerEntryTest, LoanBroker_BinaryFalse)
 
 TEST_F(RPCLedgerEntryTest, Loan_BinaryFalse)
 {
+    static constexpr auto kLOAN_SEQ = 1;
+    static constexpr auto kSTART_DATE = 1000;
+    static constexpr auto kPAYMENT_INTERVAL = 86400;
+    static constexpr auto kINTEREST_RATE = 100;
+
     auto const ledgerHeader = createLedgerHeader(kLEDGER_HASH, kRANGE_MAX);
     EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _)).WillRepeatedly(Return(ledgerHeader));
 
     boost::json::object const entry;
 
-    auto const loan = createLoan(kACCOUNT, ripple::uint256{kINDEX1}, 1, 1000, 86400, 100, ripple::uint256{1}, 0);
+    auto const loan = createLoan(
+        kACCOUNT,
+        ripple::uint256{kINDEX1},
+        kLOAN_SEQ,
+        kSTART_DATE,
+        kPAYMENT_INTERVAL,
+        kINTEREST_RATE,
+        ripple::uint256{1},
+        0
+    );
 
     EXPECT_CALL(*backend_, doFetchLedgerObject(testing::_, testing::_, testing::_))
         .WillOnce(Return(loan.getSerializer().peekData()));
@@ -3544,19 +3558,20 @@ TEST_F(RPCLedgerEntryTest, Loan_BinaryFalse)
                     "binary": false,
                     "loan": {{
                         "loan_broker_id": "{}",
-                        "loan_seq": 1
+                        "loan_seq": {}
                     }}
                 }})JSON",
-                kINDEX1
+                kINDEX1,
+                kLOAN_SEQ
             )
         );
         auto const output = handler.process(req, Context{yield});
         ASSERT_TRUE(output);
 
         EXPECT_EQ(output.result->at("node").at("Borrower").as_string(), kACCOUNT);
-        EXPECT_EQ(output.result->at("node").at("LoanSequence").as_int64(), 1);
-        EXPECT_EQ(output.result->at("node").at("StartDate").as_int64(), 1000);
-        EXPECT_EQ(output.result->at("node").at("PaymentInterval").as_int64(), 86400);
+        EXPECT_EQ(output.result->at("node").at("LoanSequence").as_int64(), kLOAN_SEQ);
+        EXPECT_EQ(output.result->at("node").at("StartDate").as_int64(), kSTART_DATE);
+        EXPECT_EQ(output.result->at("node").at("PaymentInterval").as_int64(), kPAYMENT_INTERVAL);
     });
 }
 
