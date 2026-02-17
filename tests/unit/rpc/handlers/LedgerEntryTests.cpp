@@ -2525,7 +2525,6 @@ TEST_P(IndexTest, InvalidIndexNotString)
 
 TEST_F(RPCLedgerEntryTest, LedgerEntryNotFound)
 {
-    // return valid ledgerHeader
     auto const ledgerHeader = createLedgerHeader(kLEDGER_HASH, kRANGE_MAX);
     EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _)).WillRepeatedly(Return(ledgerHeader));
 
@@ -3357,7 +3356,6 @@ TEST_P(RPCLedgerEntryNormalPathTest, NormalPath)
 {
     auto const testBundle = GetParam();
 
-    // return valid ledgerHeader
     auto const ledgerHeader = createLedgerHeader(kLEDGER_HASH, kRANGE_MAX);
     EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _)).WillRepeatedly(Return(ledgerHeader));
 
@@ -3405,7 +3403,6 @@ TEST_F(RPCLedgerEntryTest, BinaryFalse)
         }
     })JSON";
 
-    // return valid ledgerHeader
     auto const ledgerHeader = createLedgerHeader(kLEDGER_HASH, kRANGE_MAX);
     EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _)).WillRepeatedly(Return(ledgerHeader));
 
@@ -3432,7 +3429,6 @@ TEST_F(RPCLedgerEntryTest, BinaryFalse)
 
 TEST_F(RPCLedgerEntryTest, Vault_BinaryFalse)
 {
-    // return valid ledgerHeader
     auto const ledgerHeader = createLedgerHeader(kLEDGER_HASH, kRANGE_MAX);
     EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _)).WillRepeatedly(Return(ledgerHeader));
 
@@ -3485,7 +3481,6 @@ TEST_F(RPCLedgerEntryTest, Vault_BinaryFalse)
 
 TEST_F(RPCLedgerEntryTest, LoanBroker_BinaryFalse)
 {
-    // return valid ledgerHeader
     auto const ledgerHeader = createLedgerHeader(kLEDGER_HASH, kRANGE_MAX);
     EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _)).WillRepeatedly(Return(ledgerHeader));
 
@@ -3531,7 +3526,6 @@ TEST_F(RPCLedgerEntryTest, LoanBroker_BinaryFalse)
 
 TEST_F(RPCLedgerEntryTest, Loan_BinaryFalse)
 {
-    // return valid ledgerHeader
     auto const ledgerHeader = createLedgerHeader(kLEDGER_HASH, kRANGE_MAX);
     EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _)).WillRepeatedly(Return(ledgerHeader));
 
@@ -3568,7 +3562,6 @@ TEST_F(RPCLedgerEntryTest, Loan_BinaryFalse)
 
 TEST_F(RPCLedgerEntryTest, UnexpectedLedgerType)
 {
-    // return valid ledgerHeader
     auto const ledgerHeader = createLedgerHeader(kLEDGER_HASH, kRANGE_MAX);
     EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _)).WillRepeatedly(Return(ledgerHeader));
 
@@ -4057,7 +4050,6 @@ TEST_F(RPCLedgerEntryTest, SyntheticMPTIssuanceID)
 
     auto const mptId = ripple::makeMptID(2, getAccountIdWithString(kACCOUNT));
 
-    // return valid ledgerHeader
     auto const ledgerHeader = createLedgerHeader(kLEDGER_HASH, kRANGE_MAX);
     EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _)).WillRepeatedly(Return(ledgerHeader));
 

@@ -181,10 +181,9 @@ tag_invoke(boost::json::value_from_tag, boost::json::value& jv, AccountInfoHandl
             if (name.ends_with("ID")) {
                 // Remove the ID suffix from the field name.
                 name = name.substr(0, name.size() - 2);
-                ASSERT(!name.empty(), "name is not empty");
+                ASSERT(!name.empty(), "Field name is empty after stripping 'ID'");
             }
-            // ValidPseudoAccounts invariant guarantees that only one field
-            // can be set
+            // ValidPseudoAccounts invariant guarantees that only one field can be set
             jv.as_object()[JS(pseudo_account)].as_object()[JS(type)] = name;
             break;
         }
