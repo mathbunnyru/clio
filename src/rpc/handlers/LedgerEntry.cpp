@@ -198,7 +198,7 @@ LedgerEntryHandler::process(LedgerEntryHandler::Input const& input, Context cons
         auto const seq = util::integralValueAs<uint32_t>(input.loanBroker->at(JS(seq)));
         key = ripple::keylet::loanbroker(*account, seq).key;
     } else if (input.loan) {
-        auto const id = ripple::uint256{boost::json::value_to<std::string>(input.loan->at(JS(loan_broker_id)))};
+        auto const id = ripple::uint256{boost::json::value_to<std::string>(input.loan->at(JS(loan_broker_id))).data()};
         auto const seq = util::integralValueAs<uint32_t>(input.loan->at(JS(loan_seq)));
         key = ripple::keylet::loan(id, seq).key;
     } else if (input.delegate) {
