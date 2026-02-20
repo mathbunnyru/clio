@@ -68,43 +68,108 @@ TEST_F(RPCCountersTest, CheckThatCountersAddUp)
     auto const report = counters.report();
     auto const& rpc = report.at(JS(rpc)).as_object();
 
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("error").as_object().at(JS(started))), "512");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("error").as_object().at(JS(finished))), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("error").as_object().at(JS(errored))), "512");
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("error").as_object().at(JS(started))), "512"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("error").as_object().at(JS(finished))), "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("error").as_object().at(JS(errored))), "512"
+    );
     EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("error").as_object().at("forwarded")), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("error").as_object().at("failed_forward")), "0");
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("error").as_object().at("failed_forward")), "0"
+    );
     EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("error").as_object().at(JS(failed))), "0");
 
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("complete").as_object().at(JS(started))), "512");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("complete").as_object().at(JS(finished))), "512");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("complete").as_object().at(JS(errored))), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("complete").as_object().at("forwarded")), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("complete").as_object().at("failed_forward")), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("complete").as_object().at(JS(failed))), "0");
     EXPECT_EQ(
-        boost::json::value_to<std::string>(rpc.at("complete").as_object().at(JS(duration_us))), "512000"
+        boost::json::value_to<std::string>(rpc.at("complete").as_object().at(JS(started))), "512"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("complete").as_object().at(JS(finished))), "512"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("complete").as_object().at(JS(errored))), "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("complete").as_object().at("forwarded")), "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("complete").as_object().at("failed_forward")), "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("complete").as_object().at(JS(failed))), "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("complete").as_object().at(JS(duration_us))),
+        "512000"
     );  // 1000 per call
 
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("forward").as_object().at(JS(started))), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("forward").as_object().at(JS(finished))), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("forward").as_object().at(JS(errored))), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("forward").as_object().at("forwarded")), "512");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("forward").as_object().at("failed_forward")), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("forward").as_object().at(JS(failed))), "0");
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("forward").as_object().at(JS(started))), "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("forward").as_object().at(JS(finished))), "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("forward").as_object().at(JS(errored))), "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("forward").as_object().at("forwarded")), "512"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("forward").as_object().at("failed_forward")), "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("forward").as_object().at(JS(failed))), "0"
+    );
 
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("failed").as_object().at(JS(started))), "512");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("failed").as_object().at(JS(finished))), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("failed").as_object().at(JS(errored))), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("failed").as_object().at("forwarded")), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("failed").as_object().at("failed_forward")), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("failed").as_object().at(JS(failed))), "512");
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("failed").as_object().at(JS(started))), "512"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("failed").as_object().at(JS(finished))), "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("failed").as_object().at(JS(errored))), "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("failed").as_object().at("forwarded")), "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("failed").as_object().at("failed_forward")), "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("failed").as_object().at(JS(failed))), "512"
+    );
 
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("failedToForward").as_object().at(JS(started))), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("failedToForward").as_object().at(JS(finished))), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("failedToForward").as_object().at(JS(errored))), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("failedToForward").as_object().at("forwarded")), "0");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("failedToForward").as_object().at("failed_forward")), "512");
-    EXPECT_EQ(boost::json::value_to<std::string>(rpc.at("failedToForward").as_object().at(JS(failed))), "0");
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("failedToForward").as_object().at(JS(started))),
+        "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("failedToForward").as_object().at(JS(finished))),
+        "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("failedToForward").as_object().at(JS(errored))),
+        "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("failedToForward").as_object().at("forwarded")),
+        "0"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(
+            rpc.at("failedToForward").as_object().at("failed_forward")
+        ),
+        "512"
+    );
+    EXPECT_EQ(
+        boost::json::value_to<std::string>(rpc.at("failedToForward").as_object().at(JS(failed))),
+        "0"
+    );
 
     EXPECT_EQ(boost::json::value_to<std::string>(report.at("too_busy_errors")), "512");
     EXPECT_EQ(boost::json::value_to<std::string>(report.at("not_ready_errors")), "512");
@@ -119,8 +184,10 @@ struct RPCCountersMockPrometheusTests : WithMockPrometheus, RPCCountersBaseTest 
 
 TEST_F(RPCCountersMockPrometheusTests, rpcFailed)
 {
-    auto& startedMock = makeMock<CounterInt>("rpc_method_total_number", "{method=\"test\",status=\"started\"}");
-    auto& failedMock = makeMock<CounterInt>("rpc_method_total_number", "{method=\"test\",status=\"failed\"}");
+    auto& startedMock =
+        makeMock<CounterInt>("rpc_method_total_number", "{method=\"test\",status=\"started\"}");
+    auto& failedMock =
+        makeMock<CounterInt>("rpc_method_total_number", "{method=\"test\",status=\"failed\"}");
     EXPECT_CALL(startedMock, add(1));
     EXPECT_CALL(failedMock, add(1));
     counters.rpcFailed("test");
@@ -128,8 +195,10 @@ TEST_F(RPCCountersMockPrometheusTests, rpcFailed)
 
 TEST_F(RPCCountersMockPrometheusTests, rpcErrored)
 {
-    auto& startedMock = makeMock<CounterInt>("rpc_method_total_number", "{method=\"test\",status=\"started\"}");
-    auto& erroredMock = makeMock<CounterInt>("rpc_method_total_number", "{method=\"test\",status=\"errored\"}");
+    auto& startedMock =
+        makeMock<CounterInt>("rpc_method_total_number", "{method=\"test\",status=\"started\"}");
+    auto& erroredMock =
+        makeMock<CounterInt>("rpc_method_total_number", "{method=\"test\",status=\"errored\"}");
     EXPECT_CALL(startedMock, add(1));
     EXPECT_CALL(erroredMock, add(1));
     counters.rpcErrored("test");
@@ -137,8 +206,10 @@ TEST_F(RPCCountersMockPrometheusTests, rpcErrored)
 
 TEST_F(RPCCountersMockPrometheusTests, rpcComplete)
 {
-    auto& startedMock = makeMock<CounterInt>("rpc_method_total_number", "{method=\"test\",status=\"started\"}");
-    auto& finishedMock = makeMock<CounterInt>("rpc_method_total_number", "{method=\"test\",status=\"finished\"}");
+    auto& startedMock =
+        makeMock<CounterInt>("rpc_method_total_number", "{method=\"test\",status=\"started\"}");
+    auto& finishedMock =
+        makeMock<CounterInt>("rpc_method_total_number", "{method=\"test\",status=\"finished\"}");
     auto& durationMock = makeMock<CounterInt>("rpc_method_duration_us", "{method=\"test\"}");
     EXPECT_CALL(startedMock, add(1));
     EXPECT_CALL(finishedMock, add(1));
@@ -148,15 +219,17 @@ TEST_F(RPCCountersMockPrometheusTests, rpcComplete)
 
 TEST_F(RPCCountersMockPrometheusTests, rpcForwarded)
 {
-    auto& forwardedMock = makeMock<CounterInt>("rpc_method_total_number", "{method=\"test\",status=\"forwarded\"}");
+    auto& forwardedMock =
+        makeMock<CounterInt>("rpc_method_total_number", "{method=\"test\",status=\"forwarded\"}");
     EXPECT_CALL(forwardedMock, add(1));
     counters.rpcForwarded("test");
 }
 
 TEST_F(RPCCountersMockPrometheusTests, rpcFailedToForwarded)
 {
-    auto& failedForwardMock =
-        makeMock<CounterInt>("rpc_method_total_number", "{method=\"test\",status=\"failed_forward\"}");
+    auto& failedForwardMock = makeMock<CounterInt>(
+        "rpc_method_total_number", "{method=\"test\",status=\"failed_forward\"}"
+    );
     EXPECT_CALL(failedForwardMock, add(1));
     counters.rpcFailedToForward("test");
 }
@@ -170,28 +243,32 @@ TEST_F(RPCCountersMockPrometheusTests, onTooBusy)
 
 TEST_F(RPCCountersMockPrometheusTests, onNotReady)
 {
-    auto& notReadyMock = makeMock<CounterInt>("rpc_error_total_number", "{error_type=\"not_ready\"}");
+    auto& notReadyMock =
+        makeMock<CounterInt>("rpc_error_total_number", "{error_type=\"not_ready\"}");
     EXPECT_CALL(notReadyMock, add(1));
     counters.onNotReady();
 }
 
 TEST_F(RPCCountersMockPrometheusTests, onBadSyntax)
 {
-    auto& badSyntaxMock = makeMock<CounterInt>("rpc_error_total_number", "{error_type=\"bad_syntax\"}");
+    auto& badSyntaxMock =
+        makeMock<CounterInt>("rpc_error_total_number", "{error_type=\"bad_syntax\"}");
     EXPECT_CALL(badSyntaxMock, add(1));
     counters.onBadSyntax();
 }
 
 TEST_F(RPCCountersMockPrometheusTests, onUnknownCommand)
 {
-    auto& unknownCommandMock = makeMock<CounterInt>("rpc_error_total_number", "{error_type=\"unknown_command\"}");
+    auto& unknownCommandMock =
+        makeMock<CounterInt>("rpc_error_total_number", "{error_type=\"unknown_command\"}");
     EXPECT_CALL(unknownCommandMock, add(1));
     counters.onUnknownCommand();
 }
 
 TEST_F(RPCCountersMockPrometheusTests, onInternalError)
 {
-    auto& internalErrorMock = makeMock<CounterInt>("rpc_error_total_number", "{error_type=\"internal_error\"}");
+    auto& internalErrorMock =
+        makeMock<CounterInt>("rpc_error_total_number", "{error_type=\"internal_error\"}");
     EXPECT_CALL(internalErrorMock, add(1));
     counters.onInternalError();
 }

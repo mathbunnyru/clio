@@ -137,7 +137,9 @@ public:
         std::shared_ptr<HandlerProvider const> const& handlerProvider
     )
     {
-        return std::make_shared<RPCEngine>(config, backend, balancer, dosGuard, workQueue, counters, handlerProvider);
+        return std::make_shared<RPCEngine>(
+            config, backend, balancer, dosGuard, workQueue, counters, handlerProvider
+        );
     }
 
     /**
@@ -220,7 +222,9 @@ public:
     bool
     post(FnType&& func, std::string const& ip)
     {
-        return workQueue_.get().postCoro(std::forward<FnType>(func), dosGuard_.get().isWhiteListed(ip));
+        return workQueue_.get().postCoro(
+            std::forward<FnType>(func), dosGuard_.get().isWhiteListed(ip)
+        );
     }
 
     /**
@@ -237,7 +241,8 @@ public:
     }
 
     /**
-     * @brief Notify the system that specified method failed to execute due to a recoverable user error.
+     * @brief Notify the system that specified method failed to execute due to a recoverable user
+     * error.
      *
      * Used for errors based on user input, not actual failures of the db or clio itself.
      *
@@ -295,7 +300,8 @@ public:
     }
 
     /**
-     * @brief Notify the system that the incoming request specified an unknown/unsupported method/command.
+     * @brief Notify the system that the incoming request specified an unknown/unsupported
+     * method/command.
      */
     void
     notifyUnknownCommand()
