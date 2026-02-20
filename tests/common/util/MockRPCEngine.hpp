@@ -25,9 +25,11 @@
 #include <boost/asio.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/spawn.hpp>
+#include <boost/json/object.hpp>
 #include <gtest/gtest.h>
 
 #include <chrono>
+#include <cstdint>
 #include <functional>
 #include <string>
 
@@ -49,6 +51,17 @@ struct MockAsyncRPCEngine {
     }
 
     MOCK_METHOD(void, notifyComplete, (std::string const&, std::chrono::microseconds const&), ());
+    void
+    notifyComplete(
+        web::Context const& ctx,
+        std::chrono::microseconds const& duration,
+        bool isForwarded
+    )
+    {
+        notifyComplete(ctx.method, duration);
+        if (not isForwarded)
+            recordLedgerMetrics(ctx.params, ctx.range.maxSequence);
+    }
     MOCK_METHOD(void, notifyFailed, (std::string const&), ());
     MOCK_METHOD(void, notifyErrored, (std::string const&), ());
     MOCK_METHOD(void, notifyForwarded, (std::string const&), ());
@@ -58,6 +71,7 @@ struct MockAsyncRPCEngine {
     MOCK_METHOD(void, notifyTooBusy, (), ());
     MOCK_METHOD(void, notifyUnknownCommand, (), ());
     MOCK_METHOD(void, notifyInternalError, (), ());
+    MOCK_METHOD(void, recordLedgerMetrics, (boost::json::object const&, std::uint32_t), ());
     MOCK_METHOD(rpc::Result, buildResponse, (web::Context const&), ());
 };
 
@@ -69,6 +83,17 @@ struct MockRPCEngine {
         ()
     );
     MOCK_METHOD(void, notifyComplete, (std::string const&, std::chrono::microseconds const&), ());
+    void
+    notifyComplete(
+        web::Context const& ctx,
+        std::chrono::microseconds const& duration,
+        bool isForwarded
+    )
+    {
+        notifyComplete(ctx.method, duration);
+        if (not isForwarded)
+            recordLedgerMetrics(ctx.params, ctx.range.maxSequence);
+    }
     MOCK_METHOD(void, notifyErrored, (std::string const&), ());
     MOCK_METHOD(void, notifyForwarded, (std::string const&), ());
     MOCK_METHOD(void, notifyFailedToForward, (std::string const&), ());
@@ -77,5 +102,6 @@ struct MockRPCEngine {
     MOCK_METHOD(void, notifyTooBusy, (), ());
     MOCK_METHOD(void, notifyUnknownCommand, (), ());
     MOCK_METHOD(void, notifyInternalError, (), ());
+    MOCK_METHOD(void, recordLedgerMetrics, (boost::json::object const&, std::uint32_t), ());
     MOCK_METHOD(rpc::Result, buildResponse, (web::Context const&), ());
 };

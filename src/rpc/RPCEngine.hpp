@@ -27,7 +27,6 @@
 #include "rpc/common/HandlerProvider.hpp"
 #include "rpc/common/Types.hpp"
 #include "rpc/common/impl/ForwardingProxy.hpp"
-#include "util/OverloadSet.hpp"
 #include "util/ResponseExpirationCache.hpp"
 #include "util/log/Logger.hpp"
 #include "web/Context.hpp"
@@ -41,6 +40,7 @@
 #include <xrpl/protocol/ErrorCodes.h>
 
 #include <chrono>
+#include <cstdint>
 #include <exception>
 #include <functional>
 #include <memory>
@@ -228,16 +228,37 @@ public:
     }
 
     /**
-     * @brief Notify the system that specified method was executed.
+     * @brief Notify the system that specified method was executed and record ledger metrics.
      *
-     * @param method
+     * @param context The web context containing method, params, and ledger information
      * @param duration The time it took to execute the method specified in microseconds
+     * @param isForwarded Whether the request was forwarded to rippled or not
      */
     void
-    notifyComplete(std::string const& method, std::chrono::microseconds const& duration)
+    notifyComplete(
+        web::Context const& context,
+        std::chrono::microseconds const& duration,
+        bool isForwarded
+    )
     {
-        if (validHandler(method))
-            counters_.get().rpcComplete(method, duration);
+        if (validHandler(context.method)) {
+            counters_.get().rpcComplete(context.method, duration);
+            if (not isForwarded) {
+                counters_.get().recordLedgerRequest(context.params, context.range.maxSequence);
+            }
+        }
+    }
+
+    /**
+     * @brief Record ledger request metrics.
+     *
+     * @param params The request parameters containing ledger information
+     * @param currentLedgerSequence The current ledger sequence
+     */
+    void
+    recordLedgerMetrics(boost::json::object const& params, std::uint32_t currentLedgerSequence)
+    {
+        counters_.get().recordLedgerRequest(params, currentLedgerSequence);
     }
 
     /**

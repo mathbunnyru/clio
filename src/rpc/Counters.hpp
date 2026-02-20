@@ -21,11 +21,13 @@
 
 #include "rpc/WorkQueue.hpp"
 #include "util/prometheus/Counter.hpp"
+#include "util/prometheus/Histogram.hpp"
 
 #include <boost/json.hpp>
 #include <boost/json/object.hpp>
 
 #include <chrono>
+#include <cstdint>
 #include <functional>
 #include <mutex>
 #include <string>
@@ -65,6 +67,9 @@ class Counters {
     CounterType badSyntaxCounter_;
     CounterType unknownCommandCounter_;
     CounterType internalErrorCounter_;
+
+    std::reference_wrapper<util::prometheus::HistogramInt> ledgerAgeLedgersHistogram_;
+    CounterType ledgerHashRequestsCounter_;
 
     std::reference_wrapper<Reportable const> workQueue_;
     std::chrono::time_point<std::chrono::system_clock> startupTime_;
@@ -149,6 +154,15 @@ public:
     /** @brief Increments the global internal error counter. */
     void
     onInternalError();
+
+    /**
+     * @brief Records ledger request metrics based on the ledger parameter in the request.
+     *
+     * @param params The request parameters containing ledger information
+     * @param currentLedgerSequence The current ledger sequence number
+     */
+    void
+    recordLedgerRequest(boost::json::object const& params, std::uint32_t currentLedgerSequence);
 
     /** @return Uptime of this instance in seconds. */
     std::chrono::seconds

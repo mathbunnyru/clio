@@ -22,6 +22,7 @@
 #include "rpc/WorkQueue.hpp"
 #include "util/MockPrometheus.hpp"
 #include "util/prometheus/Counter.hpp"
+#include "util/prometheus/Histogram.hpp"
 
 #include <boost/json/object.hpp>
 #include <boost/json/value_to.hpp>
@@ -30,6 +31,7 @@
 #include <xrpl/protocol/jss.h>
 
 #include <chrono>
+#include <cstdint>
 #include <string>
 
 using namespace rpc;
@@ -271,4 +273,94 @@ TEST_F(RPCCountersMockPrometheusTests, onInternalError)
         makeMock<CounterInt>("rpc_error_total_number", "{error_type=\"internal_error\"}");
     EXPECT_CALL(internalErrorMock, add(1));
     counters.onInternalError();
+}
+
+struct RPCCountersMockPrometheusRecotdLedgerRequestTest : RPCCountersMockPrometheusTests {
+    testing::StrictMock<util::prometheus::MockHistogramImpl<int64_t>>& ageLedgersHistogramMock =
+        makeMock<util::prometheus::HistogramInt>("rpc_requested_ledger_age_histogram", "");
+};
+
+TEST_F(RPCCountersMockPrometheusRecotdLedgerRequestTest, currentLedger)
+{
+    // "current" is not tracked in the histogram (it's not a historical ledger lookup)
+    // No mock expectations needed
+    boost::json::object params;
+    params["ledger_index"] = "current";
+    counters.recordLedgerRequest(params, 1000);
+}
+
+TEST_F(RPCCountersMockPrometheusRecotdLedgerRequestTest, validateLedger)
+{
+    EXPECT_CALL(ageLedgersHistogramMock, observe(0));
+
+    boost::json::object params;
+    params["ledger_index"] = "validated";
+    counters.recordLedgerRequest(params, 1000);
+}
+
+TEST_F(RPCCountersMockPrometheusRecotdLedgerRequestTest, validatedDefaultLedger)
+{
+    EXPECT_CALL(ageLedgersHistogramMock, observe(0));
+
+    boost::json::object params;
+    counters.recordLedgerRequest(params, 1000);
+}
+
+TEST_F(RPCCountersMockPrometheusRecotdLedgerRequestTest, specificLedger)
+{
+    auto& ageLedgersHistogramMock =
+        makeMock<util::prometheus::HistogramInt>("rpc_requested_ledger_age_histogram", "");
+
+    EXPECT_CALL(ageLedgersHistogramMock, observe(100));  // age is 1000 - 900 = 100
+
+    boost::json::object params;
+    params["ledger_index"] = 900;
+    counters.recordLedgerRequest(params, 1000);
+}
+
+TEST_F(RPCCountersMockPrometheusRecotdLedgerRequestTest, stringNumberLedger)
+{
+    EXPECT_CALL(ageLedgersHistogramMock, observe(50));  // 1000 - 950 = 50 ledgers
+
+    boost::json::object params;
+    params["ledger_index"] = "950";
+    counters.recordLedgerRequest(params, 1000);
+}
+
+TEST_F(RPCCountersMockPrometheusRecotdLedgerRequestTest, zeroAgeLedger)
+{
+    auto& ageLedgersHistogramMock =
+        makeMock<util::prometheus::HistogramInt>("rpc_requested_ledger_age_histogram", "");
+
+    EXPECT_CALL(ageLedgersHistogramMock, observe(0));  // 1000 - 1000 = 0 ledgers
+
+    boost::json::object params;
+    params["ledger_index"] = 1000;  // Same as current
+    counters.recordLedgerRequest(params, 1000);
+}
+
+TEST_F(RPCCountersMockPrometheusRecotdLedgerRequestTest, ledgerHashRequest)
+{
+    auto& ledgerHashCounterMock = makeMock<CounterInt>("rpc_ledger_hash_requests_total_number", "");
+
+    EXPECT_CALL(ledgerHashCounterMock, add(1));
+
+    boost::json::object params;
+    params["ledger_hash"] = "ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789";
+    counters.recordLedgerRequest(params, 1000);
+}
+
+TEST_F(RPCCountersMockPrometheusRecotdLedgerRequestTest, ledgerHashWithIndexIgnoresIndex)
+{
+    auto& ledgerHashCounterMock = makeMock<CounterInt>("rpc_ledger_hash_requests_total_number", "");
+
+    // When both ledger_hash and ledger_index are present, only ledger_hash counter should be
+    // incremented
+    EXPECT_CALL(ledgerHashCounterMock, add(1));
+    // No histogram call should be made
+
+    boost::json::object params;
+    params["ledger_hash"] = "ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789";
+    params["ledger_index"] = 900;  // This should be ignored
+    counters.recordLedgerRequest(params, 1000);
 }

@@ -21,18 +21,24 @@
 
 #include "rpc/JS.hpp"
 #include "rpc/WorkQueue.hpp"
+#include "util/JsonUtils.hpp"
 #include "util/prometheus/Label.hpp"
 #include "util/prometheus/Prometheus.hpp"
 
 #include <boost/json/object.hpp>
+#include <boost/json/value.hpp>
+#include <boost/json/value_to.hpp>
 #include <fmt/format.h>
 #include <xrpl/protocol/jss.h>
 
 #include <chrono>
+#include <cstdint>
 #include <functional>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace rpc {
 
@@ -138,6 +144,21 @@ Counters::Counters(Reportable const& wq)
               "Total number of internal errors"
           )
       )
+    , ledgerAgeLedgersHistogram_(
+          PrometheusService::histogramInt(
+              "rpc_requested_ledger_age_histogram",
+              Labels{},
+              {0, 10, 100, 1'000, 10'000, 100'000, 1'000'000, 10'000'000, 100'000'000},
+              "Age of requested ledgers in ledger count"
+          )
+      )
+    , ledgerHashRequestsCounter_(
+          PrometheusService::counterInt(
+              "rpc_ledger_hash_requests_total_number",
+              Labels{},
+              "Total number of successful requests containing ledger_hash field"
+          )
+      )
     , workQueue_(std::cref(wq))
     , startupTime_{std::chrono::system_clock::now()}
 {
@@ -215,6 +236,35 @@ void
 Counters::onInternalError()
 {
     ++internalErrorCounter_.get();
+}
+
+void
+Counters::recordLedgerRequest(
+    boost::json::object const& params,
+    std::uint32_t currentLedgerSequence
+)
+{
+    if (params.contains(JS(ledger_hash))) {
+        ++ledgerHashRequestsCounter_.get();
+        return;
+    }
+
+    if (not params.contains(JS(ledger_index))) {
+        ledgerAgeLedgersHistogram_.get().observe(0);
+        return;
+    }
+    auto const& indexValue = params.at("ledger_index");
+    if (auto const parsed = util::getLedgerIndex(indexValue); parsed.has_value()) {
+        if (*parsed <= currentLedgerSequence) {
+            auto const ageLedgers = static_cast<std::int64_t>(currentLedgerSequence - *parsed);
+            ledgerAgeLedgersHistogram_.get().observe(ageLedgers);
+        }
+    } else if (indexValue.is_string()) {
+        auto const indexStr = boost::json::value_to<std::string>(indexValue);
+        if (indexStr == "validated") {
+            ledgerAgeLedgersHistogram_.get().observe(0);
+        }
+    }
 }
 
 std::chrono::seconds
