@@ -220,7 +220,9 @@ Counters::onInternalError()
 std::chrono::seconds
 Counters::uptime() const
 {
-    return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - startupTime_);
+    return std::chrono::duration_cast<std::chrono::seconds>(
+        std::chrono::system_clock::now() - startupTime_
+    );
 }
 
 boost::json::object
