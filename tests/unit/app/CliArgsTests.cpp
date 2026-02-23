@@ -116,8 +116,10 @@ TEST_F(CliArgsTests, Parse_Config)
 {
     std::string_view configPath = "some_config_path";
     std::array argv{
-        "clio_server", "--conf", configPath.data()
-    };  // NOLINT(bugprone-suspicious-stringview-data-usage)
+        "clio_server",
+        "--conf",
+        configPath.data()  // NOLINT(bugprone-suspicious-stringview-data-usage)
+    };
     auto const action = CliArgs::parse(argv.size(), argv.data());
 
     int const returnCode = 123;
@@ -140,8 +142,10 @@ TEST_F(CliArgsTests, Parse_VerifyConfig)
 {
     std::string_view configPath = "some_config_path";
     std::array argv{
-        "clio_server", configPath.data(), "--verify"
-    };  // NOLINT(bugprone-suspicious-stringview-data-usage)
+        "clio_server",
+        configPath.data(),
+        "--verify"  // NOLINT(bugprone-suspicious-stringview-data-usage)
+    };
     auto const action = CliArgs::parse(argv.size(), argv.data());
 
     int const returnCode = 123;

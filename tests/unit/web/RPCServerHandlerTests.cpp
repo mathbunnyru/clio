@@ -70,9 +70,8 @@ struct MockWsBase : public web::ConnectionBase {
     }
 
     void
-    // NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
     send(
-        std::string&& msg,
+        std::string&& msg,  // NOLINT(cppcoreguidelines-rvalue-reference-param-not-moved)
         boost::beast::http::status status = boost::beast::http::status::ok
     ) override
     {
