@@ -137,19 +137,19 @@ getNFTokenMintData(ripple::TxMeta const& txMeta, ripple::STTx const& sttx)
 
     // Find the first NFT ID that doesn't match.  We're looking for an
     // added NFT, so the one we want will be the mismatch in finalIDs.
-    auto const diff = std::ranges::mismatch(finalIDs, prevIDs);
+    auto const [finalMismatch, prevMismatch] = std::ranges::mismatch(finalIDs, prevIDs);
 
     // There should always be a difference so the returned finalIDs
     // iterator should never be end().  But better safe than sorry.
-    if (finalIDs.size() != prevIDs.size() + 1 || diff.in1 == finalIDs.end() || !owner) {
+    if (finalIDs.size() != prevIDs.size() + 1 || finalMismatch == finalIDs.end() || !owner) {
         throw std::runtime_error(
             fmt::format(" - unexpected NFTokenMint data in tx {}", strHex(sttx.getTransactionID()))
         );
     }
 
     return {
-        {NFTTransactionsData(*diff.in1, txMeta, sttx.getTransactionID())},
-        NFTsData(*diff.in1, *owner, sttx.getFieldVL(ripple::sfURI), txMeta)
+        {NFTTransactionsData(*finalMismatch, txMeta, sttx.getTransactionID())},
+        NFTsData(*finalMismatch, *owner, sttx.getFieldVL(ripple::sfURI), txMeta)
     };
 }
 
