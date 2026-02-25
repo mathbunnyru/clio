@@ -15,9 +15,6 @@ target_sources(clio_integration_tests
                        TestGlobals.cpp
                        Main.cpp)
 
-# Fix for dwarf5 bug on ci. IS STILL NEEDED???
-target_compile_options(clio_options INTERFACE -gdwarf-4)
-
 target_include_directories(clio_integration_tests PRIVATE .)
 target_link_libraries(clio_integration_tests PUBLIC clio_testing_common PRIVATE Boost::program_options)
 set_target_properties(clio_integration_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
