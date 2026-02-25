@@ -79,3 +79,6 @@ if (time_trace)
 endif ()
 
 target_compile_options(clio_options INTERFACE ${COMPILER_FLAGS})
+
+# Add debug symbols for all builds, including Release. This is needed to get useful stack traces in production.
+target_compile_options(clio_options INTERFACE -g)
