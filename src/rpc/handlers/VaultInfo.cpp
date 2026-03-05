@@ -70,7 +70,7 @@ validate(VaultInfoHandler::Input const& input)
 
 }  // namespace
 
-VaultInfoHandler::VaultInfoHandler(std::shared_ptr<BackendInterface> const& sharedPtrBackend)
+VaultInfoHandler::VaultInfoHandler(std::shared_ptr<BackendInterface> sharedPtrBackend)
     : sharedPtrBackend_{sharedPtrBackend}
 {
 }
