@@ -65,7 +65,7 @@ AccountCurrenciesHandler::process(
         ripple::keylet::account(*accountID).key, lgrInfo.seq, ctx.yield
     );
     if (!accountLedgerObject)
-        return Error{Status{RippledError::rpcACT_NOT_FOUND, "accountNotFound"}};
+        return Error{Status{RippledError::rpcACT_NOT_FOUND}};
 
     Output response;
     auto const addToResponse = [&](ripple::SLE const sle) {

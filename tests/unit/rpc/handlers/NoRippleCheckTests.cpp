@@ -320,7 +320,7 @@ TEST_F(RPCNoRippleCheckTest, AccountNotExist)
         ASSERT_FALSE(output);
         auto const err = rpc::makeError(output.result.error());
         EXPECT_EQ(err.at("error").as_string(), "actNotFound");
-        EXPECT_EQ(err.at("error_message").as_string(), "accountNotFound");
+        EXPECT_EQ(err.at("error_message").as_string(), "Account not found.");
     });
 }
 

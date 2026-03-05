@@ -68,7 +68,7 @@ AccountNFTsHandler::process(AccountNFTsHandler::Input const& input, Context cons
     );
 
     if (!accountLedgerObject)
-        return Error{Status{RippledError::rpcACT_NOT_FOUND, "accountNotFound"}};
+        return Error{Status{RippledError::rpcACT_NOT_FOUND}};
 
     auto response = Output{};
     response.account = input.account;

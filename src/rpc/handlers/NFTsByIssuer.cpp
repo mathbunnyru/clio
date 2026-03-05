@@ -68,7 +68,7 @@ NFTsByIssuerHandler::process(NFTsByIssuerHandler::Input const& input, Context co
     );
 
     if (!accountLedgerObject)
-        return Error{Status{RippledError::rpcACT_NOT_FOUND, "accountNotFound"}};
+        return Error{Status{RippledError::rpcACT_NOT_FOUND}};
 
     std::optional<uint256> cursor;
     if (input.marker)
