@@ -31,11 +31,9 @@ set(COMPILER_FLAGS
 # -Wduplicated-cond -Wlogical-op -Wuseless-cast ) endif ()
 
 if(is_clang)
-    list(
-        APPEND COMPILER_FLAGS
-        -Wshadow # gcc is to aggressive with shadowing
-        # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=78147
-    )
+    # gcc is too aggressive with shadowing
+    # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=78147
+    list(APPEND COMPILER_FLAGS -Wshadow)
 endif()
 
 if(is_appleclang)

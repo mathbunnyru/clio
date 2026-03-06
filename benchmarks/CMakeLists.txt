@@ -2,7 +2,8 @@ add_executable(clio_benchmark)
 
 target_sources(
     clio_benchmark
-    PRIVATE # Common
+    PRIVATE
+        # Common
         Main.cpp
         Playground.cpp
         # ExecutionContext
