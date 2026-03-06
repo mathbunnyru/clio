@@ -84,21 +84,36 @@ WriterDecider::onNewState(
                 return *lhs.uuid < *rhs.uuid;
             });
 
-            auto const it = std::ranges::find_if(clusterData, [](ClioNode const& node) {
-                return node.dbRole == ClioNode::DbRole::NotWriter or
-                    node.dbRole == ClioNode::DbRole::Writer;
+            auto it = std::ranges::find_if(clusterData, [](ClioNode const& node) {
+                return node.etlStarted and node.cacheIsFull and
+                    (node.dbRole == ClioNode::DbRole::NotWriter or
+                     node.dbRole == ClioNode::DbRole::Writer);
             });
 
-            if (it == clusterData.end()) {
-                // No writer nodes in the cluster yet
+            auto electNode = [&selfId, &writerState](auto it) {
+                if (*it->uuid == *selfId) {
+                    writerState->startWriting();
+                } else {
+                    writerState->giveUpWriting();
+                }
+            };
+            if (it != clusterData.end()) {
+                electNode(it);
                 return;
             }
 
-            if (*it->uuid == *selfId) {
-                writerState->startWriting();
-            } else {
-                writerState->giveUpWriting();
+            // Try to find a node with at least started ETL
+            it = std::ranges::find_if(clusterData, [](ClioNode const& node) {
+                return node.etlStarted and
+                    (node.dbRole == ClioNode::DbRole::NotWriter or
+                     node.dbRole == ClioNode::DbRole::Writer);
+            });
+
+            if (it != clusterData.end()) {
+                electNode(it);
+                return;
             }
+            writerState->giveUpWriting();
         }
     );
 }

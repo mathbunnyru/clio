@@ -28,6 +28,7 @@
 #include <boost/signals2/signal.hpp>
 #include <boost/signals2/variadic_signal.hpp>
 
+#include <atomic>
 #include <memory>
 
 namespace etl {
@@ -36,11 +37,6 @@ namespace etl {
  * @brief Represents the state of the ETL subsystem.
  */
 struct SystemState {
-    SystemState()
-    {
-        isLoadingCache = true;
-    }
-
     /**
      * @brief Factory method to create a SystemState instance.
      *
@@ -74,12 +70,8 @@ struct SystemState {
         "Whether the process is writing to the database"
     );
 
-    /** @brief Whether the process is still loading cache after startup. */
-    util::prometheus::Bool isLoadingCache = PrometheusService::boolMetric(
-        "etl_loading_cache",
-        util::prometheus::Labels{},
-        "Whether etl is loading cache after clio startup"
-    );
+    /** @brief Shows whether ETL started monitor and ready to become a writer if needed */
+    std::atomic_bool etlStarted{false};
 
     /**
      * @brief Commands for controlling the ETL writer state.
