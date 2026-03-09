@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "data/LedgerCacheLoadingState.hpp"
 #include "etl/WriterState.hpp"
 
 #include <boost/json/conversion.hpp>
@@ -59,20 +60,26 @@ struct ClioNode {
 
     Uuid uuid;  ///< The UUID of the node.
     std::chrono::system_clock::time_point
-        updateTime;    ///< The time the data about the node was last updated.
-    DbRole dbRole;     ///< The database role of the node
-    bool etlStarted;   ///< Whether the ETL monitor has started on this node
-    bool cacheIsFull;  ///< Whether the ledger cache is fully loaded on this node
+        updateTime;                ///< The time the data about the node was last updated.
+    DbRole dbRole;                 ///< The database role of the node
+    bool etlStarted;               ///< Whether the ETL monitor has started on this node
+    bool cacheIsFull;              ///< Whether the ledger cache is fully loaded on this node
+    bool cacheIsCurrentlyLoading;  ///< Whether this node is currently loading the ledger cache
 
     /**
-     * @brief Create a ClioNode from writer state.
+     * @brief Create a ClioNode from writer state and cache loading state.
      *
      * @param uuid The UUID of the node
      * @param writerState The writer state to determine the node's database role
+     * @param cacheLoadingState The cache loading state to determine if cache is being loaded
      * @return A ClioNode with the current time and role derived from writerState
      */
     static ClioNode
-    from(Uuid uuid, etl::WriterStateInterface const& writerState);
+    from(
+        Uuid uuid,
+        etl::WriterStateInterface const& writerState,
+        data::LedgerCacheLoadingStateInterface const& cacheLoadingState
+    );
 };
 
 void

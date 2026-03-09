@@ -12,6 +12,7 @@ target_sources(
         data/BackendCountersTests.cpp
         data/BackendInterfaceTests.cpp
         data/LedgerCacheTests.cpp
+        data/LedgerCacheLoadingStateTests.cpp
         data/LedgerCacheSaverTests.cpp
         data/cassandra/AsyncExecutorTests.cpp
         data/cassandra/ExecutionStrategyTests.cpp
@@ -23,6 +24,7 @@ target_sources(
         data/impl/OutputFileTests.cpp
         # Cluster
         cluster/BackendTests.cpp
+        cluster/CacheLoaderDeciderTests.cpp
         cluster/ClioNodeTests.cpp
         cluster/ClusterCommunicationServiceTests.cpp
         cluster/MetricsTests.cpp

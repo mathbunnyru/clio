@@ -21,6 +21,7 @@
 
 #include "data/BackendInterface.hpp"
 #include "data/LedgerCacheInterface.hpp"
+#include "data/LedgerCacheLoadingState.hpp"
 #include "data/Types.hpp"
 #include "etl/CacheLoaderInterface.hpp"
 #include "etl/CacheLoaderSettings.hpp"
@@ -60,6 +61,7 @@ class CacheLoader : public CacheLoaderInterface {
     std::reference_wrapper<data::LedgerCacheInterface> cache_;
 
     CacheLoaderSettings settings_;
+    std::unique_ptr<data::LedgerCacheLoadingStateInterface const> cacheLoadingState_;
     ExecutionContextType ctx_;
     std::unique_ptr<CacheLoaderType> loader_;
 
@@ -70,15 +72,18 @@ public:
      * @param config The configuration to use
      * @param backend The backend to use
      * @param cache The cache to load into
+     * @param cacheLoadingState State controlling whether loading from backend is currently allowed
      */
     CacheLoader(
         util::config::ClioConfigDefinition const& config,
         std::shared_ptr<BackendInterface> backend,
-        data::LedgerCacheInterface& cache
+        data::LedgerCacheInterface& cache,
+        std::unique_ptr<data::LedgerCacheLoadingStateInterface const> cacheLoadingState
     )
         : backend_{std::move(backend)}
         , cache_{cache}
         , settings_{makeCacheLoaderSettings(config)}
+        , cacheLoadingState_(std::move(cacheLoadingState))
         , ctx_{settings_.numThreads}
     {
     }
@@ -108,6 +113,11 @@ public:
             cache_.get().setFull();
             return;
         }
+
+        LOG(log_.info()) << "Waiting for ledger cache loading to become allowed";
+        cacheLoadingState_->waitForLoadingAllowed();
+        LOG(log_.info()) << "Ledger cache loading is now allowed. Start loading...";
+        cache_.get().startLoading();
 
         std::shared_ptr<impl::BaseCursorProvider> provider;
         if (settings_.numCacheCursorsFromDiff != 0) {

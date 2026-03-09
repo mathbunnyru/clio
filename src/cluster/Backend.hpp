@@ -22,6 +22,7 @@
 #include "cluster/ClioNode.hpp"
 #include "cluster/impl/RepeatedTask.hpp"
 #include "data/BackendInterface.hpp"
+#include "data/LedgerCacheLoadingState.hpp"
 #include "etl/WriterState.hpp"
 #include "util/log/Logger.hpp"
 
@@ -63,6 +64,7 @@ private:
 
     std::shared_ptr<data::BackendInterface> backend_;
     std::unique_ptr<etl::WriterStateInterface const> writerState_;
+    std::unique_ptr<data::LedgerCacheLoadingStateInterface const> cacheLoadingState_;
 
     impl::RepeatedTask<boost::asio::thread_pool> readerTask_;
     impl::RepeatedTask<boost::asio::thread_pool> writerTask_;
@@ -78,6 +80,7 @@ public:
      * @param ctx The execution context for asynchronous operations
      * @param backend Interface to the backend database
      * @param writerState State indicating whether this node is writing to the database
+     * @param cacheLoadingState State controlling whether this node is allowed to load the cache
      * @param readInterval How often to read cluster state from the backend
      * @param writeInterval How often to write this node's state to the backend
      */
@@ -85,6 +88,7 @@ public:
         boost::asio::thread_pool& ctx,
         std::shared_ptr<data::BackendInterface> backend,
         std::unique_ptr<etl::WriterStateInterface const> writerState,
+        std::unique_ptr<data::LedgerCacheLoadingStateInterface const> cacheLoadingState,
         std::chrono::steady_clock::duration readInterval,
         std::chrono::steady_clock::duration writeInterval
     );
