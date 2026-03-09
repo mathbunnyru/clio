@@ -107,7 +107,7 @@ AccountChannelsHandler::process(
     );
 
     if (!accountLedgerObject)
-        return Error{Status{RippledError::rpcACT_NOT_FOUND, "accountNotFound"}};
+        return Error{Status{RippledError::rpcACT_NOT_FOUND}};
 
     auto const destAccountID = input.destinationAccount
         ? accountFromStringStrict(input.destinationAccount.value())

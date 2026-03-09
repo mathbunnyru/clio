@@ -85,7 +85,7 @@ AccountOffersHandler::process(AccountOffersHandler::Input const& input, Context 
     );
 
     if (!accountLedgerObject)
-        return Error{Status{RippledError::rpcACT_NOT_FOUND, "accountNotFound"}};
+        return Error{Status{RippledError::rpcACT_NOT_FOUND}};
 
     Output response;
     response.account = ripple::to_string(*accountID);

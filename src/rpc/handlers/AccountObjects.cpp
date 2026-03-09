@@ -69,7 +69,7 @@ AccountObjectsHandler::process(AccountObjectsHandler::Input const& input, Contex
     );
 
     if (!accountLedgerObject)
-        return Error{Status{RippledError::rpcACT_NOT_FOUND, "accountNotFound"}};
+        return Error{Status{RippledError::rpcACT_NOT_FOUND}};
 
     auto typeFilter = std::optional<std::vector<ripple::LedgerEntryType>>{};
 

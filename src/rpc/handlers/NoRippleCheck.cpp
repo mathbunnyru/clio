@@ -74,7 +74,7 @@ NoRippleCheckHandler::process(NoRippleCheckHandler::Input const& input, Context 
     auto const accountObj = sharedPtrBackend_->fetchLedgerObject(keylet, lgrInfo.seq, ctx.yield);
 
     if (!accountObj)
-        return Error{Status{RippledError::rpcACT_NOT_FOUND, "accountNotFound"}};
+        return Error{Status{RippledError::rpcACT_NOT_FOUND}};
 
     auto it = ripple::SerialIter{accountObj->data(), accountObj->size()};
     auto sle = ripple::SLE{it, keylet};
