@@ -19,8 +19,10 @@
 
 #pragma once
 
+#include "data/LedgerCacheInterface.hpp"
 #include "etl/SystemState.hpp"
 
+#include <functional>
 #include <memory>
 
 namespace etl {
@@ -88,12 +90,20 @@ public:
     setWriterDecidingFallback() = 0;
 
     /**
-     * @brief Whether clio is still loading cache after startup.
+     * @brief Whether the ETL monitor has started and the node is ready to become a writer.
      *
-     * @return true if clio is still loading cache, false otherwise.
+     * @return true if ETL has started the monitor loop, false otherwise.
      */
     [[nodiscard]] virtual bool
-    isLoadingCache() const = 0;
+    isEtlStarted() const = 0;
+
+    /**
+     * @brief Whether the ledger cache is fully loaded.
+     *
+     * @return true if the cache is full, false otherwise.
+     */
+    [[nodiscard]] virtual bool
+    isCacheFull() const = 0;
 
     /**
      * @brief Create a clone of this writer state.
@@ -119,13 +129,16 @@ class WriterState : public WriterStateInterface {
 private:
     std::shared_ptr<SystemState>
         systemState_; /**< @brief Shared system state for ETL coordination */
+    std::reference_wrapper<data::LedgerCacheInterface const> cache_;
 
 public:
     /**
-     * @brief Construct a WriterState with the given system state.
+     * @brief Construct a WriterState with the given system state and cache.
+     *
      * @param state Shared pointer to the system state for coordination
+     * @param cache The ledger cache used to report cache fullness
      */
-    WriterState(std::shared_ptr<SystemState> state);
+    WriterState(std::shared_ptr<SystemState> state, data::LedgerCacheInterface const& cache);
 
     bool
     isReadOnly() const override;
@@ -172,13 +185,13 @@ public:
     bool
     isFallback() const override;
 
-    /**
-     * @brief Whether clio is still loading cache after startup.
-     *
-     * @return true if clio is still loading cache, false otherwise.
-     */
+    /** @copydoc WriterStateInterface::isEtlStarted */
     bool
-    isLoadingCache() const override;
+    isEtlStarted() const override;
+
+    /** @copydoc WriterStateInterface::isCacheFull */
+    bool
+    isCacheFull() const override;
 
     /**
      * @brief Create a clone of this writer state.

@@ -97,7 +97,7 @@ AccountChannelsHandler::process(
         *sharedPtrBackend_, ctx.yield, input.ledgerHash, input.ledgerIndex, range->maxSequence
     );
 
-    if (!expectedLgrInfo.has_value())
+    if (not expectedLgrInfo.has_value())
         return Error{expectedLgrInfo.error()};
 
     auto const& lgrInfo = expectedLgrInfo.value();
@@ -134,7 +134,7 @@ AccountChannelsHandler::process(
         addToResponse
     );
 
-    if (!expectedNext.has_value())
+    if (not expectedNext.has_value())
         return Error{expectedNext.error()};
 
     response.account = input.account;
