@@ -21,6 +21,7 @@
 #include "cluster/ClioNode.hpp"
 #include "data/BackendInterface.hpp"
 #include "util/MockBackendTestFixture.hpp"
+#include "util/MockLedgerCacheLoadingState.hpp"
 #include "util/MockPrometheus.hpp"
 #include "util/MockWriterState.hpp"
 
@@ -53,6 +54,8 @@ struct ClusterBackendTest : util::prometheus::WithPrometheus, MockBackendTestStr
     boost::asio::thread_pool ctx;
     std::unique_ptr<MockWriterState> writerState = std::make_unique<MockWriterState>();
     MockWriterState& writerStateRef = *writerState;
+    std::unique_ptr<NiceMockLedgerCacheLoadingState> cacheLoadingState =
+        std::make_unique<NiceMockLedgerCacheLoadingState>();
     testing::StrictMock<
         testing::MockFunction<void(ClioNode::CUuid, std::shared_ptr<Backend::ClusterData const>)>>
         callbackMock;
@@ -78,6 +81,7 @@ TEST_F(ClusterBackendTest, SubscribeToNewState)
         ctx,
         backend_,
         std::move(writerState),
+        std::move(cacheLoadingState),
         std::chrono::milliseconds(1),
         std::chrono::milliseconds(1)
     };
@@ -122,6 +126,7 @@ TEST_F(ClusterBackendTest, Stop)
         ctx,
         backend_,
         std::move(writerState),
+        std::move(cacheLoadingState),
         std::chrono::milliseconds(1),
         std::chrono::milliseconds(1)
     };
@@ -155,6 +160,7 @@ TEST_F(ClusterBackendTest, FetchClioNodesDataThrowsException)
         ctx,
         backend_,
         std::move(writerState),
+        std::move(cacheLoadingState),
         std::chrono::milliseconds(1),
         std::chrono::milliseconds(1)
     };
@@ -194,6 +200,7 @@ TEST_F(ClusterBackendTest, FetchClioNodesDataReturnsDataWithOtherNodes)
         ctx,
         backend_,
         std::move(writerState),
+        std::move(cacheLoadingState),
         std::chrono::milliseconds(1),
         std::chrono::milliseconds(1)
     };
@@ -205,7 +212,8 @@ TEST_F(ClusterBackendTest, FetchClioNodesDataReturnsDataWithOtherNodes)
         "db_role": 2,
         "update_time": "2025-01-15T10:30:00Z",
         "etl_started": false,
-        "cache_is_full": false
+        "cache_is_full": false,
+        "cache_is_currently_loading": false
     })JSON";
 
     EXPECT_CALL(*backend_, fetchClioNodesData)
@@ -272,6 +280,7 @@ TEST_F(ClusterBackendTest, FetchClioNodesDataReturnsOnlySelfData)
         ctx,
         backend_,
         std::move(writerState),
+        std::move(cacheLoadingState),
         std::chrono::milliseconds(1),
         std::chrono::milliseconds(1)
     };
@@ -282,7 +291,8 @@ TEST_F(ClusterBackendTest, FetchClioNodesDataReturnsOnlySelfData)
         "db_role": 1,
         "update_time": "2025-01-16T10:30:00Z",
         "etl_started": false,
-        "cache_is_full": false
+        "cache_is_full": false,
+        "cache_is_currently_loading": false
     })JSON";
 
     EXPECT_CALL(*backend_, fetchClioNodesData).Times(testing::AtLeast(1)).WillRepeatedly([&]() {
@@ -327,6 +337,7 @@ TEST_F(ClusterBackendTest, FetchClioNodesDataReturnsInvalidJson)
         ctx,
         backend_,
         std::move(writerState),
+        std::move(cacheLoadingState),
         std::chrono::milliseconds(1),
         std::chrono::milliseconds(1)
     };
@@ -378,6 +389,7 @@ TEST_F(ClusterBackendTest, FetchClioNodesDataReturnsValidJsonButCannotConvertToC
         ctx,
         backend_,
         std::move(writerState),
+        std::move(cacheLoadingState),
         std::chrono::milliseconds(1),
         std::chrono::milliseconds(1)
     };
@@ -385,9 +397,10 @@ TEST_F(ClusterBackendTest, FetchClioNodesDataReturnsValidJsonButCannotConvertToC
     clusterBackend.subscribeToNewState(callbackMock.AsStdFunction());
 
     auto const otherUuid = boost::uuids::random_generator{}();
-    // Valid JSON but missing required field 'db_role'
+    // Valid JSON but db_role has wrong type (string instead of integer)
     auto const validJsonMissingField = R"JSON({
-        "update_time": "2025-01-16T10:30:00Z"
+        "update_time": "2025-01-16T10:30:00Z",
+        "db_role": "writer"
     })JSON";
 
     EXPECT_CALL(*backend_, fetchClioNodesData)
@@ -433,6 +446,7 @@ TEST_F(ClusterBackendTest, WriteNodeMessageWritesSelfDataWithRecentTimestampAndD
         ctx,
         backend_,
         std::move(writerState),
+        std::move(cacheLoadingState),
         std::chrono::milliseconds(1),
         std::chrono::milliseconds(1)
     };
@@ -471,6 +485,95 @@ TEST_F(ClusterBackendTest, WriteNodeMessageWritesSelfDataWithRecentTimestampAndD
             EXPECT_EQ(node->dbRole, ClioNode::DbRole::NotWriter);
             EXPECT_GE(node->updateTime, beforeRun);
             EXPECT_LE(node->updateTime, afterWrite);
+        });
+
+    clusterBackend.run();
+    semaphore.acquire();
+}
+
+TEST_F(ClusterBackendTest, WriteNodeMessageReflectsCacheIsCurrentlyLoading)
+{
+    auto& cacheLoadingStateRef = *cacheLoadingState;
+    Backend clusterBackend{
+        ctx,
+        backend_,
+        std::move(writerState),
+        std::move(cacheLoadingState),
+        std::chrono::milliseconds(1),
+        std::chrono::milliseconds(1)
+    };
+
+    EXPECT_CALL(*backend_, fetchClioNodesData)
+        .Times(testing::AtLeast(1))
+        .WillRepeatedly(testing::Return(BackendInterface::ClioNodesDataFetchResult{}));
+    EXPECT_CALL(writerStateRef, isReadOnly)
+        .Times(testing::AtLeast(1))
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(writerStateRef, isEtlStarted)
+        .Times(testing::AtLeast(1))
+        .WillRepeatedly(testing::Return(false));
+    EXPECT_CALL(writerStateRef, isCacheFull)
+        .Times(testing::AtLeast(1))
+        .WillRepeatedly(testing::Return(false));
+    EXPECT_CALL(cacheLoadingStateRef, isCurrentlyLoading)
+        .Times(testing::AtLeast(1))
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(*backend_, writeNodeMessage)
+        .Times(testing::AtLeast(1))
+        .WillRepeatedly([&](boost::uuids::uuid const&, std::string message) {
+            SemaphoreReleaseGuard const guard{semaphore};
+            auto const json = boost::json::parse(message);
+            auto const node = boost::json::try_value_to<ClioNode>(json);
+            ASSERT_TRUE(node.has_value());
+            EXPECT_TRUE(node->cacheIsCurrentlyLoading);
+        });
+
+    clusterBackend.run();
+    semaphore.acquire();
+}
+
+TEST_F(ClusterBackendTest, SubscribeToNewStateReflectsCacheIsCurrentlyLoading)
+{
+    auto& cacheLoadingStateRef = *cacheLoadingState;
+    Backend clusterBackend{
+        ctx,
+        backend_,
+        std::move(writerState),
+        std::move(cacheLoadingState),
+        std::chrono::milliseconds(1),
+        std::chrono::milliseconds(1)
+    };
+
+    clusterBackend.subscribeToNewState(callbackMock.AsStdFunction());
+
+    EXPECT_CALL(*backend_, fetchClioNodesData)
+        .Times(testing::AtLeast(1))
+        .WillRepeatedly(testing::Return(BackendInterface::ClioNodesDataFetchResult{}));
+    EXPECT_CALL(*backend_, writeNodeMessage).Times(testing::AtLeast(1));
+    EXPECT_CALL(writerStateRef, isReadOnly)
+        .Times(testing::AtLeast(1))
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(writerStateRef, isEtlStarted)
+        .Times(testing::AtLeast(1))
+        .WillRepeatedly(testing::Return(false));
+    EXPECT_CALL(writerStateRef, isCacheFull)
+        .Times(testing::AtLeast(1))
+        .WillRepeatedly(testing::Return(false));
+    EXPECT_CALL(cacheLoadingStateRef, isCurrentlyLoading)
+        .Times(testing::AtLeast(1))
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(callbackMock, Call)
+        .Times(testing::AtLeast(1))
+        .WillRepeatedly([this](
+                            ClioNode::CUuid selfId,
+                            std::shared_ptr<Backend::ClusterData const> clusterData
+                        ) {
+            SemaphoreReleaseGuard const guard{semaphore};
+            ASSERT_TRUE(clusterData->has_value());
+            ASSERT_EQ(clusterData->value().size(), 1);
+            auto const& selfNode = clusterData->value().front();
+            EXPECT_EQ(selfNode.uuid, selfId);
+            EXPECT_TRUE(selfNode.cacheIsCurrentlyLoading);
         });
 
     clusterBackend.run();
