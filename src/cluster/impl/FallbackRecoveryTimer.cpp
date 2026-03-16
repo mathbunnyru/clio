@@ -17,27 +17,37 @@
 */
 //==============================================================================
 
-#pragma once
+#include "cluster/impl/FallbackRecoveryTimer.hpp"
 
-#include "etl/WriterState.hpp"
+#include "util/Mutex.hpp"
 
-#include <gmock/gmock.h>
+#include <boost/asio/thread_pool.hpp>
 
+#include <chrono>
 #include <memory>
 
-struct MockWriterStateBase : public etl::WriterStateInterface {
-    MOCK_METHOD(bool, isReadOnly, (), (const, override));
-    MOCK_METHOD(bool, isWriting, (), (const, override));
-    MOCK_METHOD(void, startWriting, (), (override));
-    MOCK_METHOD(void, giveUpWriting, (), (override));
-    MOCK_METHOD(void, setWriterDecidingFallback, (), (override));
-    MOCK_METHOD(bool, isFallback, (), (const, override));
-    MOCK_METHOD(bool, isFallbackRecovery, (), (const, override));
-    MOCK_METHOD(void, setFallbackRecovery, (bool), (override));
-    MOCK_METHOD(bool, isEtlStarted, (), (const, override));
-    MOCK_METHOD(bool, isCacheFull, (), (const, override));
-    MOCK_METHOD(std::unique_ptr<etl::WriterStateInterface>, clone, (), (const, override));
-};
+namespace cluster::impl {
 
-using MockWriterState = testing::StrictMock<MockWriterStateBase>;
-using NiceMockWriterState = testing::NiceMock<MockWriterStateBase>;
+FallbackRecoveryTimer::FallbackRecoveryTimer(
+    boost::asio::thread_pool& ctx,
+    std::chrono::steady_clock::duration recoveryTime
+)
+    : impl_(std::make_shared<util::Mutex<Impl>>(Impl{ctx.get_executor(), recoveryTime}))
+{
+}
+
+bool
+FallbackRecoveryTimer::isRunning() const
+{
+    return impl_->lock()->isRunning;
+}
+
+void
+FallbackRecoveryTimer::cancel()
+{
+    auto locked = impl_->lock();
+    locked->isRunning = false;
+    locked->timer.cancel();
+}
+
+}  // namespace cluster::impl
