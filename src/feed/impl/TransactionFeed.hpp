@@ -19,7 +19,6 @@
 #include <xrpl/protocol/Book.h>
 #include <xrpl/protocol/LedgerHeader.h>
 
-#include <array>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -30,7 +29,10 @@ namespace feed::impl {
 
 class TransactionFeed {
     // Hold two versions of transaction messages
-    using AllVersionTransactionsType = std::array<std::shared_ptr<std::string>, 2>;
+    struct AllVersionsMsgsType {
+        std::string v1;
+        std::string v2;
+    };
 
     struct TransactionSlot {
         std::reference_wrapper<TransactionFeed> feed;
@@ -42,7 +44,7 @@ class TransactionFeed {
         }
 
         void
-        operator()(AllVersionTransactionsType const& allVersionMsgs) const;
+        operator()(std::shared_ptr<AllVersionsMsgsType> const& allVersionMsgs) const;
     };
 
     util::Logger logger_{"Subscriptions"};
@@ -52,15 +54,16 @@ class TransactionFeed {
     std::reference_wrapper<util::prometheus::GaugeInt> subAccountCount_;
     std::reference_wrapper<util::prometheus::GaugeInt> subBookCount_;
 
-    TrackableSignalMap<ripple::AccountID, Subscriber, AllVersionTransactionsType const&>
+    TrackableSignalMap<ripple::AccountID, Subscriber, std::shared_ptr<AllVersionsMsgsType> const&>
         accountSignal_;
-    TrackableSignalMap<ripple::Book, Subscriber, AllVersionTransactionsType const&> bookSignal_;
-    TrackableSignal<Subscriber, AllVersionTransactionsType const&> signal_;
+    TrackableSignalMap<ripple::Book, Subscriber, std::shared_ptr<AllVersionsMsgsType> const&>
+        bookSignal_;
+    TrackableSignal<Subscriber, std::shared_ptr<AllVersionsMsgsType> const&> signal_;
 
     // Signals for proposed tx subscribers
-    TrackableSignalMap<ripple::AccountID, Subscriber, AllVersionTransactionsType const&>
+    TrackableSignalMap<ripple::AccountID, Subscriber, std::shared_ptr<AllVersionsMsgsType> const&>
         accountProposedSignal_;
-    TrackableSignal<Subscriber, AllVersionTransactionsType const&> txProposedSignal_;
+    TrackableSignal<Subscriber, std::shared_ptr<AllVersionsMsgsType> const&> txProposedSignal_;
 
     std::unordered_set<SubscriberPtr> notified_;  // Used by slots to prevent double notifications
                                                   // if tx contains multiple subscribed accounts

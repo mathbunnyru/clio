@@ -233,8 +233,8 @@ SubscriptionSource::handleMessage(std::string const& message)
         } else {
             if (isForwarding_) {
                 // Clio as rippled's proposed_transactions subscriber, will receive two jsons for
-                // each transaction 1 - Proposed transaction 2 - Validated transaction Only forward
-                // proposed transaction, validated transactions are sent by Clio itself
+                // each transaction 1 - Proposed transaction 2 - Validated transaction.
+                // Only forward proposed transaction, validated transactions are sent by Clio itself
                 if (object.contains(JS(transaction)) and !object.contains(JS(meta))) {
                     LOG(log_.debug()) << "Forwarding proposed transaction: " << object;
                     subscriptions_->forwardProposedTransaction(object);

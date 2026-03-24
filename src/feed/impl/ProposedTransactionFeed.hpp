@@ -27,9 +27,33 @@ namespace feed::impl {
 
 /**
  * @brief Feed that publishes the Proposed Transactions.
- * @note Be aware that the Clio only forwards this stream, not respect api_version.
  */
 class ProposedTransactionFeed {
+    // Hold two versions of transaction messages
+    struct AllVersionMsgsType {
+        std::string v1;
+        std::string v2;
+    };
+
+    using AllVersionsMsgsPtrType = std::shared_ptr<AllVersionMsgsType>;
+
+    class ProposedTransactionSlot {
+        std::reference_wrapper<ProposedTransactionFeed> feed_;
+        std::weak_ptr<Subscriber> subscriptionContextWeakPtr_;
+
+    public:
+        ProposedTransactionSlot(
+            ProposedTransactionFeed& feed,
+            SubscriberSharedPtr const& connection
+        )
+            : feed_(feed), subscriptionContextWeakPtr_(connection)
+        {
+        }
+
+        void
+        operator()(AllVersionsMsgsPtrType const& allVersionMsgs) const;
+    };
+
     util::Logger logger_{"Subscriptions"};
 
     std::unordered_set<SubscriberPtr> notified_;  // Used by slots to prevent double notifications
@@ -38,10 +62,16 @@ class ProposedTransactionFeed {
     std::reference_wrapper<util::prometheus::GaugeInt> subAllCount_;
     std::reference_wrapper<util::prometheus::GaugeInt> subAccountCount_;
 
-    TrackableSignalMap<ripple::AccountID, Subscriber, std::shared_ptr<std::string>> accountSignal_;
-    TrackableSignal<Subscriber, std::shared_ptr<std::string>> signal_;
+    TrackableSignalMap<ripple::AccountID, Subscriber, AllVersionsMsgsPtrType> accountSignal_;
+    TrackableSignal<Subscriber, AllVersionsMsgsPtrType> signal_;
 
 public:
+    /**
+     * @brief Move constructor is deleted because ProposedTransactionSlot takes
+     * ProposedTransactionFeed by reference.
+     */
+    ProposedTransactionFeed(ProposedTransactionFeed&&) = delete;
+
     /**
      * @brief Construct a Proposed Transaction Feed object.
      * @param executionCtx The actual publish will be called in the strand of this.

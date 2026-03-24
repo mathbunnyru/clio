@@ -37,7 +37,9 @@
 namespace feed::impl {
 
 void
-TransactionFeed::TransactionSlot::operator()(AllVersionTransactionsType const& allVersionMsgs) const
+TransactionFeed::TransactionSlot::operator()(
+    std::shared_ptr<AllVersionsMsgsType> const& allVersionMsgs
+) const
 {
     if (auto connection = subscriptionContextWeakPtr.lock(); connection) {
         // Check if this connection already sent
@@ -47,10 +49,10 @@ TransactionFeed::TransactionSlot::operator()(AllVersionTransactionsType const& a
         feed.get().notified_.insert(connection.get());
 
         if (connection->apiSubversion() < 2u) {
-            connection->send(allVersionMsgs[0]);
+            connection->send(std::shared_ptr<std::string>(allVersionMsgs, &allVersionMsgs->v1));
             return;
         }
-        connection->send(allVersionMsgs[1]);
+        connection->send(std::shared_ptr<std::string>(allVersionMsgs, &allVersionMsgs->v2));
     }
 }
 
@@ -263,10 +265,9 @@ TransactionFeed::pub(
         return pubObj;
     };
 
-    AllVersionTransactionsType allVersionsMsgs{
-        std::make_shared<std::string>(boost::json::serialize(genJsonByVersion(1u))),
-        std::make_shared<std::string>(boost::json::serialize(genJsonByVersion(2u)))
-    };
+    auto allVersionsMsgs = std::make_shared<AllVersionsMsgsType>(
+        boost::json::serialize(genJsonByVersion(1u)), boost::json::serialize(genJsonByVersion(2u))
+    );
 
     auto const affectedAccountsFlat = meta->getAffectedAccounts();
     auto affectedAccounts = std::unordered_set<ripple::AccountID>(
