@@ -64,7 +64,7 @@ FeatureHandler::process(FeatureHandler::Input const& input, Context const& ctx) 
             return Output::Feature{
                 .name = feature.name,
                 .key = ripple::to_string(feature.feature),
-                .supported = feature.isSupportedByClio,
+                .supported = feature.isSupportedByClio and feature.isSupportedByXRPL,
             };
         }
     );

@@ -98,13 +98,25 @@ AmendmentCenter::AmendmentCenter(std::shared_ptr<data::BackendInterface> const& 
                 .name = name,
                 .feature = Amendment::getAmendmentId(name),
                 .isSupportedByXRPL = support != ripple::AmendmentSupport::Unsupported,
-                .isSupportedByClio =
-                    rg::find(supportedAmendments(), name) != rg::end(supportedAmendments()),
+                .isSupportedByClio = rg::contains(supportedAmendments(), name),
                 .isRetired = support == ripple::AmendmentSupport::Retired
             };
         }),
         std::back_inserter(all_)
     );
+
+    // Mix in amendments that Clio registered but libXRPL no longer knows about (deleted upstream).
+    for (auto const& name : supportedAmendments()) {
+        if (not rg::contains(all_, name, &Amendment::name)) {
+            all_.push_back({
+                .name = name,
+                .feature = Amendment::getAmendmentId(name),
+                .isSupportedByXRPL = false,
+                .isSupportedByClio = true,
+                .isRetired = true,
+            });
+        }
+    }
 
     for (auto const& am : all_ | vs::filter([](auto const& am) { return am.isSupportedByClio; }))
         supported_.insert_or_assign(am.name, am);
