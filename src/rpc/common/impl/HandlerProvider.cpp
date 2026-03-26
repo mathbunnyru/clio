@@ -44,6 +44,7 @@
 #include "rpc/handlers/Tx.hpp"
 #include "rpc/handlers/Unsubscribe.hpp"
 #include "rpc/handlers/VaultInfo.hpp"
+#include "rpc/handlers/VaultList.hpp"
 #include "rpc/handlers/VersionHandler.hpp"
 #include "util/config/ConfigDefinition.hpp"
 
@@ -109,6 +110,7 @@ ProductionHandlerProvider::ProductionHandlerProvider(
            {.handler = SubscribeHandler{backend, amendmentCenter, subscriptionManager}}},
           {"unsubscribe", {.handler = UnsubscribeHandler{subscriptionManager}}},
           {"vault_info", {.handler = VaultInfoHandler{backend}}},
+          {"vault_list", {.handler = VaultListHandler{backend}, .isClioOnly = true}},
           {"version", {.handler = VersionHandler{config}}},
       }
 {

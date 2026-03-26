@@ -49,6 +49,7 @@ handledRpcs()
         "subscribe",
         "unsubscribe",
         "vault_info",
+        "vault_list",
         "version",
         // clang-format on
     };

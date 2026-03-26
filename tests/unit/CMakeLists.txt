@@ -142,6 +142,7 @@ target_sources(
         rpc/handlers/UnsubscribeTests.cpp
         rpc/handlers/VersionHandlerTests.cpp
         rpc/handlers/VaultInfoTests.cpp
+        rpc/handlers/VaultListTests.cpp
         rpc/JsonBoolTests.cpp
         rpc/RPCEngineTests.cpp
         rpc/RPCHelpersTests.cpp
