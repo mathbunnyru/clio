@@ -39,6 +39,7 @@ constexpr auto kASSET_CURRENCY = "USD";
 constexpr auto kASSET_ISSUER = "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW";
 constexpr uint32_t kSEQ_START = 10;
 constexpr uint32_t kSEQ = 30;
+constexpr auto kAPI_VERSION = 2;
 
 }  // namespace
 
@@ -135,7 +136,8 @@ TEST_P(VaultListParameterTest, InvalidParams)
     runSpawn([&, this](auto yield) {
         auto const handler = AnyHandler{VaultListHandler{backend_}};
         auto const req = json::parse(testBundle.testJson);
-        auto const output = handler.process(req, Context{.yield = yield, .apiVersion = 2});
+        auto const output =
+            handler.process(req, Context{.yield = yield, .apiVersion = kAPI_VERSION});
         ASSERT_FALSE(output);
 
         auto const err = rpc::makeError(output.result.error());
@@ -161,7 +163,8 @@ TEST_F(RPCVaultListHandlerTest, LedgerNotFound)
 
     auto const handler = AnyHandler{VaultListHandler{backend_}};
     runSpawn([&](auto yield) {
-        auto const output = handler.process(kINPUT, Context{.yield = yield, .apiVersion = 2});
+        auto const output =
+            handler.process(kINPUT, Context{.yield = yield, .apiVersion = kAPI_VERSION});
         ASSERT_FALSE(output);
         auto const err = rpc::makeError(output.result.error());
         EXPECT_EQ(err.at("error").as_string(), "lgrNotFound");
@@ -188,7 +191,8 @@ TEST_F(RPCVaultListHandlerTest, TokenNotFound)
 
     auto const handler = AnyHandler{VaultListHandler{backend_}};
     runSpawn([&](auto yield) {
-        auto const output = handler.process(kINPUT, Context{.yield = yield, .apiVersion = 2});
+        auto const output =
+            handler.process(kINPUT, Context{.yield = yield, .apiVersion = kAPI_VERSION});
         ASSERT_FALSE(output);
         auto const err = rpc::makeError(output.result.error());
         EXPECT_EQ(err.at("error").as_string(), "objectNotFound");
@@ -222,7 +226,8 @@ TEST_F(RPCVaultListHandlerTest, IssuerAccountNotFound)
 
     auto const handler = AnyHandler{VaultListHandler{backend_}};
     runSpawn([&](auto yield) {
-        auto const output = handler.process(kINPUT, Context{.yield = yield, .apiVersion = 2});
+        auto const output =
+            handler.process(kINPUT, Context{.yield = yield, .apiVersion = kAPI_VERSION});
         ASSERT_FALSE(output);
         auto const err = rpc::makeError(output.result.error());
         EXPECT_EQ(err.at("error").as_string(), "actNotFound");
@@ -261,7 +266,8 @@ TEST_F(RPCVaultListHandlerTest, EmptyResult)
 
     auto const handler = AnyHandler{VaultListHandler{backend_}};
     runSpawn([&](auto yield) {
-        auto const output = handler.process(kINPUT, Context{.yield = yield, .apiVersion = 2});
+        auto const output =
+            handler.process(kINPUT, Context{.yield = yield, .apiVersion = kAPI_VERSION});
         ASSERT_TRUE(output);
         EXPECT_EQ(output.result->as_object().at("vaults").as_array().size(), 0);
         EXPECT_EQ(output.result->as_object().at("token_id").as_string(), kMPT_ID);
@@ -334,7 +340,8 @@ TEST_F(RPCVaultListHandlerTest, SingleVaultListed)
 
     auto const handler = AnyHandler{VaultListHandler{backend_}};
     runSpawn([&](auto yield) {
-        auto const output = handler.process(kINPUT, Context{.yield = yield, .apiVersion = 2});
+        auto const output =
+            handler.process(kINPUT, Context{.yield = yield, .apiVersion = kAPI_VERSION});
         ASSERT_TRUE(output);
 
         auto const& result = output.result->as_object();
@@ -400,7 +407,8 @@ TEST_F(RPCVaultListHandlerTest, NonVaultObjectsFiltered)
 
     auto const handler = AnyHandler{VaultListHandler{backend_}};
     runSpawn([&](auto yield) {
-        auto const output = handler.process(kINPUT, Context{.yield = yield, .apiVersion = 2});
+        auto const output =
+            handler.process(kINPUT, Context{.yield = yield, .apiVersion = kAPI_VERSION});
         ASSERT_TRUE(output);
 
         auto const& vaults = output.result->as_object().at("vaults").as_array();
@@ -476,7 +484,8 @@ TEST_F(RPCVaultListHandlerTest, MultipleVaultsListed)
 
     auto const handler = AnyHandler{VaultListHandler{backend_}};
     runSpawn([&](auto yield) {
-        auto const output = handler.process(kINPUT, Context{.yield = yield, .apiVersion = 2});
+        auto const output =
+            handler.process(kINPUT, Context{.yield = yield, .apiVersion = kAPI_VERSION});
         ASSERT_TRUE(output);
 
         auto const& vaults = output.result->as_object().at("vaults").as_array();
@@ -558,7 +567,8 @@ TEST_F(RPCVaultListHandlerTest, ShareIssuanceNotFoundFallsBackToZero)
 
     auto const handler = AnyHandler{VaultListHandler{backend_}};
     runSpawn([&](auto yield) {
-        auto const output = handler.process(kINPUT, Context{.yield = yield, .apiVersion = 2});
+        auto const output =
+            handler.process(kINPUT, Context{.yield = yield, .apiVersion = kAPI_VERSION});
         ASSERT_TRUE(output);
 
         auto const& vaults = output.result->as_object().at("vaults").as_array();
@@ -603,7 +613,8 @@ TEST_F(RPCVaultListHandlerTest, WithExplicitLedgerIndex)
 
     auto const handler = AnyHandler{VaultListHandler{backend_}};
     runSpawn([&](auto yield) {
-        auto const output = handler.process(kINPUT, Context{.yield = yield, .apiVersion = 2});
+        auto const output =
+            handler.process(kINPUT, Context{.yield = yield, .apiVersion = kAPI_VERSION});
         ASSERT_TRUE(output);
         EXPECT_EQ(output.result->as_object().at("ledger_index").as_uint64(), kEXPLICIT_SEQ);
     });
@@ -640,7 +651,8 @@ TEST_F(RPCVaultListHandlerTest, WithLimitParameter)
 
     auto const handler = AnyHandler{VaultListHandler{backend_}};
     runSpawn([&](auto yield) {
-        auto const output = handler.process(kINPUT, Context{.yield = yield, .apiVersion = 2});
+        auto const output =
+            handler.process(kINPUT, Context{.yield = yield, .apiVersion = kAPI_VERSION});
         ASSERT_TRUE(output);
         // Limit is clamped to [10, 400], 50 is within range so stays 50
         EXPECT_EQ(output.result->as_object().at("limit").as_uint64(), 50);
@@ -678,7 +690,8 @@ TEST_F(RPCVaultListHandlerTest, LimitClampedToMax)
 
     auto const handler = AnyHandler{VaultListHandler{backend_}};
     runSpawn([&](auto yield) {
-        auto const output = handler.process(kINPUT, Context{.yield = yield, .apiVersion = 2});
+        auto const output =
+            handler.process(kINPUT, Context{.yield = yield, .apiVersion = kAPI_VERSION});
         ASSERT_TRUE(output);
         // Limit is clamped to max 400
         EXPECT_EQ(output.result->as_object().at("limit").as_uint64(), 400);
@@ -744,7 +757,8 @@ TEST_F(RPCVaultListHandlerTest, VaultWithNonZeroFlagsStatus)
 
     auto const handler = AnyHandler{VaultListHandler{backend_}};
     runSpawn([&](auto yield) {
-        auto const output = handler.process(kINPUT, Context{.yield = yield, .apiVersion = 2});
+        auto const output =
+            handler.process(kINPUT, Context{.yield = yield, .apiVersion = kAPI_VERSION});
         ASSERT_TRUE(output);
 
         auto const& vaults = output.result->as_object().at("vaults").as_array();
