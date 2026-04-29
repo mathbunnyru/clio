@@ -33,6 +33,9 @@ jobs:
         with:
           enable_ccache: false
 
+      - name: Print build environment
+        uses: XRPLF/actions/print-env@8f811899319ef002e7a088c77c57d95aba602a97
+
       - name: Update libXRPL version requirement
         run: |
           sed -i.bak -E "s|'xrpl/[a-zA-Z0-9\\.\\-]+'|'xrpl/${{ github.event.client_payload.conan_ref }}'|g" conanfile.py
