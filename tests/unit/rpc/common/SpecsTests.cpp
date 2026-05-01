@@ -44,7 +44,7 @@ struct SpecsTests : testing::Test {
         {
         }
 
-        std::optional<check::Warning>
+        [[nodiscard]] std::optional<check::Warning>
         check(boost::json::value const& value, std::string key) const
         {
             return ref.check(value, key);
@@ -102,6 +102,7 @@ TEST_P(FieldProcessorTests, FieldSpecWithRequirementProcess)
     EXPECT_CALL(requirementMock, verify).WillOnce(testing::Return(GetParam().requirementResult));
     if (GetParam().otherRequirementResult) {
         EXPECT_CALL(anotherRequirementMock, verify)
+            // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
             .WillOnce(testing::Return(GetParam().otherRequirementResult.value()));
     }
 
@@ -206,6 +207,7 @@ TEST_P(RpcSpecProcessTests, Process)
     EXPECT_CALL(requirementMock, verify).WillOnce(testing::Return(GetParam().requirementResult));
     if (GetParam().otherRequirementResult) {
         EXPECT_CALL(anotherRequirementMock, verify)
+            // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
             .WillOnce(testing::Return(GetParam().otherRequirementResult.value()));
     }
     auto const result = spec.process(json);

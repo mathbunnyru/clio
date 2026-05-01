@@ -152,7 +152,7 @@ public:
         // drop the keyspace
         Handle const handle{TestGlobals::instance().backendHost};
         EXPECT_TRUE(handle.connect());
-        handle.execute("DROP KEYSPACE " + TestGlobals::instance().backendKeyspace);
+        EXPECT_TRUE(handle.execute("DROP KEYSPACE " + TestGlobals::instance().backendKeyspace));
     }
 };
 
@@ -173,28 +173,28 @@ TEST_F(MigrationCassandraManagerCleanDBTest, AllMigratorStatusBeforeAnyMigration
 {
     auto const status = testMigrationManager_->allMigratorsStatusPairs();
     EXPECT_EQ(status.size(), 4);
-    EXPECT_EQ(std::get<1>(status[0]), MigratorStatus::NotMigrated);
-    EXPECT_EQ(std::get<1>(status[1]), MigratorStatus::NotMigrated);
-    EXPECT_EQ(std::get<1>(status[2]), MigratorStatus::NotMigrated);
-    EXPECT_EQ(std::get<1>(status[3]), MigratorStatus::NotMigrated);
+    EXPECT_EQ(std::get<1>(status[0]), MigratorStatus::Status::NotMigrated);
+    EXPECT_EQ(std::get<1>(status[1]), MigratorStatus::Status::NotMigrated);
+    EXPECT_EQ(std::get<1>(status[2]), MigratorStatus::Status::NotMigrated);
+    EXPECT_EQ(std::get<1>(status[3]), MigratorStatus::Status::NotMigrated);
 }
 
 TEST_F(MigrationCassandraManagerCleanDBTest, MigratorStatus)
 {
     auto status = testMigrationManager_->getMigratorStatusByName("ExampleObjectsMigrator");
-    EXPECT_EQ(status, MigratorStatus::NotMigrated);
+    EXPECT_EQ(status, MigratorStatus::Status::NotMigrated);
 
     status = testMigrationManager_->getMigratorStatusByName("ExampleTransactionsMigrator");
-    EXPECT_EQ(status, MigratorStatus::NotMigrated);
+    EXPECT_EQ(status, MigratorStatus::Status::NotMigrated);
 
     status = testMigrationManager_->getMigratorStatusByName("ExampleLedgerMigrator");
-    EXPECT_EQ(status, MigratorStatus::NotMigrated);
+    EXPECT_EQ(status, MigratorStatus::Status::NotMigrated);
 
     status = testMigrationManager_->getMigratorStatusByName("ExampleDropTableMigrator");
-    EXPECT_EQ(status, MigratorStatus::NotMigrated);
+    EXPECT_EQ(status, MigratorStatus::Status::NotMigrated);
 
     status = testMigrationManager_->getMigratorStatusByName("NonExistentMigrator");
-    EXPECT_EQ(status, MigratorStatus::NotKnown);
+    EXPECT_EQ(status, MigratorStatus::Status::NotKnown);
 }
 
 // The test suite for testing migration process for ExampleTransactionsMigrator. In this test suite,
@@ -217,7 +217,7 @@ TEST_F(MigrationCassandraManagerTxTableTest, MigrateExampleTransactionsMigrator)
     constexpr auto kTRANSACTIONS_MIGRATOR_NAME = "ExampleTransactionsMigrator";
     EXPECT_EQ(
         testMigrationManager_->getMigratorStatusByName(kTRANSACTIONS_MIGRATOR_NAME),
-        MigratorStatus::NotMigrated
+        MigratorStatus::Status::NotMigrated
     );
 
     ExampleTransactionsMigrator::count = 0;
@@ -258,7 +258,7 @@ TEST_F(MigrationCassandraManagerTxTableTest, MigrateExampleTransactionsMigrator)
 
     EXPECT_EQ(
         testMigrationManager_->getMigratorStatusByName(kTRANSACTIONS_MIGRATOR_NAME),
-        MigratorStatus::Migrated
+        MigratorStatus::Status::Migrated
     );
 }
 
@@ -281,7 +281,7 @@ TEST_F(MigrationCassandraManagerObjectsTableTest, MigrateExampleObjectsMigrator)
     constexpr auto kOBJECTS_MIGRATOR_NAME = "ExampleObjectsMigrator";
     EXPECT_EQ(
         testMigrationManager_->getMigratorStatusByName(kOBJECTS_MIGRATOR_NAME),
-        MigratorStatus::NotMigrated
+        MigratorStatus::Status::NotMigrated
     );
 
     testMigrationManager_->runMigration(kOBJECTS_MIGRATOR_NAME);
@@ -291,7 +291,7 @@ TEST_F(MigrationCassandraManagerObjectsTableTest, MigrateExampleObjectsMigrator)
 
     EXPECT_EQ(
         testMigrationManager_->getMigratorStatusByName(kOBJECTS_MIGRATOR_NAME),
-        MigratorStatus::Migrated
+        MigratorStatus::Status::Migrated
     );
 }
 
@@ -315,13 +315,13 @@ TEST_F(MigrationCassandraManagerLedgerTableTest, MigrateExampleLedgerMigrator)
     constexpr auto kHEADER_MIGRATOR_NAME = "ExampleLedgerMigrator";
     EXPECT_EQ(
         testMigrationManager_->getMigratorStatusByName(kHEADER_MIGRATOR_NAME),
-        MigratorStatus::NotMigrated
+        MigratorStatus::Status::NotMigrated
     );
 
     testMigrationManager_->runMigration(kHEADER_MIGRATOR_NAME);
     EXPECT_EQ(
         testMigrationManager_->getMigratorStatusByName(kHEADER_MIGRATOR_NAME),
-        MigratorStatus::Migrated
+        MigratorStatus::Status::Migrated
     );
 
     auto const newTableSize = data::synchronous([&](auto ctx) {
@@ -357,7 +357,7 @@ TEST_F(MigrationCassandraManagerDropTableTest, MigrateDropTableMigrator)
     constexpr auto kDROP_TABLE_MIGRATOR_NAME = "ExampleDropTableMigrator";
     EXPECT_EQ(
         testMigrationManager_->getMigratorStatusByName(kDROP_TABLE_MIGRATOR_NAME),
-        MigratorStatus::NotMigrated
+        MigratorStatus::Status::NotMigrated
     );
 
     auto const beforeDropSize =
@@ -367,7 +367,7 @@ TEST_F(MigrationCassandraManagerDropTableTest, MigrateDropTableMigrator)
     testMigrationManager_->runMigration(kDROP_TABLE_MIGRATOR_NAME);
     EXPECT_EQ(
         testMigrationManager_->getMigratorStatusByName(kDROP_TABLE_MIGRATOR_NAME),
-        MigratorStatus::Migrated
+        MigratorStatus::Status::Migrated
     );
 
     auto const newTableSize =
