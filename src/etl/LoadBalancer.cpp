@@ -275,7 +275,8 @@ LoadBalancer::forwardToRippled(
         return std::unexpected{rpc::ClioError::RpcCommandIsMissing};
 
     auto const cmd = boost::json::value_to<std::string>(request.at("command"));
-    if (forwardingCache_) {
+    if (shouldUseCache(isAdmin)) {
+        // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
         if (auto cachedResponse = forwardingCache_->get(cmd); cachedResponse) {
             forwardingCounters_.cacheHit.get() += 1;
             return *std::move(cachedResponse);
@@ -310,8 +311,8 @@ LoadBalancer::forwardToRippled(
     }
 
     if (response) {
-        if (forwardingCache_ and not response->contains("error"))
-            forwardingCache_->put(cmd, *response);
+        if (shouldUseCache(isAdmin) and not response->contains("error"))
+            forwardingCache_->put(cmd, *response);  // NOLINT(bugprone-unchecked-optional-access)
         return *std::move(response);
     }
 
@@ -413,6 +414,12 @@ LoadBalancer::chooseForwardingSource()
             source->setForwarding(false);
         }
     }
+}
+
+bool
+LoadBalancer::shouldUseCache(bool isAdmin) const
+{
+    return forwardingCache_.has_value() and not isAdmin;
 }
 
 }  // namespace etl
