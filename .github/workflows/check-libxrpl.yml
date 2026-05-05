@@ -100,10 +100,10 @@ jobs:
       - name: Create an issue
         uses: XRPLF/actions/create-issue@fbcc16eb7f20dc3199eaf1aed0d3523a5ba9008c
         with:
-          labels: "compatibility,bug"
           title: "Proposed libXRPL check failed"
           body: >
             Clio build or tests failed against `libXRPL ${{ github.event.client_payload.conan_ref }}`.
 
             PR: ${{ github.event.client_payload.pr_url }}
+          labels: "compatibility,bug"
           assignees: "godexsoft,kuznetsss,mathbunnyru"
