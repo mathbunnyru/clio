@@ -138,7 +138,10 @@ TEST_F(BackendCassandraFactoryTestWithDB, CreateCassandraBackend)
         EXPECT_TRUE(backend);
 
         auto const range = backend->fetchLedgerRange();
+        ASSERT_TRUE(range.has_value());
+        // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
         EXPECT_EQ(range->minSequence, 100);
+        // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
         EXPECT_EQ(range->maxSequence, 500);
     }
 }

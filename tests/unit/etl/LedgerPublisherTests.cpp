@@ -62,9 +62,10 @@ TEST_F(ETLLedgerPublisherTest, PublishLedgerHeaderSkipDueToAge)
     publisher.publish(dummyLedgerHeader);
 
     // Verify last published sequence is set immediately
-    EXPECT_TRUE(publisher.getLastPublishedSequence());
+    auto const seq = publisher.getLastPublishedSequence();
+    ASSERT_TRUE(seq.has_value());
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-    EXPECT_EQ(publisher.getLastPublishedSequence().value(), kSEQ);
+    EXPECT_EQ(seq.value(), kSEQ);
 
     // Since age > MAX_LEDGER_AGE_SECONDS, these should not be called
     EXPECT_CALL(*backend_, doFetchLedgerObject).Times(0);
@@ -97,9 +98,10 @@ TEST_F(ETLLedgerPublisherTest, PublishLedgerHeaderWithinAgeLimit)
     publisher.publish(dummyLedgerHeader);
 
     // Verify last published sequence is set immediately
-    EXPECT_TRUE(publisher.getLastPublishedSequence());
+    auto const seq = publisher.getLastPublishedSequence();
+    ASSERT_TRUE(seq.has_value());
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-    EXPECT_EQ(publisher.getLastPublishedSequence().value(), kSEQ);
+    EXPECT_EQ(seq.value(), kSEQ);
 
     ctx.join();
     EXPECT_TRUE(publisher.lastPublishAgeSeconds() <= 1);
@@ -113,9 +115,10 @@ TEST_F(ETLLedgerPublisherTest, PublishLedgerHeaderIsWritingTrue)
     auto publisher = impl::LedgerPublisher(ctx, backend_, mockSubscriptionManagerPtr, dummyState);
 
     publisher.publish(dummyLedgerHeader);
-    EXPECT_TRUE(publisher.getLastPublishedSequence());
+    auto const seq = publisher.getLastPublishedSequence();
+    ASSERT_TRUE(seq.has_value());
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-    EXPECT_EQ(publisher.getLastPublishedSequence().value(), kSEQ);
+    EXPECT_EQ(seq.value(), kSEQ);
 
     ctx.join();
 
@@ -155,9 +158,10 @@ TEST_F(ETLLedgerPublisherTest, PublishLedgerHeaderInRange)
     EXPECT_CALL(*mockSubscriptionManagerPtr, pubTransaction);
 
     publisher.publish(dummyLedgerHeader);
-    EXPECT_TRUE(publisher.getLastPublishedSequence());
+    auto const seq = publisher.getLastPublishedSequence();
+    ASSERT_TRUE(seq.has_value());
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-    EXPECT_EQ(publisher.getLastPublishedSequence().value(), kSEQ);
+    EXPECT_EQ(seq.value(), kSEQ);
 
     ctx.join();
 
@@ -202,9 +206,10 @@ TEST_F(ETLLedgerPublisherTest, PublishLedgerHeaderCloseTimeGreaterThanNow)
     EXPECT_CALL(*mockSubscriptionManagerPtr, pubTransaction);
 
     publisher.publish(dummyLedgerHeader);
-    EXPECT_TRUE(publisher.getLastPublishedSequence());
+    auto const seq = publisher.getLastPublishedSequence();
+    ASSERT_TRUE(seq.has_value());
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-    EXPECT_EQ(publisher.getLastPublishedSequence().value(), kSEQ);
+    EXPECT_EQ(seq.value(), kSEQ);
 
     ctx.join();
 
@@ -294,9 +299,10 @@ TEST_F(ETLLedgerPublisherTest, PublishMultipleTxInOrder)
     EXPECT_CALL(*mockSubscriptionManagerPtr, pubTransaction(t1, _)).InSequence(s);
 
     publisher.publish(dummyLedgerHeader);
-    EXPECT_TRUE(publisher.getLastPublishedSequence());
+    auto const seq = publisher.getLastPublishedSequence();
+    ASSERT_TRUE(seq.has_value());
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-    EXPECT_EQ(publisher.getLastPublishedSequence().value(), kSEQ);
+    EXPECT_EQ(seq.value(), kSEQ);
 
     ctx.join();
 
@@ -318,9 +324,10 @@ TEST_F(ETLLedgerPublisherTest, PublishVeryOldLedgerShouldSkip)
     EXPECT_CALL(*mockSubscriptionManagerPtr, pubTransaction).Times(0);
 
     publisher.publish(dummyLedgerHeader);
-    EXPECT_TRUE(publisher.getLastPublishedSequence());
+    auto const seq = publisher.getLastPublishedSequence();
+    ASSERT_TRUE(seq.has_value());
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-    EXPECT_EQ(publisher.getLastPublishedSequence().value(), kSEQ);
+    EXPECT_EQ(seq.value(), kSEQ);
 
     ctx.join();
 }
@@ -367,9 +374,10 @@ TEST_F(ETLLedgerPublisherTest, PublishMultipleLedgersInQuickSuccession)
     publisher.publish(dummyLedgerHeader1);
     publisher.publish(dummyLedgerHeader2);
 
-    EXPECT_TRUE(publisher.getLastPublishedSequence());
+    auto const seq = publisher.getLastPublishedSequence();
+    ASSERT_TRUE(seq.has_value());
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-    EXPECT_EQ(publisher.getLastPublishedSequence().value(), kSEQ + 1);
+    EXPECT_EQ(seq.value(), kSEQ + 1);
 
     ctx.join();
 }

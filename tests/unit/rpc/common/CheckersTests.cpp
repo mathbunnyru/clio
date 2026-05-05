@@ -21,19 +21,19 @@ struct DeprecatedTests : ::testing::Test {
 TEST_F(DeprecatedTests, Field)
 {
     auto warning = Deprecated<>::check(json, "some_string");
-    ASSERT_TRUE(warning);
+    ASSERT_TRUE(warning.has_value());
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     EXPECT_EQ(warning->warningCode, WarningCode::WarnRpcDeprecated);
 
     warning = Deprecated<>::check(json, "other");
-    EXPECT_FALSE(warning);
+    EXPECT_FALSE(warning.has_value());
 }
 
 TEST_F(DeprecatedTests, FieldWithStringValue)
 {
     Deprecated<std::string> const checker{"some_value"};
     auto warning = checker.check(json, "some_string");
-    ASSERT_TRUE(warning);
+    ASSERT_TRUE(warning.has_value());
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     EXPECT_EQ(warning->warningCode, WarningCode::WarnRpcDeprecated);
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
@@ -45,7 +45,7 @@ TEST_F(DeprecatedTests, FieldWithIntValue)
 {
     Deprecated<int> const checker{42};
     auto warning = checker.check(json, "some_number");
-    ASSERT_TRUE(warning);
+    ASSERT_TRUE(warning.has_value());
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     EXPECT_EQ(warning->warningCode, WarningCode::WarnRpcDeprecated);
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
@@ -57,7 +57,7 @@ TEST_F(DeprecatedTests, FieldWithBoolValue)
 {
     Deprecated<bool> const checker{false};
     auto warning = checker.check(json, "some_bool");
-    ASSERT_TRUE(warning);
+    ASSERT_TRUE(warning.has_value());
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     EXPECT_EQ(warning->warningCode, WarningCode::WarnRpcDeprecated);
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
@@ -69,7 +69,7 @@ TEST_F(DeprecatedTests, FieldWithFloatValue)
 {
     Deprecated<float> const checker{3.14};
     auto warning = checker.check(json, "some_float");
-    ASSERT_TRUE(warning);
+    ASSERT_TRUE(warning.has_value());
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     EXPECT_EQ(warning->warningCode, WarningCode::WarnRpcDeprecated);
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)

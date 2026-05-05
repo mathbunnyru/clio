@@ -241,19 +241,22 @@ TEST_F(MigrationCassandraManagerTxTableTest, MigrateExampleTransactionsMigrator)
     auto txType = getTxType(
         ripple::uint256("CEECF7E516F8A53C5D32A357B737ED54D3186FDD510B1973D908AD8D93AD8E00")
     );
-    EXPECT_TRUE(txType.has_value());
+    ASSERT_TRUE(txType.has_value());
+    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     EXPECT_EQ(txType.value(), "OracleSet");
 
     txType = getTxType(
         ripple::uint256("35DBFB1A88DE17EBD2BCE37F6E1FD6D3B9887C92B7933ED2FCF2A84E9138B7CA")
     );
-    EXPECT_TRUE(txType.has_value());
+    ASSERT_TRUE(txType.has_value());
+    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     EXPECT_EQ(txType.value(), "Payment");
 
     txType = getTxType(
         ripple::uint256("FCACE9D00625FA3BCC5316078324EA153EC8551243AC1701D496CC1CA2B8A474")
     );
-    EXPECT_TRUE(txType.has_value());
+    ASSERT_TRUE(txType.has_value());
+    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     EXPECT_EQ(txType.value(), "AMMCreate");
 
     EXPECT_EQ(

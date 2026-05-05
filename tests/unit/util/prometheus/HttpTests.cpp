@@ -196,6 +196,7 @@ TEST_F(PrometheusHandleRequestTests, responseWithCounterAndGauge)
 
     auto response = handlePrometheusRequest(req, true);
 
+    ASSERT_TRUE(response.has_value());
     EXPECT_EQ(response->result(), http::status::ok);  // NOLINT(bugprone-unchecked-optional-access)
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     EXPECT_EQ(response->operator[](http::field::content_type), "text/plain; version=0.0.4");
