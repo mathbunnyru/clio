@@ -29,8 +29,8 @@ using namespace feed;
 
 namespace {
 
-constexpr auto kACCOUNT = "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn";
-constexpr auto kACCOUNT2 = "rLEsXccBGNR3UPuPu2hUXPjziKC3qKSBun";
+constexpr auto kAccount = "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn";
+constexpr auto kAccount2 = "rLEsXccBGNR3UPuPu2hUXPjziKC3qKSBun";
 
 }  // namespace
 
@@ -484,7 +484,7 @@ INSTANTIATE_TEST_CASE_P(
     RPCUnsubscribe,
     UnsubscribeParameterTest,
     ValuesIn(generateTestValuesForParametersTest()),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );
 
 TEST_P(UnsubscribeParameterTest, InvalidParams)
@@ -541,21 +541,21 @@ TEST_F(RPCUnsubscribeTest, Accounts)
             R"JSON({{
                 "accounts": ["{}", "{}"]
             }})JSON",
-            kACCOUNT,
-            kACCOUNT2
+            kAccount,
+            kAccount2
         )
     );
 
     EXPECT_CALL(
         *mockSubscriptionManagerPtr_,
         // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-        unsubAccount(*rpc::accountFromStringStrict(kACCOUNT), _)
+        unsubAccount(*rpc::accountFromStringStrict(kAccount), _)
     )
         .Times(1);
     EXPECT_CALL(
         *mockSubscriptionManagerPtr_,
         // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-        unsubAccount(*rpc::accountFromStringStrict(kACCOUNT2), _)
+        unsubAccount(*rpc::accountFromStringStrict(kAccount2), _)
     )
         .Times(1);
 
@@ -574,21 +574,21 @@ TEST_F(RPCUnsubscribeTest, AccountsProposed)
             R"JSON({{
                 "accounts_proposed": ["{}", "{}"]
             }})JSON",
-            kACCOUNT,
-            kACCOUNT2
+            kAccount,
+            kAccount2
         )
     );
 
     EXPECT_CALL(
         *mockSubscriptionManagerPtr_,
         // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-        unsubProposedAccount(*rpc::accountFromStringStrict(kACCOUNT), _)
+        unsubProposedAccount(*rpc::accountFromStringStrict(kAccount), _)
     )
         .Times(1);
     EXPECT_CALL(
         *mockSubscriptionManagerPtr_,
         // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-        unsubProposedAccount(*rpc::accountFromStringStrict(kACCOUNT2), _)
+        unsubProposedAccount(*rpc::accountFromStringStrict(kAccount2), _)
     )
         .Times(1);
 
@@ -618,7 +618,7 @@ TEST_F(RPCUnsubscribeTest, Books)
                     }}
                 ]
             }})JSON",
-            kACCOUNT
+            kAccount
         )
     );
 
@@ -654,7 +654,7 @@ TEST_F(RPCUnsubscribeTest, SingleBooks)
                     }}
                 ]
             }})JSON",
-            kACCOUNT
+            kAccount
         )
     );
 

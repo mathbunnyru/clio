@@ -23,8 +23,8 @@ namespace migration::cassandra::impl {
  */
 struct TableObjectsDesc {
     using Row = std::tuple<ripple::uint256, std::uint32_t, data::Blob>;
-    static constexpr char const* kPARTITION_KEY = "key";
-    static constexpr char const* kTABLE_NAME = "objects";
+    static constexpr char const* kPartitionKey = "key";
+    static constexpr char const* kTableName = "objects";
 };
 
 /**

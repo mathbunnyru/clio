@@ -368,36 +368,34 @@ tag_invoke(boost::json::value_to_tag<LedgerEntryHandler::Input>, boost::json::va
         input.binary = jv.at(JS(binary)).as_bool();
 
     // check all the potential index
-    static auto const kINDEX_FIELD_TYPE_MAP =
-        std::unordered_map<std::string, ripple::LedgerEntryType>{
-            {JS(index), ripple::ltANY},
-            {JS(directory), ripple::ltDIR_NODE},
-            {JS(offer), ripple::ltOFFER},
-            {JS(check), ripple::ltCHECK},
-            {JS(escrow), ripple::ltESCROW},
-            {JS(payment_channel), ripple::ltPAYCHAN},
-            {JS(deposit_preauth), ripple::ltDEPOSIT_PREAUTH},
-            {JS(ticket), ripple::ltTICKET},
-            {JS(nft_page), ripple::ltNFTOKEN_PAGE},
-            {JS(amm), ripple::ltAMM},
-            {JS(xchain_owned_create_account_claim_id),
-             ripple::ltXCHAIN_OWNED_CREATE_ACCOUNT_CLAIM_ID},
-            {JS(xchain_owned_claim_id), ripple::ltXCHAIN_OWNED_CLAIM_ID},
-            {JS(oracle), ripple::ltORACLE},
-            {JS(credential), ripple::ltCREDENTIAL},
-            {JS(mptoken), ripple::ltMPTOKEN},
-            {JS(permissioned_domain), ripple::ltPERMISSIONED_DOMAIN},
-            {JS(vault), ripple::ltVAULT},
-            {JS(loan_broker), ripple::ltLOAN_BROKER},
-            {JS(loan), ripple::ltLOAN},
-            {JS(delegate), ripple::ltDELEGATE},
-            {JS(amendments), ripple::ltAMENDMENTS},
-            {JS(fee), ripple::ltFEE_SETTINGS},
-            {JS(hashes), ripple::ltLEDGER_HASHES},
-            {JS(nft_offer), ripple::ltNFTOKEN_OFFER},
-            {JS(nunl), ripple::ltNEGATIVE_UNL},
-            {JS(signer_list), ripple::ltSIGNER_LIST},
-        };
+    static auto const kIndexFieldTypeMap = std::unordered_map<std::string, ripple::LedgerEntryType>{
+        {JS(index), ripple::ltANY},
+        {JS(directory), ripple::ltDIR_NODE},
+        {JS(offer), ripple::ltOFFER},
+        {JS(check), ripple::ltCHECK},
+        {JS(escrow), ripple::ltESCROW},
+        {JS(payment_channel), ripple::ltPAYCHAN},
+        {JS(deposit_preauth), ripple::ltDEPOSIT_PREAUTH},
+        {JS(ticket), ripple::ltTICKET},
+        {JS(nft_page), ripple::ltNFTOKEN_PAGE},
+        {JS(amm), ripple::ltAMM},
+        {JS(xchain_owned_create_account_claim_id), ripple::ltXCHAIN_OWNED_CREATE_ACCOUNT_CLAIM_ID},
+        {JS(xchain_owned_claim_id), ripple::ltXCHAIN_OWNED_CLAIM_ID},
+        {JS(oracle), ripple::ltORACLE},
+        {JS(credential), ripple::ltCREDENTIAL},
+        {JS(mptoken), ripple::ltMPTOKEN},
+        {JS(permissioned_domain), ripple::ltPERMISSIONED_DOMAIN},
+        {JS(vault), ripple::ltVAULT},
+        {JS(loan_broker), ripple::ltLOAN_BROKER},
+        {JS(loan), ripple::ltLOAN},
+        {JS(delegate), ripple::ltDELEGATE},
+        {JS(amendments), ripple::ltAMENDMENTS},
+        {JS(fee), ripple::ltFEE_SETTINGS},
+        {JS(hashes), ripple::ltLEDGER_HASHES},
+        {JS(nft_offer), ripple::ltNFTOKEN_OFFER},
+        {JS(nunl), ripple::ltNEGATIVE_UNL},
+        {JS(signer_list), ripple::ltSIGNER_LIST},
+    };
 
     auto const parseBridgeFromJson = [](boost::json::value const& bridgeJson) {
         auto const lockingDoor =
@@ -444,12 +442,12 @@ tag_invoke(boost::json::value_to_tag<LedgerEntryHandler::Input>, boost::json::va
     };
 
     auto const indexFieldType =
-        std::ranges::find_if(kINDEX_FIELD_TYPE_MAP, [&jsonObject](auto const& pair) {
+        std::ranges::find_if(kIndexFieldTypeMap, [&jsonObject](auto const& pair) {
             auto const& [field, _] = pair;
             return jsonObject.contains(field) && jsonObject.at(field).is_string();
         });
 
-    if (indexFieldType != kINDEX_FIELD_TYPE_MAP.end()) {
+    if (indexFieldType != kIndexFieldTypeMap.end()) {
         input.index = boost::json::value_to<std::string>(jv.at(indexFieldType->first));
         input.expectedType = indexFieldType->second;
     }

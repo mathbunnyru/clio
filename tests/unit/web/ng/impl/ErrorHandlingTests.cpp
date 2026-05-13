@@ -32,8 +32,8 @@ struct NgErrorHandlingTests : public virtual ::testing::Test {
                 http::request<http::string_body>{http::verb::post, "/", 11, body.value_or("")}
             };
         }
-        static Request::HttpHeaders const kHEADERS;
-        return Request{body.value_or(""), kHEADERS};
+        static Request::HttpHeaders const kHeaders;
+        return Request{body.value_or(""), kHeaders};
     }
 };
 
@@ -122,7 +122,7 @@ INSTANTIATE_TEST_CASE_P(
             boost::beast::http::status::bad_request
         },
     }),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );
 
 struct NgErrorHandlingMakeInternalErrorTestBundle {
@@ -219,7 +219,7 @@ INSTANTIATE_TEST_CASE_P(
                 {"request", {{"id", 1}, {"api_version", 2}}}}}}
          }}
     ),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );
 
 TEST_F(NgErrorHandlingTests, MakeNotReadyError)
@@ -340,5 +340,5 @@ INSTANTIATE_TEST_CASE_P(
              R"JSON({"result":{"error":"internal","error_code":73,"error_message":"Internal error.","status":"error","type":"response","id":1,"request":{"id":1,"api_version":2}}})JSON"
          }}
     ),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );

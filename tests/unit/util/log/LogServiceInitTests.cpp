@@ -88,7 +88,7 @@ TEST_F(LogServiceInitTests, DefaultLogLevel)
     EXPECT_TRUE(LogService::init(config_));
 
     std::string const logString = "some log";
-    for (std::string_view const channel : Logger::kCHANNELS) {
+    for (std::string_view const channel : Logger::kChannels) {
         Logger const log{channel};
         log.trace() << logString;
         auto loggerStr = getLoggerString();
@@ -131,7 +131,7 @@ TEST_F(LogServiceInitTests, ChannelLogLevel)
     EXPECT_TRUE(LogService::init(config_));
 
     std::string const logString = "some log";
-    for (auto const& channel : Logger::kCHANNELS) {
+    for (auto const& channel : Logger::kChannels) {
         Logger const log{channel};
         log.trace() << logString;
         ASSERT_TRUE(getLoggerString().empty());

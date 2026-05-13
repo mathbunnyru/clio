@@ -52,7 +52,7 @@ public:
 
     using HttpHeaders = boost::beast::http::request<boost::beast::http::string_body>::header_type;
 
-    static constexpr std::string_view kPROXY_TOKEN_HEADER = "X-Proxy-Token";
+    static constexpr std::string_view kProxyTokenHeader = "X-Proxy-Token";
 
     /**
      * @brief Resolves the client's IP address from the connection IP and HTTP headers.

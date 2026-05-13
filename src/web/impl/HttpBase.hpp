@@ -45,7 +45,7 @@
 
 namespace web::impl {
 
-static constexpr auto kHEALTH_CHECK_HTML = R"html(
+static constexpr auto kHealthCheckHtml = R"html(
     <!DOCTYPE html>
     <html>
         <head><title>Test page for Clio</title></head>
@@ -53,7 +53,7 @@ static constexpr auto kHEALTH_CHECK_HTML = R"html(
     </html>
 )html";
 
-static constexpr auto kCACHE_CHECK_LOADED_HTML = R"html(
+static constexpr auto kCacheCheckLoadedHtml = R"html(
     <!DOCTYPE html>
     <html>
         <head><title>Cache state</title></head>
@@ -61,7 +61,7 @@ static constexpr auto kCACHE_CHECK_LOADED_HTML = R"html(
     </html>
 )html";
 
-static constexpr auto kCACHE_CHECK_NOT_LOADED_HTML = R"html(
+static constexpr auto kCacheCheckNotLoadedHtml = R"html(
     <!DOCTYPE html>
     <html>
         <head><title>Cache state</title></head>
@@ -246,17 +246,15 @@ public:
         }
 
         if (req_.method() == http::verb::get and req_.target() == "/health")
-            return sender_(httpResponse(http::status::ok, "text/html", kHEALTH_CHECK_HTML));
+            return sender_(httpResponse(http::status::ok, "text/html", kHealthCheckHtml));
 
         if (req_.method() == http::verb::get and req_.target() == "/cache_state") {
             if (cache_.get().isFull()) {
-                return sender_(
-                    httpResponse(http::status::ok, "text/html", kCACHE_CHECK_LOADED_HTML)
-                );
+                return sender_(httpResponse(http::status::ok, "text/html", kCacheCheckLoadedHtml));
             }
 
             return sender_(httpResponse(
-                http::status::service_unavailable, "text/html", kCACHE_CHECK_NOT_LOADED_HTML
+                http::status::service_unavailable, "text/html", kCacheCheckNotLoadedHtml
             ));
         }
 

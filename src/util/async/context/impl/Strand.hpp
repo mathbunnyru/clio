@@ -27,7 +27,7 @@ class BasicStrand {
     friend AssociatedExecutorExtractor;
 
 public:
-    static constexpr bool kIS_NOEXCEPT = noexcept(ErrorHandlerType::wrap([](auto&) { throw 0; }));
+    static constexpr bool kIsNoexcept = noexcept(ErrorHandlerType::wrap([](auto&) { throw 0; }));
 
     using ContextHolderType = typename ParentContextType::ContextHolderType::Strand;
     using ExecutorType = typename ContextHolderType::Executor;
@@ -50,7 +50,7 @@ public:
     execute(
         SomeHandlerWith<StopToken> auto&& fn,
         std::optional<std::chrono::milliseconds> timeout = std::nullopt
-    ) noexcept(kIS_NOEXCEPT)
+    ) noexcept(kIsNoexcept)
     {
         return DispatcherType::dispatch(
             context_,
@@ -77,7 +77,7 @@ public:
 
     [[nodiscard]] auto
     execute(SomeHandlerWith<StopToken> auto&& fn, SomeStdDuration auto timeout) noexcept(
-        kIS_NOEXCEPT
+        kIsNoexcept
     )
     {
         return execute(
@@ -87,7 +87,7 @@ public:
     }
 
     [[nodiscard]] auto
-    execute(SomeHandlerWithoutStopToken auto&& fn) noexcept(kIS_NOEXCEPT)
+    execute(SomeHandlerWithoutStopToken auto&& fn) noexcept(kIsNoexcept)
     {
         return DispatcherType::dispatch(
             context_,
@@ -108,7 +108,7 @@ public:
     executeRepeatedly(
         SomeStdDuration auto interval,
         SomeHandlerWithoutStopToken auto&& fn
-    ) noexcept(kIS_NOEXCEPT)
+    ) noexcept(kIsNoexcept)
     {
         if constexpr (not std::is_same_v<
                           decltype(TimerContextProvider::getContext(*this)),
@@ -124,7 +124,7 @@ public:
     }
 
     void
-    submit(SomeHandlerWithoutStopToken auto&& fn) noexcept(kIS_NOEXCEPT)
+    submit(SomeHandlerWithoutStopToken auto&& fn) noexcept(kIsNoexcept)
     {
         DispatcherType::post(context_, ErrorHandlerType::catchAndAssert(fn));
     }

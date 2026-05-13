@@ -349,7 +349,7 @@ TEST_F(GrpcSourceStopTests, LoadInitialLedgerStopsWhenRequested)
 
 TEST_F(GrpcSourceTests, DeadlineIsHandledCorrectly)
 {
-    static constexpr auto kDEADLINE = std::chrono::milliseconds{5};
+    static constexpr auto kDeadline = std::chrono::milliseconds{5};
 
     uint32_t const sequence = 123u;
     bool const getObjects = true;
@@ -358,7 +358,7 @@ TEST_F(GrpcSourceTests, DeadlineIsHandledCorrectly)
     std::binary_semaphore sem(0);
 
     auto grpcSource = std::make_unique<etl::impl::GrpcSource>(
-        "localhost", std::to_string(getXRPLMockPort()), kDEADLINE
+        "localhost", std::to_string(getXRPLMockPort()), kDeadline
     );
 
     // Note: this may not be called at all if gRPC cancels before it gets a chance to call the stub
@@ -375,7 +375,7 @@ TEST_F(GrpcSourceTests, DeadlineIsHandledCorrectly)
 
     auto const [status, response] =
         grpcSource->fetchLedger(sequence, getObjects, getObjectNeighbors);
-    ASSERT_FALSE(status.ok());  // timed out after kDEADLINE
+    ASSERT_FALSE(status.ok());  // timed out after kDeadline
 
     sem.release();  // we don't need to hold GetLedger thread any longer
     grpcSource.reset();

@@ -102,7 +102,7 @@ INSTANTIATE_TEST_CASE_P(
                 {"request", {{"id", 1}, {"api_version", 2}}}}}}
          }}
     ),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );
 
 struct ErrorHandlingSendErrorTestBundle {
@@ -182,7 +182,7 @@ INSTANTIATE_TEST_CASE_P(
             boost::beast::http::status::bad_request
         },
     }),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );
 
 TEST_F(ErrorHandlingTests, sendInternalError)

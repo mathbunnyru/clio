@@ -140,7 +140,7 @@ INSTANTIATE_TEST_CASE_P(
             true
         }
     ),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );
 
 struct ServerTest : util::prometheus::WithPrometheus, SyncAsioContextTest {
@@ -567,7 +567,7 @@ INSTANTIATE_TEST_SUITE_P(
         ServerHttpTestBundle{"GET", http::verb::get},
         ServerHttpTestBundle{"POST", http::verb::post}
     ),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );
 
 TEST_F(ServerTest, WsClientDisconnects)

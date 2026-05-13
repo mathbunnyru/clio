@@ -16,9 +16,9 @@ using namespace testing;
 
 namespace {
 
-constexpr auto kSEQ = 30;
+constexpr auto kSeq = 30;
 
-std::vector<ripple::uint256> const kACCOUNT_ROOTS = {
+std::vector<ripple::uint256> const kAccountRoots = {
     ripple::uint256{"05E1EAC2574BE082B00B16F907CE32E6058DEB8F9E81CF34A00E80A5D71FA4FE"},
     ripple::uint256{"110872C7196EE6EF7032952F1852B11BB461A96FF2D7E06A8003B4BB30FD130B"},
     ripple::uint256{"3B3A84E850C724E914293271785A31D0BFC8B9DD1B6332E527B149AD72E80E18"},
@@ -39,13 +39,13 @@ TEST_F(CursorFromAccountProviderTests, EnoughAccountRoots)
     auto const pageSize = 100;
     auto const provider = etl::impl::CursorFromAccountProvider{backend_, numCursors, pageSize};
 
-    ON_CALL(*backend_, fetchAccountRoots(numCursors, _, kSEQ, _))
-        .WillByDefault(Return(kACCOUNT_ROOTS));
+    ON_CALL(*backend_, fetchAccountRoots(numCursors, _, kSeq, _))
+        .WillByDefault(Return(kAccountRoots));
     EXPECT_CALL(*backend_, fetchAccountRoots(_, _, _, _)).Times(1);
 
-    auto const cursors = provider.getCursors(kSEQ);
+    auto const cursors = provider.getCursors(kSeq);
     ASSERT_EQ(cursors.size(), numCursors + 1);
 
-    EXPECT_EQ(cursors.front().start, kFIRST_KEY);
-    EXPECT_EQ(cursors.back().end, kLAST_KEY);
+    EXPECT_EQ(cursors.front().start, kFirstKey);
+    EXPECT_EQ(cursors.back().end, kLastKey);
 }

@@ -184,7 +184,7 @@ TEST_F(ConfigDescriptionAssertTest, NonExistingKeyTest)
 struct OverrideConfigVals : testing::Test {
     OverrideConfigVals()
     {
-        ConfigFileJson const jsonFileObj{boost::json::parse(kJSON_DATA).as_object()};
+        ConfigFileJson const jsonFileObj{boost::json::parse(kJsonData).as_object()};
         auto const errors = configData.parse(jsonFileObj);
         EXPECT_TRUE(!errors.has_value());
     }
@@ -298,7 +298,7 @@ struct IncorrectOverrideValues : testing::Test {
 
 TEST_F(IncorrectOverrideValues, InvalidJsonErrors)
 {
-    ConfigFileJson const jsonFileObj{boost::json::parse(kINVALID_JSON_DATA).as_object()};
+    ConfigFileJson const jsonFileObj{boost::json::parse(kInvalidJsonData).as_object()};
     auto const errors = configData.parse(jsonFileObj);
     EXPECT_TRUE(errors.has_value());
 

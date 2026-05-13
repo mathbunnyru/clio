@@ -60,7 +60,7 @@ operator<<(std::ostream& stream, Status const& status)
 WarningInfo const&
 getWarningInfo(WarningCode code)
 {
-    static constexpr WarningInfo kINFOS[]{
+    static constexpr WarningInfo kInfos[]{
         {WarningCode::WarnUnknown, "Unknown warning"},
         {WarningCode::WarnRpcClio,
          "This is a clio server. clio only serves validated data. If you want to talk to rippled, "
@@ -74,7 +74,7 @@ getWarningInfo(WarningCode code)
     };
 
     auto matchByCode = [code](auto const& info) { return info.code == code; };
-    if (auto it = ranges::find_if(kINFOS, matchByCode); it != end(kINFOS))
+    if (auto it = ranges::find_if(kInfos, matchByCode); it != end(kInfos))
         return *it;
 
     throw(out_of_range("Invalid WarningCode"));
@@ -93,7 +93,7 @@ makeWarning(WarningCode code)
 ClioErrorInfo const&
 getErrorInfo(ClioError code)
 {
-    static constexpr ClioErrorInfo kINFOS[]{
+    static constexpr ClioErrorInfo kInfos[]{
         {.code = ClioError::RpcMalformedCurrency,
          .error = "malformedCurrency",
          .message = "Malformed currency."},
@@ -150,7 +150,7 @@ getErrorInfo(ClioError code)
     };
 
     auto matchByCode = [code](auto const& info) { return info.code == code; };
-    if (auto it = ranges::find_if(kINFOS, matchByCode); it != end(kINFOS))
+    if (auto it = ranges::find_if(kInfos, matchByCode); it != end(kInfos))
         return *it;
 
     throw(out_of_range("Invalid error code"));

@@ -209,13 +209,13 @@ template <typename T>
 inline bool
 isDirNode(T const& object)
 {
-    static constexpr auto kMIN_SIZE_REQUIRED = 3;
-    if (std::size(object) < kMIN_SIZE_REQUIRED)
+    static constexpr auto kMinSizeRequired = 3;
+    if (std::size(object) < kMinSizeRequired)
         return false;
 
-    static constexpr short kDIR_NODE_SPACE_KEY = 0x0064;
+    static constexpr short kDirNodeSpaceKey = 0x0064;
     short const spaceKey = (object.data()[1] << 8) | object.data()[2];
-    return spaceKey == kDIR_NODE_SPACE_KEY;
+    return spaceKey == kDirNodeSpaceKey;
 }
 
 /**
@@ -246,12 +246,12 @@ template <typename T>
 inline ripple::uint256
 getBookBase(T const& key)
 {
-    static constexpr size_t kEY_SIZE = 24;
+    static constexpr size_t kEySize = 24;
 
     ASSERT(key.size() == ripple::uint256::size(), "Invalid key size {}", key.size());
 
     ripple::uint256 ret;
-    for (size_t i = 0; i < kEY_SIZE; ++i)
+    for (size_t i = 0; i < kEySize; ++i)
         ret.data()[i] = key.data()[i];
 
     return ret;
@@ -270,4 +270,4 @@ uint256ToString(ripple::uint256 const& input)
 }
 
 /** @brief The ripple epoch start timestamp. Midnight on 1st January 2000. */
-static constexpr std::uint32_t kRIPPLE_EPOCH_START = 946684800;
+static constexpr std::uint32_t kRippleEpochStart = 946684800;

@@ -29,13 +29,13 @@ using namespace testing;
 
 namespace {
 
-constexpr auto kRANGE_MIN = 10;
-constexpr auto kRANGE_MAX = 30;
-constexpr auto kLEDGER_HASH = "4BC50C9B0D8515D3EAAE1E74B29A95804346C491EE1A95BF25E4AAB854A6A652";
-constexpr auto kACCOUNT = "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn";
-constexpr auto kTX1 = "E6DBAFC99223B42257915A63DFC6B0C032D4070F9A574B255AD97466726FC321";
-constexpr auto kTX2 = "E6DBAFC99223B42257915A63DFC6B0C032D4070F9A574B255AD97466726FC322";
-constexpr auto kINDEX = "13F1A95D7AAB7108D5CE7EEAF504B2894B8C674E6D68499076441C4837282BF8";
+constexpr auto kRangeMin = 10;
+constexpr auto kRangeMax = 30;
+constexpr auto kLedgerHash = "4BC50C9B0D8515D3EAAE1E74B29A95804346C491EE1A95BF25E4AAB854A6A652";
+constexpr auto kAccount = "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn";
+constexpr auto kTx1 = "E6DBAFC99223B42257915A63DFC6B0C032D4070F9A574B255AD97466726FC321";
+constexpr auto kTx2 = "E6DBAFC99223B42257915A63DFC6B0C032D4070F9A574B255AD97466726FC322";
+constexpr auto kIndex = "13F1A95D7AAB7108D5CE7EEAF504B2894B8C674E6D68499076441C4837282BF8";
 
 void
 mockLedgerObject(
@@ -55,7 +55,7 @@ mockLedgerObject(
         time,
         ripple::Blob(8, 'a'),
         ripple::Blob(8, 'a'),
-        kRANGE_MAX - 4,
+        kRangeMax - 4,
         ripple::uint256{tx},
         createPriceDataSeries({createOraclePriceData(
             price, ripple::to_currency("USD"), ripple::to_currency("XRP"), scale
@@ -63,7 +63,7 @@ mockLedgerObject(
     );
 
     auto const oracleIndex = ripple::keylet::oracle(getAccountIdWithString(account), docId).key;
-    EXPECT_CALL(backend, doFetchLedgerObject(oracleIndex, kRANGE_MAX, _))
+    EXPECT_CALL(backend, doFetchLedgerObject(oracleIndex, kRangeMax, _))
         .WillOnce(Return(oracleObject.getSerializer().peekData()));
 }
 };  // namespace
@@ -72,7 +72,7 @@ class RPCGetAggregatePriceHandlerTest : public HandlerBaseTest {
 protected:
     RPCGetAggregatePriceHandlerTest()
     {
-        backend_->setRange(kRANGE_MIN, kRANGE_MAX);
+        backend_->setRange(kRangeMin, kRangeMax);
     }
 };
 
@@ -378,7 +378,7 @@ INSTANTIATE_TEST_CASE_P(
     RPCGetAggregatePriceGroup1,
     GetAggregatePriceParameterTest,
     ValuesIn(generateTestValuesForParametersTest()),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );
 
 TEST_P(GetAggregatePriceParameterTest, InvalidParams)
@@ -425,8 +425,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, OverOraclesMax)
 
 TEST_F(RPCGetAggregatePriceHandlerTest, LedgerNotFound)
 {
-    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _)).WillOnce(Return(std::nullopt));
-    constexpr auto kDOCUMENT_ID = 1;
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRangeMax, _)).WillOnce(Return(std::nullopt));
+    constexpr auto kDocumentId = 1;
     auto const req = json::parse(
         fmt::format(
             R"JSON({{
@@ -439,8 +439,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, LedgerNotFound)
                     }}
                 ]
             }})JSON",
-            kACCOUNT,
-            kDOCUMENT_ID
+            kAccount,
+            kDocumentId
         )
     );
     auto const handler = AnyHandler{GetAggregatePriceHandler{backend_}};
@@ -455,11 +455,11 @@ TEST_F(RPCGetAggregatePriceHandlerTest, LedgerNotFound)
 
 TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntrySinglePriceData)
 {
-    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _))
-        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kRANGE_MAX)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRangeMax, _))
+        .WillOnce(Return(createLedgerHeader(kLedgerHash, kRangeMax)));
 
-    constexpr auto kDOCUMENT_ID = 1;
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID, kTX1, 1e3, 2);  // 10
+    constexpr auto kDocumentId = 1;
+    mockLedgerObject(*backend_, kAccount, kDocumentId, kTx1, 1e3, 2);  // 10
 
     auto const handler = AnyHandler{GetAggregatePriceHandler{backend_}};
     auto const req = json::parse(
@@ -474,8 +474,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntrySinglePriceData)
                     }}
                 ]
             }})JSON",
-            kACCOUNT,
-            kDOCUMENT_ID
+            kAccount,
+            kDocumentId
         )
     );
 
@@ -493,8 +493,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntrySinglePriceData)
                 "ledger_hash": "{}",
                 "validated": true
             }})JSON",
-            kRANGE_MAX,
-            kLEDGER_HASH
+            kRangeMax,
+            kLedgerHash
         )
     );
     runSpawn([&](auto yield) {
@@ -506,11 +506,11 @@ TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntrySinglePriceData)
 
 TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntryStrOracleDocumentId)
 {
-    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _))
-        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kRANGE_MAX)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRangeMax, _))
+        .WillOnce(Return(createLedgerHeader(kLedgerHash, kRangeMax)));
 
-    constexpr auto kDOCUMENT_ID = 1;
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID, kTX1, 1e3, 2);  // 10
+    constexpr auto kDocumentId = 1;
+    mockLedgerObject(*backend_, kAccount, kDocumentId, kTx1, 1e3, 2);  // 10
 
     auto const handler = AnyHandler{GetAggregatePriceHandler{backend_}};
     auto const req = json::parse(
@@ -525,8 +525,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntryStrOracleDocumentId)
                     }}
                 ]
             }})JSON",
-            kACCOUNT,
-            kDOCUMENT_ID
+            kAccount,
+            kDocumentId
         )
     );
 
@@ -544,8 +544,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntryStrOracleDocumentId)
                 "ledger_hash": "{}",
                 "validated": true
             }})JSON",
-            kRANGE_MAX,
-            kLEDGER_HASH
+            kRangeMax,
+            kLedgerHash
         )
     );
     runSpawn([&](auto yield) {
@@ -557,11 +557,11 @@ TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntryStrOracleDocumentId)
 
 TEST_F(RPCGetAggregatePriceHandlerTest, PreviousTxNotFound)
 {
-    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _))
-        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kRANGE_MAX)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRangeMax, _))
+        .WillOnce(Return(createLedgerHeader(kLedgerHash, kRangeMax)));
 
-    constexpr auto kDOCUMENT_ID = 1;
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID, kTX1, 1e3, 2);  // 10
+    constexpr auto kDocumentId = 1;
+    mockLedgerObject(*backend_, kAccount, kDocumentId, kTx1, 1e3, 2);  // 10
 
     auto const handler = AnyHandler{GetAggregatePriceHandler{backend_}};
     auto const req = json::parse(
@@ -576,8 +576,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, PreviousTxNotFound)
                     }}
                 ]
             }})JSON",
-            kACCOUNT,
-            kDOCUMENT_ID
+            kAccount,
+            kDocumentId
         )
     );
 
@@ -595,8 +595,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, PreviousTxNotFound)
                 "ledger_hash": "{}",
                 "validated": true
             }})JSON",
-            kRANGE_MAX,
-            kLEDGER_HASH
+            kRangeMax,
+            kLedgerHash
         )
     );
     runSpawn([&](auto yield) {
@@ -610,25 +610,25 @@ TEST_F(RPCGetAggregatePriceHandlerTest, PreviousTxNotFound)
 
 TEST_F(RPCGetAggregatePriceHandlerTest, NewLedgerObjectHasNoPricePair)
 {
-    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _))
-        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kRANGE_MAX)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRangeMax, _))
+        .WillOnce(Return(createLedgerHeader(kLedgerHash, kRangeMax)));
 
-    constexpr auto kDOCUMENT_ID = 1;
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID, kTX1, 1e3, 2);  // 10
+    constexpr auto kDocumentId = 1;
+    mockLedgerObject(*backend_, kAccount, kDocumentId, kTx1, 1e3, 2);  // 10
 
-    EXPECT_CALL(*backend_, fetchTransaction(ripple::uint256(kTX1), _))
+    EXPECT_CALL(*backend_, fetchTransaction(ripple::uint256(kTx1), _))
         .WillRepeatedly(Return(createOracleSetTxWithMetadata(
-            kACCOUNT,
-            kRANGE_MAX,
+            kAccount,
+            kRangeMax,
             123,
             1,
             4321u,
             createPriceDataSeries({createOraclePriceData(
                 1e3, ripple::to_currency("EUR"), ripple::to_currency("XRP"), 2
             )}),
-            kINDEX,
+            kIndex,
             true,
-            kTX2
+            kTx2
         )));
 
     auto const handler = AnyHandler{GetAggregatePriceHandler{backend_}};
@@ -644,8 +644,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, NewLedgerObjectHasNoPricePair)
                     }}
                 ]
             }})JSON",
-            kACCOUNT,
-            kDOCUMENT_ID
+            kAccount,
+            kDocumentId
         )
     );
 
@@ -663,8 +663,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, NewLedgerObjectHasNoPricePair)
                 "ledger_hash": "{}",
                 "validated": true
             }})JSON",
-            kRANGE_MAX,
-            kLEDGER_HASH
+            kRangeMax,
+            kLedgerHash
         )
     );
     runSpawn([&](auto yield) {
@@ -679,15 +679,15 @@ TEST_F(RPCGetAggregatePriceHandlerTest, NewLedgerObjectHasNoPricePair)
 // median is the middle value of a set of numbers when there are odd number of price
 TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntryMultipleOraclesOdd)
 {
-    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _))
-        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kRANGE_MAX)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRangeMax, _))
+        .WillOnce(Return(createLedgerHeader(kLedgerHash, kRangeMax)));
 
-    constexpr auto kDOCUMENT_ID1 = 1;
-    constexpr auto kDOCUMENT_ID2 = 2;
-    constexpr auto kDOCUMENT_ID3 = 3;
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID1, kTX1, 1e3, 2);  // 10
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID2, kTX1, 2e3, 2);  // 20
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID3, kTX1, 3e3, 1);  // 300
+    constexpr auto kDocumentID1 = 1;
+    constexpr auto kDocumentID2 = 2;
+    constexpr auto kDocumentID3 = 3;
+    mockLedgerObject(*backend_, kAccount, kDocumentID1, kTx1, 1e3, 2);  // 10
+    mockLedgerObject(*backend_, kAccount, kDocumentID2, kTx1, 2e3, 2);  // 20
+    mockLedgerObject(*backend_, kAccount, kDocumentID3, kTx1, 3e3, 1);  // 300
 
     auto const handler = AnyHandler{GetAggregatePriceHandler{backend_}};
     auto const req = json::parse(
@@ -710,12 +710,12 @@ TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntryMultipleOraclesOdd)
                     }}
                 ]
             }})JSON",
-            kACCOUNT,
-            kDOCUMENT_ID1,
-            kACCOUNT,
-            kDOCUMENT_ID2,
-            kACCOUNT,
-            kDOCUMENT_ID3
+            kAccount,
+            kDocumentID1,
+            kAccount,
+            kDocumentID2,
+            kAccount,
+            kDocumentID3
         )
     );
 
@@ -733,8 +733,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntryMultipleOraclesOdd)
                 "ledger_hash": "{}",
                 "validated": true
             }})JSON",
-            kRANGE_MAX,
-            kLEDGER_HASH
+            kRangeMax,
+            kLedgerHash
         )
     );
     runSpawn([&](auto yield) {
@@ -747,17 +747,17 @@ TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntryMultipleOraclesOdd)
 // median is the middle value of a set of numbers when there are odd number of price
 TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntryMultipleOraclesEven)
 {
-    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _))
-        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kRANGE_MAX)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRangeMax, _))
+        .WillOnce(Return(createLedgerHeader(kLedgerHash, kRangeMax)));
 
-    constexpr auto kDOCUMENT_ID1 = 1;
-    constexpr auto kDOCUMENT_ID2 = 2;
-    constexpr auto kDOCUMENT_ID3 = 3;
-    constexpr auto kDOCUMENT_ID4 = 4;
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID1, kTX1, 1e3, 2);  // 10
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID2, kTX1, 2e3, 2);  // 20
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID4, kTX1, 4e2, 1);  // 40
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID3, kTX1, 3e3, 1);  // 300
+    constexpr auto kDocumentID1 = 1;
+    constexpr auto kDocumentID2 = 2;
+    constexpr auto kDocumentID3 = 3;
+    constexpr auto kDocumentID4 = 4;
+    mockLedgerObject(*backend_, kAccount, kDocumentID1, kTx1, 1e3, 2);  // 10
+    mockLedgerObject(*backend_, kAccount, kDocumentID2, kTx1, 2e3, 2);  // 20
+    mockLedgerObject(*backend_, kAccount, kDocumentID4, kTx1, 4e2, 1);  // 40
+    mockLedgerObject(*backend_, kAccount, kDocumentID3, kTx1, 3e3, 1);  // 300
 
     auto const handler = AnyHandler{GetAggregatePriceHandler{backend_}};
     auto const req = json::parse(
@@ -784,14 +784,14 @@ TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntryMultipleOraclesEven)
                     }}
                 ]
             }})JSON",
-            kACCOUNT,
-            kDOCUMENT_ID1,
-            kACCOUNT,
-            kDOCUMENT_ID2,
-            kACCOUNT,
-            kDOCUMENT_ID3,
-            kACCOUNT,
-            kDOCUMENT_ID4
+            kAccount,
+            kDocumentID1,
+            kAccount,
+            kDocumentID2,
+            kAccount,
+            kDocumentID3,
+            kAccount,
+            kDocumentID4
         )
     );
 
@@ -809,8 +809,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntryMultipleOraclesEven)
                 "ledger_hash": "{}",
                 "validated": true
             }})JSON",
-            kRANGE_MAX,
-            kLEDGER_HASH
+            kRangeMax,
+            kLedgerHash
         )
     );
     runSpawn([&](auto yield) {
@@ -822,19 +822,19 @@ TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntryMultipleOraclesEven)
 
 TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntryTrim)
 {
-    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _))
-        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kRANGE_MAX)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRangeMax, _))
+        .WillOnce(Return(createLedgerHeader(kLedgerHash, kRangeMax)));
 
     // prepare 4 prices, when trim is 25, the lowest(documentId1) and highest(documentId3) price
     // will be removed
-    constexpr auto kDOCUMENT_ID1 = 1;
-    constexpr auto kDOCUMENT_ID2 = 2;
-    constexpr auto kDOCUMENT_ID3 = 3;
-    constexpr auto kDOCUMENT_ID4 = 4;
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID1, kTX1, 1e3, 2);  // 10
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID2, kTX1, 2e3, 2);  // 20
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID4, kTX1, 4e2, 1);  // 40
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID3, kTX1, 3e3, 1);  // 300
+    constexpr auto kDocumentID1 = 1;
+    constexpr auto kDocumentID2 = 2;
+    constexpr auto kDocumentID3 = 3;
+    constexpr auto kDocumentID4 = 4;
+    mockLedgerObject(*backend_, kAccount, kDocumentID1, kTx1, 1e3, 2);  // 10
+    mockLedgerObject(*backend_, kAccount, kDocumentID2, kTx1, 2e3, 2);  // 20
+    mockLedgerObject(*backend_, kAccount, kDocumentID4, kTx1, 4e2, 1);  // 40
+    mockLedgerObject(*backend_, kAccount, kDocumentID3, kTx1, 3e3, 1);  // 300
 
     auto const handler = AnyHandler{GetAggregatePriceHandler{backend_}};
     auto const req = json::parse(
@@ -863,14 +863,14 @@ TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntryTrim)
                 ]
             }})JSON",
             25,
-            kACCOUNT,
-            kDOCUMENT_ID1,
-            kACCOUNT,
-            kDOCUMENT_ID2,
-            kACCOUNT,
-            kDOCUMENT_ID3,
-            kACCOUNT,
-            kDOCUMENT_ID4
+            kAccount,
+            kDocumentID1,
+            kAccount,
+            kDocumentID2,
+            kAccount,
+            kDocumentID3,
+            kAccount,
+            kDocumentID4
         )
     );
 
@@ -893,8 +893,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntryTrim)
                 "ledger_hash": "{}",
                 "validated": true
             }})JSON",
-            kRANGE_MAX,
-            kLEDGER_HASH
+            kRangeMax,
+            kLedgerHash
         )
     );
     runSpawn([&](auto yield) {
@@ -906,13 +906,13 @@ TEST_F(RPCGetAggregatePriceHandlerTest, OracleLedgerEntryTrim)
 
 TEST_F(RPCGetAggregatePriceHandlerTest, NoOracleEntryFound)
 {
-    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _))
-        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kRANGE_MAX)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRangeMax, _))
+        .WillOnce(Return(createLedgerHeader(kLedgerHash, kRangeMax)));
 
-    constexpr auto kDOCUMENT_ID = 1;
+    constexpr auto kDocumentId = 1;
     auto const oracleIndex =
-        ripple::keylet::oracle(getAccountIdWithString(kACCOUNT), kDOCUMENT_ID).key;
-    EXPECT_CALL(*backend_, doFetchLedgerObject(oracleIndex, kRANGE_MAX, _))
+        ripple::keylet::oracle(getAccountIdWithString(kAccount), kDocumentId).key;
+    EXPECT_CALL(*backend_, doFetchLedgerObject(oracleIndex, kRangeMax, _))
         .WillOnce(Return(std::nullopt));
 
     auto const handler = AnyHandler{GetAggregatePriceHandler{backend_}};
@@ -928,8 +928,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, NoOracleEntryFound)
                     }}
                 ]
             }})JSON",
-            kACCOUNT,
-            kDOCUMENT_ID
+            kAccount,
+            kDocumentId
         )
     );
 
@@ -944,11 +944,11 @@ TEST_F(RPCGetAggregatePriceHandlerTest, NoOracleEntryFound)
 
 TEST_F(RPCGetAggregatePriceHandlerTest, NoMatchAssetPair)
 {
-    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _))
-        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kRANGE_MAX)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRangeMax, _))
+        .WillOnce(Return(createLedgerHeader(kLedgerHash, kRangeMax)));
 
-    constexpr auto kDOCUMENT_ID = 1;
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID, kTX1, 1e3, 2);  // 10
+    constexpr auto kDocumentId = 1;
+    mockLedgerObject(*backend_, kAccount, kDocumentId, kTx1, 1e3, 2);  // 10
 
     auto const handler = AnyHandler{GetAggregatePriceHandler{backend_}};
     auto const req = json::parse(
@@ -963,8 +963,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, NoMatchAssetPair)
                     }}
                 ]
             }})JSON",
-            kACCOUNT,
-            kDOCUMENT_ID
+            kAccount,
+            kDocumentId
         )
     );
 
@@ -979,21 +979,21 @@ TEST_F(RPCGetAggregatePriceHandlerTest, NoMatchAssetPair)
 
 TEST_F(RPCGetAggregatePriceHandlerTest, TimeThresholdIsZero)
 {
-    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _))
-        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kRANGE_MAX)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRangeMax, _))
+        .WillOnce(Return(createLedgerHeader(kLedgerHash, kRangeMax)));
 
-    constexpr auto kDOCUMENT_ID1 = 1;
-    constexpr auto kDOCUMENT_ID2 = 2;
-    constexpr auto kDOCUMENT_ID3 = 3;
-    constexpr auto kDOCUMENT_ID4 = 4;
-    constexpr auto kTIMESTAMP1 = 1711461384u;
-    constexpr auto kTIMESTAMP2 = 1711461383u;
-    constexpr auto kTIMESTAMP3 = 1711461382u;
-    constexpr auto kTIMESTAMP4 = 1711461381u;
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID1, kTX1, 1e3, 2, kTIMESTAMP1);  // 10
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID2, kTX1, 2e3, 2, kTIMESTAMP2);  // 20
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID4, kTX1, 4e2, 1, kTIMESTAMP3);  // 40
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID3, kTX1, 3e3, 1, kTIMESTAMP4);  // 300
+    constexpr auto kDocumentID1 = 1;
+    constexpr auto kDocumentID2 = 2;
+    constexpr auto kDocumentID3 = 3;
+    constexpr auto kDocumentID4 = 4;
+    constexpr auto kTimestamp1 = 1711461384u;
+    constexpr auto kTimestamp2 = 1711461383u;
+    constexpr auto kTimestamp3 = 1711461382u;
+    constexpr auto kTimestamp4 = 1711461381u;
+    mockLedgerObject(*backend_, kAccount, kDocumentID1, kTx1, 1e3, 2, kTimestamp1);  // 10
+    mockLedgerObject(*backend_, kAccount, kDocumentID2, kTx1, 2e3, 2, kTimestamp2);  // 20
+    mockLedgerObject(*backend_, kAccount, kDocumentID4, kTx1, 4e2, 1, kTimestamp3);  // 40
+    mockLedgerObject(*backend_, kAccount, kDocumentID3, kTx1, 3e3, 1, kTimestamp4);  // 300
 
     auto const handler = AnyHandler{GetAggregatePriceHandler{backend_}};
     auto const req = json::parse(
@@ -1022,14 +1022,14 @@ TEST_F(RPCGetAggregatePriceHandlerTest, TimeThresholdIsZero)
                 ]
             }})JSON",
             0,
-            kACCOUNT,
-            kDOCUMENT_ID1,
-            kACCOUNT,
-            kDOCUMENT_ID2,
-            kACCOUNT,
-            kDOCUMENT_ID3,
-            kACCOUNT,
-            kDOCUMENT_ID4
+            kAccount,
+            kDocumentID1,
+            kAccount,
+            kDocumentID2,
+            kAccount,
+            kDocumentID3,
+            kAccount,
+            kDocumentID4
         )
     );
 
@@ -1047,9 +1047,9 @@ TEST_F(RPCGetAggregatePriceHandlerTest, TimeThresholdIsZero)
                 "ledger_hash": "{}",
                 "validated": true
             }})JSON",
-            kTIMESTAMP1,
-            kRANGE_MAX,
-            kLEDGER_HASH
+            kTimestamp1,
+            kRangeMax,
+            kLedgerHash
         )
     );
     runSpawn([&](auto yield) {
@@ -1061,21 +1061,21 @@ TEST_F(RPCGetAggregatePriceHandlerTest, TimeThresholdIsZero)
 
 TEST_F(RPCGetAggregatePriceHandlerTest, ValidTimeThreshold)
 {
-    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _))
-        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kRANGE_MAX)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRangeMax, _))
+        .WillOnce(Return(createLedgerHeader(kLedgerHash, kRangeMax)));
 
-    constexpr auto kDOCUMENT_ID1 = 1;
-    constexpr auto kDOCUMENT_ID2 = 2;
-    constexpr auto kDOCUMENT_ID3 = 3;
-    constexpr auto kDOCUMENT_ID4 = 4;
-    constexpr auto kTIMESTAMP1 = 1711461384u;
-    constexpr auto kTIMESTAMP2 = 1711461383u;
-    constexpr auto kTIMESTAMP3 = 1711461382u;
-    constexpr auto kTIMESTAMP4 = 1711461381u;
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID1, kTX1, 1e3, 2, kTIMESTAMP1);  // 10
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID2, kTX1, 2e3, 2, kTIMESTAMP2);  // 20
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID4, kTX1, 4e2, 1, kTIMESTAMP3);  // 40
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID3, kTX1, 3e3, 1, kTIMESTAMP4);  // 300
+    constexpr auto kDocumentID1 = 1;
+    constexpr auto kDocumentID2 = 2;
+    constexpr auto kDocumentID3 = 3;
+    constexpr auto kDocumentID4 = 4;
+    constexpr auto kTimestamp1 = 1711461384u;
+    constexpr auto kTimestamp2 = 1711461383u;
+    constexpr auto kTimestamp3 = 1711461382u;
+    constexpr auto kTimestamp4 = 1711461381u;
+    mockLedgerObject(*backend_, kAccount, kDocumentID1, kTx1, 1e3, 2, kTimestamp1);  // 10
+    mockLedgerObject(*backend_, kAccount, kDocumentID2, kTx1, 2e3, 2, kTimestamp2);  // 20
+    mockLedgerObject(*backend_, kAccount, kDocumentID4, kTx1, 4e2, 1, kTimestamp3);  // 40
+    mockLedgerObject(*backend_, kAccount, kDocumentID3, kTx1, 3e3, 1, kTimestamp4);  // 300
 
     auto const handler = AnyHandler{GetAggregatePriceHandler{backend_}};
     auto const req = json::parse(
@@ -1103,15 +1103,15 @@ TEST_F(RPCGetAggregatePriceHandlerTest, ValidTimeThreshold)
                     }}
                 ]
             }})JSON",
-            kTIMESTAMP1 - kTIMESTAMP2,
-            kACCOUNT,
-            kDOCUMENT_ID1,
-            kACCOUNT,
-            kDOCUMENT_ID2,
-            kACCOUNT,
-            kDOCUMENT_ID3,
-            kACCOUNT,
-            kDOCUMENT_ID4
+            kTimestamp1 - kTimestamp2,
+            kAccount,
+            kDocumentID1,
+            kAccount,
+            kDocumentID2,
+            kAccount,
+            kDocumentID3,
+            kAccount,
+            kDocumentID4
         )
     );
 
@@ -1129,9 +1129,9 @@ TEST_F(RPCGetAggregatePriceHandlerTest, ValidTimeThreshold)
                 "ledger_hash": "{}",
                 "validated": true
             }})JSON",
-            kTIMESTAMP1,
-            kRANGE_MAX,
-            kLEDGER_HASH
+            kTimestamp1,
+            kRangeMax,
+            kLedgerHash
         )
     );
     runSpawn([&](auto yield) {
@@ -1143,21 +1143,21 @@ TEST_F(RPCGetAggregatePriceHandlerTest, ValidTimeThreshold)
 
 TEST_F(RPCGetAggregatePriceHandlerTest, TimeThresholdTooLong)
 {
-    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _))
-        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kRANGE_MAX)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRangeMax, _))
+        .WillOnce(Return(createLedgerHeader(kLedgerHash, kRangeMax)));
 
-    constexpr auto kDOCUMENT_ID1 = 1;
-    constexpr auto kDOCUMENT_ID2 = 2;
-    constexpr auto kDOCUMENT_ID3 = 3;
-    constexpr auto kDOCUMENT_ID4 = 4;
-    constexpr auto kTIMESTAMP1 = 1711461384u;
-    constexpr auto kTIMESTAMP2 = 1711461383u;
-    constexpr auto kTIMESTAMP3 = 1711461382u;
-    constexpr auto kTIMESTAMP4 = 1711461381u;
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID1, kTX1, 1e3, 2, kTIMESTAMP1);  // 10
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID2, kTX1, 2e3, 2, kTIMESTAMP2);  // 20
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID4, kTX1, 4e2, 1, kTIMESTAMP3);  // 40
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID3, kTX1, 3e3, 1, kTIMESTAMP4);  // 300
+    constexpr auto kDocumentID1 = 1;
+    constexpr auto kDocumentID2 = 2;
+    constexpr auto kDocumentID3 = 3;
+    constexpr auto kDocumentID4 = 4;
+    constexpr auto kTimestamp1 = 1711461384u;
+    constexpr auto kTimestamp2 = 1711461383u;
+    constexpr auto kTimestamp3 = 1711461382u;
+    constexpr auto kTimestamp4 = 1711461381u;
+    mockLedgerObject(*backend_, kAccount, kDocumentID1, kTx1, 1e3, 2, kTimestamp1);  // 10
+    mockLedgerObject(*backend_, kAccount, kDocumentID2, kTx1, 2e3, 2, kTimestamp2);  // 20
+    mockLedgerObject(*backend_, kAccount, kDocumentID4, kTx1, 4e2, 1, kTimestamp3);  // 40
+    mockLedgerObject(*backend_, kAccount, kDocumentID3, kTx1, 3e3, 1, kTimestamp4);  // 300
 
     auto const handler = AnyHandler{GetAggregatePriceHandler{backend_}};
     auto const req = json::parse(
@@ -1185,15 +1185,15 @@ TEST_F(RPCGetAggregatePriceHandlerTest, TimeThresholdTooLong)
                     }}
                 ]
             }})JSON",
-            kTIMESTAMP1 + 1,
-            kACCOUNT,
-            kDOCUMENT_ID1,
-            kACCOUNT,
-            kDOCUMENT_ID2,
-            kACCOUNT,
-            kDOCUMENT_ID3,
-            kACCOUNT,
-            kDOCUMENT_ID4
+            kTimestamp1 + 1,
+            kAccount,
+            kDocumentID1,
+            kAccount,
+            kDocumentID2,
+            kAccount,
+            kDocumentID3,
+            kAccount,
+            kDocumentID4
         )
     );
 
@@ -1211,8 +1211,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, TimeThresholdTooLong)
                 "ledger_hash": "{}",
                 "validated": true
             }})JSON",
-            kRANGE_MAX,
-            kLEDGER_HASH
+            kRangeMax,
+            kLedgerHash
         )
     );
     runSpawn([&](auto yield) {
@@ -1224,21 +1224,21 @@ TEST_F(RPCGetAggregatePriceHandlerTest, TimeThresholdTooLong)
 
 TEST_F(RPCGetAggregatePriceHandlerTest, TimeThresholdIncludeOldest)
 {
-    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _))
-        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kRANGE_MAX)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRangeMax, _))
+        .WillOnce(Return(createLedgerHeader(kLedgerHash, kRangeMax)));
 
-    constexpr auto kDOCUMENT_ID1 = 1;
-    constexpr auto kDOCUMENT_ID2 = 2;
-    constexpr auto kDOCUMENT_ID3 = 3;
-    constexpr auto kDOCUMENT_ID4 = 4;
-    constexpr auto kTIMESTAMP1 = 1711461384u;
-    constexpr auto kTIMESTAMP2 = 1711461383u;
-    constexpr auto kTIMESTAMP3 = 1711461382u;
-    constexpr auto kTIMESTAMP4 = 1711461381u;
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID1, kTX1, 1e3, 2, kTIMESTAMP1);  // 10
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID2, kTX1, 2e3, 2, kTIMESTAMP2);  // 20
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID4, kTX1, 4e2, 1, kTIMESTAMP3);  // 40
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID3, kTX1, 3e3, 1, kTIMESTAMP4);  // 300
+    constexpr auto kDocumentID1 = 1;
+    constexpr auto kDocumentID2 = 2;
+    constexpr auto kDocumentID3 = 3;
+    constexpr auto kDocumentID4 = 4;
+    constexpr auto kTimestamp1 = 1711461384u;
+    constexpr auto kTimestamp2 = 1711461383u;
+    constexpr auto kTimestamp3 = 1711461382u;
+    constexpr auto kTimestamp4 = 1711461381u;
+    mockLedgerObject(*backend_, kAccount, kDocumentID1, kTx1, 1e3, 2, kTimestamp1);  // 10
+    mockLedgerObject(*backend_, kAccount, kDocumentID2, kTx1, 2e3, 2, kTimestamp2);  // 20
+    mockLedgerObject(*backend_, kAccount, kDocumentID4, kTx1, 4e2, 1, kTimestamp3);  // 40
+    mockLedgerObject(*backend_, kAccount, kDocumentID3, kTx1, 3e3, 1, kTimestamp4);  // 300
 
     auto const handler = AnyHandler{GetAggregatePriceHandler{backend_}};
     auto const req = json::parse(
@@ -1266,15 +1266,15 @@ TEST_F(RPCGetAggregatePriceHandlerTest, TimeThresholdIncludeOldest)
                     }}
                 ]
             }})JSON",
-            kTIMESTAMP4 - kTIMESTAMP1,
-            kACCOUNT,
-            kDOCUMENT_ID1,
-            kACCOUNT,
-            kDOCUMENT_ID2,
-            kACCOUNT,
-            kDOCUMENT_ID3,
-            kACCOUNT,
-            kDOCUMENT_ID4
+            kTimestamp4 - kTimestamp1,
+            kAccount,
+            kDocumentID1,
+            kAccount,
+            kDocumentID2,
+            kAccount,
+            kDocumentID3,
+            kAccount,
+            kDocumentID4
         )
     );
 
@@ -1292,8 +1292,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, TimeThresholdIncludeOldest)
                 "ledger_hash": "{}",
                 "validated": true
             }})JSON",
-            kRANGE_MAX,
-            kLEDGER_HASH
+            kRangeMax,
+            kLedgerHash
         )
     );
     runSpawn([&](auto yield) {
@@ -1306,18 +1306,18 @@ TEST_F(RPCGetAggregatePriceHandlerTest, TimeThresholdIncludeOldest)
 // When the price pair is not available in the current oracle, trace back to previous transactions
 TEST_F(RPCGetAggregatePriceHandlerTest, FromTx)
 {
-    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _))
-        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kRANGE_MAX)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRangeMax, _))
+        .WillOnce(Return(createLedgerHeader(kLedgerHash, kRangeMax)));
 
-    constexpr auto kDOCUMENT_ID = 1;
+    constexpr auto kDocumentId = 1;
     auto const oracleIndex =
-        ripple::keylet::oracle(getAccountIdWithString(kACCOUNT), kDOCUMENT_ID).key;
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID, kTX1, 1e3, 2);  // 10
+        ripple::keylet::oracle(getAccountIdWithString(kAccount), kDocumentId).key;
+    mockLedgerObject(*backend_, kAccount, kDocumentId, kTx1, 1e3, 2);  // 10
     // return a tx which contains NewFields
-    EXPECT_CALL(*backend_, fetchTransaction(ripple::uint256(kTX1), _))
+    EXPECT_CALL(*backend_, fetchTransaction(ripple::uint256(kTx1), _))
         .WillOnce(Return(createOracleSetTxWithMetadata(
-            kACCOUNT,
-            kRANGE_MAX,
+            kAccount,
+            kRangeMax,
             123,
             1,
             4321u,
@@ -1326,7 +1326,7 @@ TEST_F(RPCGetAggregatePriceHandlerTest, FromTx)
             )}),
             ripple::to_string(oracleIndex),
             false,
-            kTX1
+            kTx1
         )));
 
     auto const handler = AnyHandler{GetAggregatePriceHandler{backend_}};
@@ -1342,8 +1342,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, FromTx)
                     }}
                 ]
             }})JSON",
-            kACCOUNT,
-            kDOCUMENT_ID
+            kAccount,
+            kDocumentId
         )
     );
 
@@ -1361,8 +1361,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, FromTx)
                 "ledger_hash": "{}",
                 "validated": true
             }})JSON",
-            kRANGE_MAX,
-            kLEDGER_HASH
+            kRangeMax,
+            kLedgerHash
         )
     );
     runSpawn([&](auto yield) {
@@ -1373,18 +1373,18 @@ TEST_F(RPCGetAggregatePriceHandlerTest, FromTx)
 }
 TEST_F(RPCGetAggregatePriceHandlerTest, NotFoundInTxHistory)
 {
-    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRANGE_MAX, _))
-        .WillOnce(Return(createLedgerHeader(kLEDGER_HASH, kRANGE_MAX)));
+    EXPECT_CALL(*backend_, fetchLedgerBySequence(kRangeMax, _))
+        .WillOnce(Return(createLedgerHeader(kLedgerHash, kRangeMax)));
 
-    constexpr auto kDOCUMENT_ID = 1;
+    constexpr auto kDocumentId = 1;
     auto const oracleIndex =
-        ripple::keylet::oracle(getAccountIdWithString(kACCOUNT), kDOCUMENT_ID).key;
-    mockLedgerObject(*backend_, kACCOUNT, kDOCUMENT_ID, kTX1, 1e3, 2);  // 10
+        ripple::keylet::oracle(getAccountIdWithString(kAccount), kDocumentId).key;
+    mockLedgerObject(*backend_, kAccount, kDocumentId, kTx1, 1e3, 2);  // 10
 
-    EXPECT_CALL(*backend_, fetchTransaction(ripple::uint256(kTX1), _))
+    EXPECT_CALL(*backend_, fetchTransaction(ripple::uint256(kTx1), _))
         .WillOnce(Return(createOracleSetTxWithMetadata(
-            kACCOUNT,
-            kRANGE_MAX,
+            kAccount,
+            kRangeMax,
             123,
             1,
             4321u,
@@ -1393,13 +1393,13 @@ TEST_F(RPCGetAggregatePriceHandlerTest, NotFoundInTxHistory)
             )}),
             ripple::to_string(oracleIndex),
             false,
-            kTX2
+            kTx2
         )));
 
-    EXPECT_CALL(*backend_, fetchTransaction(ripple::uint256(kTX2), _))
+    EXPECT_CALL(*backend_, fetchTransaction(ripple::uint256(kTx2), _))
         .WillRepeatedly(Return(createOracleSetTxWithMetadata(
-            kACCOUNT,
-            kRANGE_MAX,
+            kAccount,
+            kRangeMax,
             123,
             1,
             4321u,
@@ -1408,7 +1408,7 @@ TEST_F(RPCGetAggregatePriceHandlerTest, NotFoundInTxHistory)
             )}),
             ripple::to_string(oracleIndex),
             false,
-            kTX2
+            kTx2
         )));
 
     auto const handler = AnyHandler{GetAggregatePriceHandler{backend_}};
@@ -1424,8 +1424,8 @@ TEST_F(RPCGetAggregatePriceHandlerTest, NotFoundInTxHistory)
                     }}
                 ]
             }})JSON",
-            kACCOUNT,
-            kDOCUMENT_ID
+            kAccount,
+            kDocumentId
         )
     );
 

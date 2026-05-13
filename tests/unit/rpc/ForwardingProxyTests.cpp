@@ -29,7 +29,7 @@ using namespace util::config;
 namespace json = boost::json;
 
 namespace {
-constexpr auto kCLIENT_IP = "127.0.0.1";
+constexpr auto kClientIp = "127.0.0.1";
 }  // namespace
 
 class RPCForwardingProxyTest : public HandlerBaseTest {
@@ -255,7 +255,7 @@ INSTANTIATE_TEST_CASE_P(
     ShouldForwardTest,
     ShouldForwardParameterTest,
     ValuesIn(generateTestValuesForParametersTest()),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );
 
 TEST_P(ShouldForwardParameterTest, Test)
@@ -279,7 +279,7 @@ TEST_P(ShouldForwardParameterTest, Test)
             nullptr,
             tagFactory_,
             data::LedgerRange{},
-            kCLIENT_IP,
+            kClientIp,
             testBundle.isAdmin,
         };
 
@@ -299,9 +299,7 @@ TEST_F(RPCForwardingProxyTest, ForwardCallsBalancerWithCorrectParams)
 
     EXPECT_CALL(
         *rawBalancerPtr,
-        forwardToRippled(
-            forwarded.as_object(), std::make_optional<std::string>(kCLIENT_IP), true, _
-        )
+        forwardToRippled(forwarded.as_object(), std::make_optional<std::string>(kClientIp), true, _)
     )
         .WillOnce(Return(json::object{}));
 
@@ -318,7 +316,7 @@ TEST_F(RPCForwardingProxyTest, ForwardCallsBalancerWithCorrectParams)
             nullptr,
             tagFactory_,
             data::LedgerRange{},
-            kCLIENT_IP,
+            kClientIp,
             true,
         };
 
@@ -339,9 +337,7 @@ TEST_F(RPCForwardingProxyTest, ForwardingFailYieldsErrorStatus)
 
     EXPECT_CALL(
         *rawBalancerPtr,
-        forwardToRippled(
-            forwarded.as_object(), std::make_optional<std::string>(kCLIENT_IP), true, _
-        )
+        forwardToRippled(forwarded.as_object(), std::make_optional<std::string>(kClientIp), true, _)
     )
         .WillOnce(Return(std::unexpected{rpc::ClioError::EtlInvalidResponse}));
 
@@ -358,7 +354,7 @@ TEST_F(RPCForwardingProxyTest, ForwardingFailYieldsErrorStatus)
             nullptr,
             tagFactory_,
             data::LedgerRange{},
-            kCLIENT_IP,
+            kClientIp,
             true,
         };
 

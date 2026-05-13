@@ -35,11 +35,11 @@ providerFromString(std::string const& provider)
  * @brief Bundles all cassandra settings in one place.
  */
 struct Settings {
-    static constexpr std::size_t kDEFAULT_CONNECTION_TIMEOUT = 10000;
-    static constexpr uint32_t kDEFAULT_MAX_WRITE_REQUESTS_OUTSTANDING = 10'000;
-    static constexpr uint32_t kDEFAULT_MAX_READ_REQUESTS_OUTSTANDING = 100'000;
-    static constexpr std::size_t kDEFAULT_BATCH_SIZE = 20;
-    static constexpr Provider kDEFAULT_PROVIDER = Provider::Cassandra;
+    static constexpr std::size_t kDefaultConnectionTimeout = 10000;
+    static constexpr uint32_t kDefaultMaxWriteRequestsOutstanding = 10'000;
+    static constexpr uint32_t kDefaultMaxReadRequestsOutstanding = 100'000;
+    static constexpr std::size_t kDefaultBatchSize = 20;
+    static constexpr Provider kDefaultProvider = Provider::Cassandra;
 
     /**
      * @brief Represents the configuration of contact points for cassandra.
@@ -61,7 +61,7 @@ struct Settings {
 
     /** @brief Connect timeout specified in milliseconds */
     std::chrono::milliseconds connectionTimeout =
-        std::chrono::milliseconds{kDEFAULT_CONNECTION_TIMEOUT};
+        std::chrono::milliseconds{kDefaultConnectionTimeout};
 
     /** @brief Request timeout specified in milliseconds */
     std::chrono::milliseconds requestTimeout = std::chrono::milliseconds{0};  // no timeout at all
@@ -73,19 +73,19 @@ struct Settings {
     uint32_t threads = std::thread::hardware_concurrency();
 
     /** @brief The maximum number of outstanding write requests at any given moment */
-    uint32_t maxWriteRequestsOutstanding = kDEFAULT_MAX_WRITE_REQUESTS_OUTSTANDING;
+    uint32_t maxWriteRequestsOutstanding = kDefaultMaxWriteRequestsOutstanding;
 
     /** @brief The maximum number of outstanding read requests at any given moment */
-    uint32_t maxReadRequestsOutstanding = kDEFAULT_MAX_READ_REQUESTS_OUTSTANDING;
+    uint32_t maxReadRequestsOutstanding = kDefaultMaxReadRequestsOutstanding;
 
     /** @brief The number of connection per host to always have active */
     uint32_t coreConnectionsPerHost = 3u;
 
     /** @brief Size of batches when writing */
-    std::size_t writeBatchSize = kDEFAULT_BATCH_SIZE;
+    std::size_t writeBatchSize = kDefaultBatchSize;
 
     /** @brief Provider to know if we are using scylladb or keyspace */
-    Provider provider = kDEFAULT_PROVIDER;
+    Provider provider = kDefaultProvider;
 
     /** @brief Size of the IO queue */
     std::optional<uint32_t> queueSizeIO =

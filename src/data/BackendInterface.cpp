@@ -311,7 +311,7 @@ BackendInterface::fetchLedgerPage(
         ripple::uint256 const& curCursor = [&]() {
             if (!keys.empty())
                 return keys.back();
-            return (cursor ? *cursor : kFIRST_KEY);
+            return (cursor ? *cursor : kFirstKey);
         }();
 
         // NOLINTNEXTLINE(bugprone-unchecked-optional-access)

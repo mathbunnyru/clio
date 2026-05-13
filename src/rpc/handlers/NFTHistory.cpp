@@ -95,7 +95,7 @@ NFTHistoryHandler::process(NFTHistoryHandler::Input const& input, Context const&
         }
     }
 
-    auto const limit = input.limit.value_or(kLIMIT_DEFAULT);
+    auto const limit = input.limit.value_or(kLimitDefault);
     auto const tokenID = ripple::uint256{input.nftID.c_str()};
 
     auto const [txnsAndCursor, timeDiff] = util::timed([&]() {

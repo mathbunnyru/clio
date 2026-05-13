@@ -15,7 +15,7 @@ using namespace util::prometheus;
 
 namespace {
 
-constexpr auto kFEED = R"JSON({"test": "test"})JSON";
+constexpr auto kFeed = R"JSON({"test": "test"})JSON";
 
 }  // namespace
 
@@ -35,8 +35,8 @@ TEST_F(FeedForwardTest, Pub)
     testFeedPtr->sub(sessionPtr);
     EXPECT_EQ(testFeedPtr->count(), 1);
 
-    auto const json = json::parse(kFEED).as_object();
-    EXPECT_CALL(*mockSessionPtr, send(sharedStringJsonEq(kFEED))).Times(1);
+    auto const json = json::parse(kFeed).as_object();
+    EXPECT_CALL(*mockSessionPtr, send(sharedStringJsonEq(kFeed))).Times(1);
     testFeedPtr->pub(json);
 
     testFeedPtr->unsub(sessionPtr);
@@ -51,8 +51,8 @@ TEST_F(FeedForwardTest, AutoDisconnect)
     testFeedPtr->sub(sessionPtr);
     EXPECT_EQ(testFeedPtr->count(), 1);
 
-    auto const json = json::parse(kFEED).as_object();
-    EXPECT_CALL(*mockSessionPtr, send(sharedStringJsonEq(kFEED)));
+    auto const json = json::parse(kFeed).as_object();
+    EXPECT_CALL(*mockSessionPtr, send(sharedStringJsonEq(kFeed)));
     testFeedPtr->pub(json);
 
     slot(sessionPtr.get());

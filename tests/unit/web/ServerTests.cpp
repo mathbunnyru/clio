@@ -518,7 +518,7 @@ jsonServerConfigWithNoSpecifiedAdmin(uint32_t const port)
 }
 
 // get this value from online sha256 generator
-constexpr auto kSECRET_SHA256 = "2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b";
+constexpr auto kSecretShA256 = "2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b";
 
 }  // namespace
 
@@ -630,7 +630,7 @@ INSTANTIATE_TEST_CASE_P(
         },
         WebServerAdminTestParams{
             .config = jsonServerConfigWithAdminPassword(tests::util::generateFreePort()),
-            .headers = {WebHeader(http::field::authorization, kSECRET_SHA256)},
+            .headers = {WebHeader(http::field::authorization, kSecretShA256)},
             .expectedResponse = "user"
         },
         WebServerAdminTestParams{
@@ -639,8 +639,8 @@ INSTANTIATE_TEST_CASE_P(
                 http::field::authorization,
                 fmt::format(
                     "{}{}",
-                    PasswordAdminVerificationStrategy::kPASSWORD_PREFIX,
-                    kSECRET_SHA256
+                    PasswordAdminVerificationStrategy::kPasswordPrefix,
+                    kSecretShA256
                 )
             )},
             .expectedResponse = "admin"
@@ -649,7 +649,7 @@ INSTANTIATE_TEST_CASE_P(
             .config = jsonServerConfigWithBothAdminPasswordAndLocalAdminFalse(
                 tests::util::generateFreePort()
             ),
-            .headers = {WebHeader(http::field::authorization, kSECRET_SHA256)},
+            .headers = {WebHeader(http::field::authorization, kSecretShA256)},
             .expectedResponse = "user"
         },
         WebServerAdminTestParams{
@@ -660,8 +660,8 @@ INSTANTIATE_TEST_CASE_P(
                 http::field::authorization,
                 fmt::format(
                     "{}{}",
-                    PasswordAdminVerificationStrategy::kPASSWORD_PREFIX,
-                    kSECRET_SHA256
+                    PasswordAdminVerificationStrategy::kPasswordPrefix,
+                    kSecretShA256
                 )
             )},
             .expectedResponse = "admin"
@@ -672,8 +672,8 @@ INSTANTIATE_TEST_CASE_P(
                 http::field::authentication_info,
                 fmt::format(
                     "{}{}",
-                    PasswordAdminVerificationStrategy::kPASSWORD_PREFIX,
-                    kSECRET_SHA256
+                    PasswordAdminVerificationStrategy::kPasswordPrefix,
+                    kSecretShA256
                 )
             )},
             .expectedResponse = "user"
@@ -789,7 +789,7 @@ TEST_F(WebServerPrometheusDisabledTest, rejectedIfPrometheusIsDisabled)
         "/metrics",
         {WebHeader(
             http::field::authorization,
-            fmt::format("{}{}", PasswordAdminVerificationStrategy::kPASSWORD_PREFIX, kSECRET_SHA256)
+            fmt::format("{}{}", PasswordAdminVerificationStrategy::kPasswordPrefix, kSecretShA256)
         )}
     );
     EXPECT_EQ(res, "Prometheus is disabled in clio config");
@@ -814,7 +814,7 @@ TEST_F(WebServerPrometheusTest, validResponse)
         "/metrics",
         {WebHeader(
             http::field::authorization,
-            fmt::format("{}{}", PasswordAdminVerificationStrategy::kPASSWORD_PREFIX, kSECRET_SHA256)
+            fmt::format("{}{}", PasswordAdminVerificationStrategy::kPasswordPrefix, kSecretShA256)
         )}
     );
     EXPECT_EQ(res, "# TYPE test_counter counter\ntest_counter 1\n\n");

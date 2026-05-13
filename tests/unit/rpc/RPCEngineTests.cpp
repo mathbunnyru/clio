@@ -44,7 +44,7 @@ using namespace testing;
 using namespace util::config;
 
 namespace {
-constexpr auto kFORWARD_REPLY = R"JSON({
+constexpr auto kForwardReply = R"JSON({
     "result": {
         "status": "success",
         "forwarded": true
@@ -120,7 +120,7 @@ generateTestValuesForParametersTest()
          .isUnknownCmd = neverCalled,
          .handlerReturnError = false,
          .status = rpc::Status{},
-         .response = boost::json::parse(kFORWARD_REPLY).as_object()},
+         .response = boost::json::parse(kForwardReply).as_object()},
         {.testName = "ForwardAdminCmd",
          .isAdmin = false,
          .method = "ledger",
@@ -178,7 +178,7 @@ INSTANTIATE_TEST_CASE_P(
     RPCEngineFlow,
     RPCEngineFlowParameterTest,
     ValuesIn(generateTestValuesForParametersTest()),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );
 
 TEST_P(RPCEngineFlowParameterTest, Test)
@@ -199,7 +199,7 @@ TEST_P(RPCEngineFlowParameterTest, Test)
         EXPECT_CALL(*mockLoadBalancerPtr_, forwardToRippled)
             .WillOnce(Return(
                 std::expected<boost::json::object, rpc::ClioError>(
-                    json::parse(kFORWARD_REPLY).as_object()
+                    json::parse(kForwardReply).as_object()
                 )
             ));
         EXPECT_CALL(*handlerProvider, contains).WillOnce(Return(true));
@@ -394,7 +394,7 @@ INSTANTIATE_TEST_CASE_P(
     RPCEngineCache,
     RPCEngineCacheParameterTest,
     ValuesIn(generateCacheTestValuesForParametersTest()),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );
 
 TEST_P(RPCEngineCacheParameterTest, Test)

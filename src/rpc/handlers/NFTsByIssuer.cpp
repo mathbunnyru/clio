@@ -45,7 +45,7 @@ NFTsByIssuerHandler::process(NFTsByIssuerHandler::Input const& input, Context co
 
     auto const& lgrInfo = *expectedLgrInfo;
 
-    auto const limit = input.limit.value_or(NFTsByIssuerHandler::kLIMIT_DEFAULT);
+    auto const limit = input.limit.value_or(NFTsByIssuerHandler::kLimitDefault);
 
     auto const issuer = accountFromStringStrict(input.issuer);
     auto const accountLedgerObject = sharedPtrBackend_->fetchLedgerObject(

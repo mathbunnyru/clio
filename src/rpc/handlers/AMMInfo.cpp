@@ -46,12 +46,12 @@ std::string
 toIso8601(ripple::NetClock::time_point tp)
 {
     using namespace std::chrono;
-    static constexpr auto kRIPPLE_EPOCH_OFFSET = seconds{kRIPPLE_EPOCH_START};
+    static constexpr auto kRippleEpochOffset = seconds{kRippleEpochStart};
 
     return date::format(
         "%Y-%Om-%dT%H:%M:%OS%z",
         date::sys_time<system_clock::duration>(
-            system_clock::time_point{tp.time_since_epoch() + kRIPPLE_EPOCH_OFFSET}
+            system_clock::time_point{tp.time_since_epoch() + kRippleEpochOffset}
         )
     );
 };
@@ -230,7 +230,7 @@ AMMInfoHandler::process(AMMInfoHandler::Input const& input, Context const& ctx) 
 RpcSpecConstRef
 AMMInfoHandler::spec([[maybe_unused]] uint32_t apiVersion)
 {
-    static auto const kSTRING_ISSUE_VALIDATOR = validation::CustomValidator{
+    static auto const kStringIssueValidator = validation::CustomValidator{
         [](boost::json::value const& value, std::string_view key) -> MaybeError {
             if (not value.is_string()) {
                 return Error{
@@ -248,7 +248,7 @@ AMMInfoHandler::spec([[maybe_unused]] uint32_t apiVersion)
         }
     };
 
-    static auto const kRPC_SPEC = RpcSpec{
+    static auto const kRpcSpec = RpcSpec{
         {JS(ledger_hash), validation::CustomValidators::uint256HexStringValidator},
         {JS(ledger_index), validation::CustomValidators::ledgerIndexValidator},
         {JS(asset),
@@ -256,7 +256,7 @@ AMMInfoHandler::spec([[maybe_unused]] uint32_t apiVersion)
              validation::Type<std::string, boost::json::object>{},
              Status(RippledError::rpcISSUE_MALFORMED)
          },
-         meta::IfType<std::string>{kSTRING_ISSUE_VALIDATOR},
+         meta::IfType<std::string>{kStringIssueValidator},
          meta::IfType<boost::json::object>{
              meta::WithCustomError{
                  validation::CustomValidators::currencyIssueValidator,
@@ -268,7 +268,7 @@ AMMInfoHandler::spec([[maybe_unused]] uint32_t apiVersion)
              validation::Type<std::string, boost::json::object>{},
              Status(RippledError::rpcISSUE_MALFORMED)
          },
-         meta::IfType<std::string>{kSTRING_ISSUE_VALIDATOR},
+         meta::IfType<std::string>{kStringIssueValidator},
          meta::IfType<boost::json::object>{
              meta::WithCustomError{
                  validation::CustomValidators::currencyIssueValidator,
@@ -285,7 +285,7 @@ AMMInfoHandler::spec([[maybe_unused]] uint32_t apiVersion)
          }},
     };
 
-    return kRPC_SPEC;
+    return kRpcSpec;
 }
 
 void

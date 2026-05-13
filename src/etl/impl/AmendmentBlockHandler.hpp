@@ -28,13 +28,13 @@ private:
     ActionType action_;
 
 public:
-    static ActionType const kDEFAULT_AMENDMENT_BLOCK_ACTION;
+    static ActionType const kDefaultAmendmentBlockAction;
 
     AmendmentBlockHandler(
         util::async::AnyExecutionContext ctx,
         SystemState& state,
         std::chrono::steady_clock::duration interval = std::chrono::seconds{1},
-        ActionType action = kDEFAULT_AMENDMENT_BLOCK_ACTION
+        ActionType action = kDefaultAmendmentBlockAction
     );
 
     ~AmendmentBlockHandler() override;

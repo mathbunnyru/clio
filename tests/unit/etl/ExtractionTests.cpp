@@ -25,11 +25,11 @@
 #include <vector>
 
 namespace {
-constinit auto const kLEDGER_HASH =
+constinit auto const kLedgerHash =
     "4BC50C9B0D8515D3EAAE1E74B29A95804346C491EE1A95BF25E4AAB854A6A652";
-constinit auto const kLEDGER_HASH2 =
+constinit auto const kLedgerHasH2 =
     "1B8590C01B0006EDFA9ED60296DD052DC5E90F99659B25014D08E1BC983515BC";
-constinit auto const kSEQ = 30;
+constinit auto const kSeq = 30;
 }  // namespace
 
 struct ExtractionModelTests : virtual public ::testing::Test {};
@@ -45,9 +45,9 @@ TEST_F(ExtractionModelTests, LedgerDataCopyableAndEquatable)
         .successors =
             std::vector<etl::model::BookSuccessor>{{.firstBook = "first", .bookBase = "base"}},
         .edgeKeys = std::vector<std::string>{"key1", "key2"},
-        .header = createLedgerHeader(kLEDGER_HASH, kSEQ, 1),
+        .header = createLedgerHeader(kLedgerHash, kSeq, 1),
         .rawHeader = {1, 2, 3},
-        .seq = kSEQ
+        .seq = kSeq
     };
 
     auto const second = first;
@@ -77,7 +77,7 @@ TEST_F(ExtractionModelTests, LedgerDataCopyableAndEquatable)
     {
         auto third = second;
         third.header = createLedgerHeader(
-            kLEDGER_HASH2, kSEQ, 100
+            kLedgerHasH2, kSeq, 100
         );  // Using large age value to avoid flaky test
         EXPECT_NE(first, third);
     }
@@ -88,7 +88,7 @@ TEST_F(ExtractionModelTests, LedgerDataCopyableAndEquatable)
     }
     {
         auto third = second;
-        third.seq = kSEQ - 1;
+        third.seq = kSeq - 1;
         EXPECT_NE(first, third);
     }
 }
@@ -188,8 +188,8 @@ TEST_F(ExtractionTests, OneTransaction)
     original.set_transaction_blob(txRaw);
     original.set_metadata_blob(metaRaw);
 
-    auto res = extractTx(original, kSEQ);
-    EXPECT_EQ(res.meta.getLgrSeq(), kSEQ);
+    auto res = extractTx(original, kSeq);
+    EXPECT_EQ(res.meta.getLgrSeq(), kSeq);
     EXPECT_EQ(res.meta.getLgrSeq(), expected.meta.getLgrSeq());
     EXPECT_EQ(res.meta.getTxID(), expected.meta.getTxID());
     EXPECT_EQ(res.sttx.getTxnType(), expected.sttx.getTxnType());
@@ -212,11 +212,11 @@ TEST_F(ExtractionTests, MultipleTransactions)
         *p = original;
     }
 
-    auto res = extractTxs(list.transactions(), kSEQ);
+    auto res = extractTxs(list.transactions(), kSeq);
     EXPECT_EQ(res.size(), 10);
 
     for (auto const& tx : res) {
-        EXPECT_EQ(tx.meta.getLgrSeq(), kSEQ);
+        EXPECT_EQ(tx.meta.getLgrSeq(), kSeq);
         EXPECT_EQ(tx.meta.getLgrSeq(), expected.meta.getLgrSeq());
         EXPECT_EQ(tx.meta.getTxID(), expected.meta.getTxID());
         EXPECT_EQ(tx.sttx.getTxnType(), expected.sttx.getTxnType());
@@ -239,8 +239,8 @@ TEST_F(ExtractionTests, OneObject)
     auto res = extractObj(original);
     EXPECT_EQ(ripple::strHex(res.key), ripple::strHex(expected.keyRaw));
     EXPECT_EQ(ripple::strHex(res.data), ripple::strHex(expected.dataRaw));
-    EXPECT_EQ(res.predecessor, uint256ToString(data::kLAST_KEY));
-    EXPECT_EQ(res.successor, uint256ToString(data::kFIRST_KEY));
+    EXPECT_EQ(res.predecessor, uint256ToString(data::kLastKey));
+    EXPECT_EQ(res.successor, uint256ToString(data::kFirstKey));
     EXPECT_EQ(res.type, expected.type);
 }
 
@@ -292,8 +292,8 @@ TEST_F(ExtractionTests, MultipleObjects)
     for (auto const& obj : res) {
         EXPECT_EQ(ripple::strHex(obj.key), ripple::strHex(expected.keyRaw));
         EXPECT_EQ(ripple::strHex(obj.data), ripple::strHex(expected.dataRaw));
-        EXPECT_EQ(obj.predecessor, uint256ToString(data::kLAST_KEY));
-        EXPECT_EQ(obj.successor, uint256ToString(data::kFIRST_KEY));
+        EXPECT_EQ(obj.predecessor, uint256ToString(data::kLastKey));
+        EXPECT_EQ(obj.successor, uint256ToString(data::kFirstKey));
         EXPECT_EQ(obj.type, expected.type);
     }
 }
@@ -375,15 +375,15 @@ struct ExtractorTests : ExtractionTests {
 
 TEST_F(ExtractorTests, ExtractLedgerWithDiffNoResult)
 {
-    EXPECT_CALL(*fetcher, fetchDataAndDiff(kSEQ)).WillOnce(testing::Return(std::nullopt));
-    auto res = extractor.extractLedgerWithDiff(kSEQ);
+    EXPECT_CALL(*fetcher, fetchDataAndDiff(kSeq)).WillOnce(testing::Return(std::nullopt));
+    auto res = extractor.extractLedgerWithDiff(kSeq);
     EXPECT_FALSE(res.has_value());
 }
 
 TEST_F(ExtractorTests, ExtractLedgerOnlyNoResult)
 {
-    EXPECT_CALL(*fetcher, fetchData(kSEQ)).WillOnce(testing::Return(std::nullopt));
-    auto res = extractor.extractLedgerOnly(kSEQ);
+    EXPECT_CALL(*fetcher, fetchData(kSeq)).WillOnce(testing::Return(std::nullopt));
+    auto res = extractor.extractLedgerOnly(kSeq);
     EXPECT_FALSE(res.has_value());
 }
 
@@ -391,8 +391,8 @@ TEST_F(ExtractorTests, ExtractLedgerWithDiffWithResult)
 {
     auto original = util::createDataAndDiff();
 
-    EXPECT_CALL(*fetcher, fetchDataAndDiff(kSEQ)).WillOnce(testing::Return(original));
-    auto res = extractor.extractLedgerWithDiff(kSEQ);
+    EXPECT_CALL(*fetcher, fetchDataAndDiff(kSeq)).WillOnce(testing::Return(original));
+    auto res = extractor.extractLedgerWithDiff(kSeq);
 
     EXPECT_TRUE(res.has_value());
     // NOLINTBEGIN(bugprone-unchecked-optional-access)
@@ -408,8 +408,8 @@ TEST_F(ExtractorTests, ExtractLedgerOnlyWithResult)
 {
     auto original = util::createData();
 
-    EXPECT_CALL(*fetcher, fetchData(kSEQ)).WillOnce(testing::Return(original));
-    auto res = extractor.extractLedgerOnly(kSEQ);
+    EXPECT_CALL(*fetcher, fetchData(kSeq)).WillOnce(testing::Return(original));
+    auto res = extractor.extractLedgerOnly(kSeq);
 
     EXPECT_TRUE(res.has_value());
     // NOLINTBEGIN(bugprone-unchecked-optional-access)

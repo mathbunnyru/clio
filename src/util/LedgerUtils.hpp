@@ -78,7 +78,7 @@ class LedgerTypes {
     using LedgerTypeAttribute = impl::LedgerTypeAttribute;
     using LedgerTypeAttributeList = LedgerTypeAttribute[];
 
-    static constexpr LedgerTypeAttributeList const kLEDGER_TYPES{
+    static constexpr LedgerTypeAttributeList const kLedgerTypes{
         LedgerTypeAttribute::accountOwnedLedgerType(
             JS(AccountRoot),
             JS(account),
@@ -166,8 +166,8 @@ public:
     static constexpr auto
     getLedgerEntryTypeStrList()
     {
-        std::array<char const*, std::size(kLEDGER_TYPES)> res{};
-        std::ranges::transform(kLEDGER_TYPES, std::begin(res), [](auto const& item) {
+        std::array<char const*, std::size(kLedgerTypes)> res{};
+        std::ranges::transform(kLedgerTypes, std::begin(res), [](auto const& item) {
             return item.rpcName_;
         });
         return res;
@@ -181,16 +181,16 @@ public:
     static constexpr auto
     getDeletionBlockerLedgerTypes()
     {
-        constexpr auto kFILTER = [](auto const& item) {
+        constexpr auto kFilter = [](auto const& item) {
             return item.category_ == LedgerTypeAttribute::LedgerCategory::DeletionBlocker;
         };
 
-        constexpr auto kDELETION_BLOCKERS_COUNT =
-            std::count_if(std::begin(kLEDGER_TYPES), std::end(kLEDGER_TYPES), kFILTER);
-        std::array<ripple::LedgerEntryType, kDELETION_BLOCKERS_COUNT> res{};
+        constexpr auto kDeletionBlockersCount =
+            std::count_if(std::begin(kLedgerTypes), std::end(kLedgerTypes), kFilter);
+        std::array<ripple::LedgerEntryType, kDeletionBlockersCount> res{};
         auto it = std::begin(res);
-        std::ranges::for_each(kLEDGER_TYPES, [&](auto const& item) {
-            if (kFILTER(item)) {
+        std::ranges::for_each(kLedgerTypes, [&](auto const& item) {
+            if (kFilter(item)) {
                 *it = item.type_;
                 ++it;
             }

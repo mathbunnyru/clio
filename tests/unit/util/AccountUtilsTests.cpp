@@ -6,13 +6,13 @@
 #include <xrpl/protocol/tokens.h>
 
 namespace {
-constexpr auto kACCOUNT = "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn";
+constexpr auto kAccount = "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn";
 }  // namespace
 
 TEST(AccountUtils, parseBase58Wrapper)
 {
     EXPECT_FALSE(util::parseBase58Wrapper<ripple::AccountID>("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jp!"));
-    EXPECT_TRUE(util::parseBase58Wrapper<ripple::AccountID>(kACCOUNT));
+    EXPECT_TRUE(util::parseBase58Wrapper<ripple::AccountID>(kAccount));
 
     EXPECT_TRUE(
         util::parseBase58Wrapper<ripple::SecretKey>(

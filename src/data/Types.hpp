@@ -312,13 +312,13 @@ struct AmendmentKey {
     operator<=>(AmendmentKey const& other) const = default;
 };
 
-constexpr ripple::uint256 kFIRST_KEY{
+constexpr ripple::uint256 kFirstKey{
     "0000000000000000000000000000000000000000000000000000000000000000"
 };
-constexpr ripple::uint256 kLAST_KEY{
+constexpr ripple::uint256 kLastKey{
     "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
 };
-constexpr ripple::uint256 kHI192{
+constexpr ripple::uint256 kHi192{
     "0000000000000000000000000000000000000000000000001111111111111111"
 };
 

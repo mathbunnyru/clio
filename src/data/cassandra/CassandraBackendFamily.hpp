@@ -603,7 +603,7 @@ public:
         if (auto const res = executor_.read(yield, schema_->selectSuccessor, key, ledgerSequence);
             res) {
             if (auto const result = res->template get<ripple::uint256>(); result) {
-                if (*result == kLAST_KEY)
+                if (*result == kLastKey)
                     return std::nullopt;
                 return result;
             }

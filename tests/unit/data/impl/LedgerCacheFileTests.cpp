@@ -129,17 +129,17 @@ struct LedgerCacheFileTestBase : ::testing::Test {
             std::filesystem::remove(pathWithNewPrefix);
     }
 
-    static std::vector<DataSizeParams> const kDATA_SIZE_PARAMS;
-    static std::vector<CorruptionParams> const kCORRUPTION_PARAMS;
+    static std::vector<DataSizeParams> const kDataSizeParams;
+    static std::vector<CorruptionParams> const kCorruptionParams;
 
     TmpFile tmpFile = TmpFile::empty();
-    static uint32_t constexpr kLATEST_SEQUENCE = 12345;
+    static uint32_t constexpr kLatestSequence = 12345;
 
     static LedgerCacheFile::Data
     createTestData(size_t mapSize, size_t deletedSize, size_t blobSize)
     {
         LedgerCacheFile::Data data;
-        data.latestSeq = kLATEST_SEQUENCE;
+        data.latestSeq = kLatestSequence;
 
         for (size_t i = 0; i < mapSize; ++i) {
             ripple::uint256 key;
@@ -307,7 +307,7 @@ struct LedgerCacheFileTestBase : ::testing::Test {
 };
 
 std::vector<
-    LedgerCacheFileTestBase::DataSizeParams> const LedgerCacheFileTestBase::kDATA_SIZE_PARAMS = {
+    LedgerCacheFileTestBase::DataSizeParams> const LedgerCacheFileTestBase::kDataSizeParams = {
     {.mapEntries = 0, .deletedEntries = 0, .blobSize = 0, .description = "empty"},
     {.mapEntries = 1, .deletedEntries = 0, .blobSize = 10, .description = "single_map_small_blob"},
     {.mapEntries = 0,
@@ -325,7 +325,7 @@ std::vector<
 };
 
 std::vector<LedgerCacheFileTestBase::CorruptionParams> const
-    LedgerCacheFileTestBase::kCORRUPTION_PARAMS = {
+    LedgerCacheFileTestBase::kCorruptionParams = {
         {.type = CorruptionType::InvalidVersion, .description = "invalid_version"},
         {.type = CorruptionType::CorruptedSeparator1, .description = "corrupted_separator1"},
         {.type = CorruptionType::CorruptedSeparator2, .description = "corrupted_separator2"},
@@ -357,7 +357,7 @@ struct LedgerCacheFileTest
 INSTANTIATE_TEST_SUITE_P(
     AllDataSizes,
     LedgerCacheFileTest,
-    ::testing::ValuesIn(LedgerCacheFileTestBase::kDATA_SIZE_PARAMS),
+    ::testing::ValuesIn(LedgerCacheFileTestBase::kDataSizeParams),
     LedgerCacheFileTest::roundTripParamName
 );
 
@@ -395,7 +395,7 @@ struct LedgerCacheFileCorruptionTest
 INSTANTIATE_TEST_SUITE_P(
     AllCorruptions,
     LedgerCacheFileCorruptionTest,
-    ::testing::ValuesIn(LedgerCacheFileTestBase::kCORRUPTION_PARAMS),
+    ::testing::ValuesIn(LedgerCacheFileTestBase::kCorruptionParams),
     LedgerCacheFileCorruptionTest::corruptionParamName
 );
 
@@ -701,7 +701,7 @@ INSTANTIATE_TEST_SUITE_P(
             .testName = "accept_zero_sequence"
         }
     ),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );
 
 TEST_P(LedgerCacheFileMinSequenceValidationTest, ValidateMinSequence)

@@ -169,11 +169,11 @@ public:
 static auto
 generateData()
 {
-    constexpr auto kTOTAL = 10'000;
+    constexpr auto kTotal = 10'000;
     std::vector<uint64_t> data;
-    data.reserve(kTOTAL);
+    data.reserve(kTotal);
     util::MTRandomGenerator randomGenerator;
-    for (auto i = 0; i < kTOTAL; ++i)
+    for (auto i = 0; i < kTotal; ++i)
         data.push_back(randomGenerator.uniform(1, 100'000'000));
 
     return data;

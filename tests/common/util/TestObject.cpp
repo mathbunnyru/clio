@@ -40,8 +40,8 @@
 #include <vector>
 
 namespace {
-constexpr auto kINDEX1 = "1B8590C01B0006EDFA9ED60296DD052DC5E90F99659B25014D08E1BC983515BC";
-ripple::Slice const kSLICE("test", 4);
+constexpr auto kIndex1 = "1B8590C01B0006EDFA9ED60296DD052DC5E90F99659B25014D08E1BC983515BC";
+ripple::Slice const kSlice("test", 4);
 }  // namespace
 
 ripple::AccountID
@@ -80,7 +80,7 @@ createLedgerHeader(
         // Note: be cautious of using age values close to each other as the underlying NetClock
         // precision is seconds and the small time difference may lead to comparison bugs
         auto const now = duration_cast<seconds>(system_clock::now().time_since_epoch());
-        auto const closeTime = (now - seconds{*age}).count() - kRIPPLE_EPOCH_START;
+        auto const closeTime = (now - seconds{*age}).count() - kRippleEpochStart;
         ledgerHeader.closeTime = ripple::NetClock::time_point{seconds{closeTime}};
     }
 
@@ -100,7 +100,7 @@ createLedgerHeaderWithUnixTime(
     ledgerHeader.hash = ripple::uint256{ledgerHash};
     ledgerHeader.seq = seq;
 
-    auto const closeTime = closeTimeUnixStamp - seconds{kRIPPLE_EPOCH_START}.count();
+    auto const closeTime = closeTimeUnixStamp - seconds{kRippleEpochStart}.count();
     ledgerHeader.closeTime = ripple::NetClock::time_point{seconds{closeTime}};
 
     return ledgerHeader;
@@ -186,7 +186,7 @@ createPaymentTransactionObject(
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     obj.setAccountID(ripple::sfDestination, *account2);
     obj.setFieldU32(ripple::sfSequence, seq);
-    obj.setFieldVL(ripple::sfSigningPubKey, kSLICE);
+    obj.setFieldVL(ripple::sfSigningPubKey, kSlice);
     return obj;
 }
 
@@ -720,7 +720,7 @@ createMintNftTxWithMetadata(
     // required field for ttNFTOKEN_MINT
     tx.setFieldU32(ripple::sfNFTokenTaxon, nfTokenTaxon);
     tx.setFieldU32(ripple::sfSequence, seq);
-    tx.setFieldVL(ripple::sfSigningPubKey, kSLICE);
+    tx.setFieldVL(ripple::sfSigningPubKey, kSlice);
 
     // meta
     ripple::STObject metaObj(ripple::sfTransactionMetaData);
@@ -739,7 +739,7 @@ createMintNftTxWithMetadata(
     nftArray1.push_back(entry);
 
     auto entry2 = ripple::STObject(ripple::sfNFToken);
-    entry2.setFieldH256(ripple::sfNFTokenID, ripple::uint256{kINDEX1});
+    entry2.setFieldH256(ripple::sfNFTokenID, ripple::uint256{kIndex1});
     entry2.setFieldVL(ripple::sfURI, ripple::Slice(url, 7));
     nftArray1.push_back(entry2);
 
@@ -783,7 +783,7 @@ createMintNftTxWithMetadataOfCreatedNode(
     // required field for ttNFTOKEN_MINT
     tx.setFieldU32(ripple::sfNFTokenTaxon, nfTokenTaxon);
     tx.setFieldU32(ripple::sfSequence, seq);
-    tx.setFieldVL(ripple::sfSigningPubKey, kSLICE);
+    tx.setFieldVL(ripple::sfSigningPubKey, kSlice);
     if (uri)
         tx.setFieldVL(ripple::sfURI, ripple::Slice(uri->data(), uri->size()));
 
@@ -839,7 +839,7 @@ createNftModifyTxWithMetadata(std::string_view accountId, std::string_view nftID
     tx.setFieldAmount(ripple::sfFee, amount);
     tx.setFieldH256(ripple::sfNFTokenID, ripple::uint256{nftID});
     tx.setFieldU32(ripple::sfSequence, 100);
-    tx.setFieldVL(ripple::sfSigningPubKey, kSLICE);
+    tx.setFieldVL(ripple::sfSigningPubKey, kSlice);
 
     if (!uri.empty())  // sfURI should be absent if empty
         tx.setFieldVL(ripple::sfURI, uri);
@@ -897,7 +897,7 @@ createNftBurnTxWithMetadataOfDeletedNode(std::string_view accountId, std::string
     tx.setFieldAmount(ripple::sfFee, amount);
     tx.setFieldH256(ripple::sfNFTokenID, ripple::uint256{nftID});
     tx.setFieldU32(ripple::sfSequence, 100);
-    tx.setFieldVL(ripple::sfSigningPubKey, kSLICE);
+    tx.setFieldVL(ripple::sfSigningPubKey, kSlice);
 
     // meta
     ripple::STObject metaObj(ripple::sfTransactionMetaData);
@@ -942,7 +942,7 @@ createNftBurnTxWithMetadataOfModifiedNode(std::string_view accountId, std::strin
     tx.setFieldAmount(ripple::sfFee, amount);
     tx.setFieldH256(ripple::sfNFTokenID, ripple::uint256{nftID});
     tx.setFieldU32(ripple::sfSequence, 100);
-    tx.setFieldVL(ripple::sfSigningPubKey, kSLICE);
+    tx.setFieldVL(ripple::sfSigningPubKey, kSlice);
 
     // meta
     ripple::STObject metaObj(ripple::sfTransactionMetaData);
@@ -989,7 +989,7 @@ createAcceptNftBuyerOfferTxWithMetadata(
     tx.setFieldAmount(ripple::sfFee, amount);
     tx.setFieldU32(ripple::sfSequence, seq);
     tx.setFieldH256(ripple::sfNFTokenBuyOffer, ripple::uint256{offerId});
-    tx.setFieldVL(ripple::sfSigningPubKey, kSLICE);
+    tx.setFieldVL(ripple::sfSigningPubKey, kSlice);
 
     // meta
     // create deletedNode with ltNFTOKEN_OFFER
@@ -1037,7 +1037,7 @@ createAcceptNftSellerOfferTxWithMetadata(
     tx.setFieldAmount(ripple::sfFee, amount);
     tx.setFieldU32(ripple::sfSequence, seq);
     tx.setFieldH256(ripple::sfNFTokenSellOffer, ripple::uint256{offerId});
-    tx.setFieldVL(ripple::sfSigningPubKey, kSLICE);
+    tx.setFieldVL(ripple::sfSigningPubKey, kSlice);
 
     // meta
     // create deletedNode with ltNFTOKEN_OFFER
@@ -1085,7 +1085,7 @@ createAcceptNftSellerOfferTxWithMetadata(
         nftArray1.push_back(entry);
 
         auto entry2 = ripple::STObject(ripple::sfNFToken);
-        entry2.setFieldH256(ripple::sfNFTokenID, ripple::uint256{kINDEX1});
+        entry2.setFieldH256(ripple::sfNFTokenID, ripple::uint256{kIndex1});
         nftArray1.push_back(entry2);
 
         finalFields.setFieldArray(ripple::sfNFTokens, nftArray1);
@@ -1133,7 +1133,7 @@ createCancelNftOffersTxWithMetadata(
         return ripple::uint256{nftId.c_str()};
     });
     tx.setFieldV256(ripple::sfNFTokenOffers, offers);
-    tx.setFieldVL(ripple::sfSigningPubKey, kSLICE);
+    tx.setFieldVL(ripple::sfSigningPubKey, kSlice);
 
     // meta
     // create deletedNode with ltNFTOKEN_OFFER
@@ -1182,7 +1182,7 @@ createCreateNftOfferTxWithMetadata(
     tx.setFieldAmount(ripple::sfAmount, price);
     tx.setFieldU32(ripple::sfSequence, seq);
     tx.setFieldH256(ripple::sfNFTokenID, ripple::uint256{nftId});
-    tx.setFieldVL(ripple::sfSigningPubKey, kSLICE);
+    tx.setFieldVL(ripple::sfSigningPubKey, kSlice);
 
     // meta
     // create createdNode with LedgerIndex
@@ -1227,7 +1227,7 @@ createOracleSetTxWithMetadata(
     tx.setFieldU32(ripple::sfLastUpdateTime, lastUpdateTime);
     tx.setFieldU32(ripple::sfOracleDocumentID, docId);
     tx.setFieldU32(ripple::sfSequence, seq);
-    tx.setFieldVL(ripple::sfSigningPubKey, kSLICE);
+    tx.setFieldVL(ripple::sfSigningPubKey, kSlice);
     tx.setFieldArray(ripple::sfPriceDataSeries, priceDataSeries);
 
     // meta
@@ -1568,7 +1568,7 @@ createMPTIssuanceCreateTx(std::string_view accountId, uint32_t fee, uint32_t seq
     tx.setAccountID(ripple::sfAccount, getAccountIdWithString(accountId));
     tx.setFieldAmount(ripple::sfFee, ripple::STAmount(fee, false));
     tx.setFieldU32(ripple::sfSequence, seq);
-    tx.setFieldVL(ripple::sfSigningPubKey, kSLICE);
+    tx.setFieldVL(ripple::sfSigningPubKey, kSlice);
     return tx;
 }
 
@@ -1626,7 +1626,7 @@ createMPTokenAuthorizeTx(
     tx[ripple::sfMPTokenIssuanceID] = mptIssuanceID;
     tx.setFieldAmount(ripple::sfFee, ripple::STAmount(fee, false));
     tx.setFieldU32(ripple::sfSequence, seq);
-    tx.setFieldVL(ripple::sfSigningPubKey, kSLICE);
+    tx.setFieldVL(ripple::sfSigningPubKey, kSlice);
 
     if (holder)
         tx.setAccountID(ripple::sfHolder, getAccountIdWithString(*holder));

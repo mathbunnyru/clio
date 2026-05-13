@@ -39,9 +39,9 @@ template <typename... Types>
 constexpr bool
 hasNoDuplicateNames()
 {
-    constexpr std::array<std::string_view, sizeof...(Types)> kNAMES = {Types::kNAME...};
-    return !std::ranges::any_of(kNAMES, [&](std::string_view const& name1) {
-        return std::ranges::any_of(kNAMES, [&](std::string_view const& name2) {
+    constexpr std::array<std::string_view, sizeof...(Types)> kNames = {Types::kName...};
+    return !std::ranges::any_of(kNames, [&](std::string_view const& name1) {
+        return std::ranges::any_of(kNames, [&](std::string_view const& name2) {
             return &name1 != &name2 && name1 == name2;  // Ensure different elements are compared
         });
     });

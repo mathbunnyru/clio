@@ -8,9 +8,9 @@
 
 namespace {
 
-constexpr auto kDEFAULT_API_VERSION = 5u;
-constexpr auto kMIN_API_VERSION = 2u;
-constexpr auto kMAX_API_VERSION = 10u;
+constexpr auto kDefaultApiVersion = 5u;
+constexpr auto kMinApiVersion = 2u;
+constexpr auto kMaxApiVersion = 10u;
 
 }  // namespace
 
@@ -20,14 +20,14 @@ namespace json = boost::json;
 
 class RPCAPIVersionTest : public virtual ::testing::Test {
 protected:
-    ProductionAPIVersionParser parser_{kDEFAULT_API_VERSION, kMIN_API_VERSION, kMAX_API_VERSION};
+    ProductionAPIVersionParser parser_{kDefaultApiVersion, kMinApiVersion, kMaxApiVersion};
 };
 
 TEST_F(RPCAPIVersionTest, ReturnsDefaultVersionIfNotSpecified)
 {
     auto ver = parser_.parse(json::parse("{}").as_object());
     EXPECT_TRUE(ver);
-    EXPECT_EQ(ver.value(), kDEFAULT_API_VERSION);
+    EXPECT_EQ(ver.value(), kDefaultApiVersion);
 }
 
 TEST_F(RPCAPIVersionTest, ReturnsErrorIfVersionHigherThanMaxSupported)
@@ -80,9 +80,9 @@ TEST_F(RPCAPIVersionTest, ReturnsParsedVersionIfAllPreconditionsAreMet)
 TEST_F(RPCAPIVersionTest, GetsValuesFromConfigCorrectly)
 {
     ClioConfigDefinition const cfg{
-        {"api_version.min", ConfigValue{ConfigType::Integer}.defaultValue(kMIN_API_VERSION)},
-        {"api_version.max", ConfigValue{ConfigType::Integer}.defaultValue(kMAX_API_VERSION)},
-        {"api_version.default", ConfigValue{ConfigType::Integer}.defaultValue(kDEFAULT_API_VERSION)}
+        {"api_version.min", ConfigValue{ConfigType::Integer}.defaultValue(kMinApiVersion)},
+        {"api_version.max", ConfigValue{ConfigType::Integer}.defaultValue(kMaxApiVersion)},
+        {"api_version.default", ConfigValue{ConfigType::Integer}.defaultValue(kDefaultApiVersion)}
     };
 
     ProductionAPIVersionParser const configuredParser{cfg.getObject("api_version")};
@@ -106,7 +106,7 @@ TEST_F(RPCAPIVersionTest, GetsValuesFromConfigCorrectly)
     {
         auto ver = configuredParser.parse(json::parse(R"JSON({})JSON").as_object());
         EXPECT_TRUE(ver);
-        EXPECT_EQ(ver.value(), kDEFAULT_API_VERSION);
+        EXPECT_EQ(ver.value(), kDefaultApiVersion);
     }
     {
         auto ver =

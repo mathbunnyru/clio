@@ -63,7 +63,7 @@ namespace cluster {
  */
 class WriterDecider {
 public:
-    static constexpr std::chrono::steady_clock::duration kRECOVERY_TIME = std::chrono::hours{1};
+    static constexpr std::chrono::steady_clock::duration kRecoveryTime = std::chrono::hours{1};
 
 private:
     /** @brief Thread pool for spawning asynchronous tasks */
@@ -90,12 +90,12 @@ public:
      * @param ctx          Thread pool for executing asynchronous operations
      * @param writerState  Writer state interface for controlling write operations
      * @param recoveryTime How long to wait in Fallback before attempting recovery
-     *                     (defaults to `kRECOVERY_TIME`; pass a short duration in tests)
+     *                     (defaults to `kRecoveryTime`; pass a short duration in tests)
      */
     WriterDecider(
         boost::asio::thread_pool& ctx,
         std::unique_ptr<etl::WriterStateInterface> writerState,
-        std::chrono::steady_clock::duration recoveryTime = kRECOVERY_TIME
+        std::chrono::steady_clock::duration recoveryTime = kRecoveryTime
     );
 
     /**

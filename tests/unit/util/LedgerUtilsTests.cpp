@@ -13,8 +13,8 @@
 
 TEST(LedgerUtilsTests, LedgerObjectTypeList)
 {
-    constexpr auto kTYPES = util::LedgerTypes::getLedgerEntryTypeStrList();
-    static constexpr char const* kTYPES_LIST[] = {
+    constexpr auto kTypes = util::LedgerTypes::getLedgerEntryTypeStrList();
+    static constexpr char const* kTypesList[] = {
         JS(account),
         JS(amendments),
         JS(check),
@@ -45,9 +45,9 @@ TEST(LedgerUtilsTests, LedgerObjectTypeList)
         JS(delegate)
     };
 
-    static_assert(std::size(kTYPES_LIST) == kTYPES.size());
-    static_assert(std::ranges::all_of(kTYPES_LIST, [&kTYPES](std::string_view type) {
-        return std::ranges::find(kTYPES, type) != std::cend(kTYPES);
+    static_assert(std::size(kTypesList) == kTypes.size());
+    static_assert(std::ranges::all_of(kTypesList, [&kTypes](std::string_view type) {
+        return std::ranges::find(kTypes, type) != std::cend(kTypes);
     }));
 }
 
@@ -60,17 +60,17 @@ TEST(LedgerUtilsTests, StrToType)
     EXPECT_EQ(util::LedgerTypes::getLedgerEntryTypeFromStr("AccountRoot"), ripple::ltACCOUNT_ROOT);
     EXPECT_EQ(util::LedgerTypes::getLedgerEntryTypeFromStr("ACCOUNTRoot"), ripple::ltACCOUNT_ROOT);
 
-    constexpr auto kTYPES = util::LedgerTypes::getLedgerEntryTypeStrList();
-    std::ranges::for_each(kTYPES, [](auto const& typeStr) {
+    constexpr auto kTypes = util::LedgerTypes::getLedgerEntryTypeStrList();
+    std::ranges::for_each(kTypes, [](auto const& typeStr) {
         EXPECT_NE(util::LedgerTypes::getLedgerEntryTypeFromStr(typeStr), ripple::ltANY);
     });
 }
 
 TEST(LedgerUtilsTests, DeletionBlockerTypes)
 {
-    constexpr auto kTESTED_TYPES = util::LedgerTypes::getDeletionBlockerLedgerTypes();
+    constexpr auto kTestedTypes = util::LedgerTypes::getDeletionBlockerLedgerTypes();
 
-    static constexpr ripple::LedgerEntryType kDELETION_BLOCKERS[] = {
+    static constexpr ripple::LedgerEntryType kDeletionBlockers[] = {
         ripple::ltCHECK,
         ripple::ltESCROW,
         ripple::ltNFTOKEN_PAGE,
@@ -84,10 +84,10 @@ TEST(LedgerUtilsTests, DeletionBlockerTypes)
         ripple::ltPERMISSIONED_DOMAIN
     };
 
-    static_assert(std::size(kDELETION_BLOCKERS) == kTESTED_TYPES.size());
-    static_assert(std::ranges::any_of(kTESTED_TYPES, [](auto const& type) {
-        return std::find(std::cbegin(kDELETION_BLOCKERS), std::cend(kDELETION_BLOCKERS), type) !=
-            std::cend(kDELETION_BLOCKERS);
+    static_assert(std::size(kDeletionBlockers) == kTestedTypes.size());
+    static_assert(std::ranges::any_of(kTestedTypes, [](auto const& type) {
+        return std::find(std::cbegin(kDeletionBlockers), std::cend(kDeletionBlockers), type) !=
+            std::cend(kDeletionBlockers);
     }));
 }
 
@@ -96,7 +96,7 @@ struct LedgerEntryTypeParam {
     ripple::LedgerEntryType expected;
 };
 
-static LedgerEntryTypeParam const kCHAIN_TEST_CASES[] = {
+static LedgerEntryTypeParam const kChainTestCases[] = {
     // Using RPC name with exact match
     {.input = "amendments", .expected = ripple::ltAMENDMENTS},
     {.input = "directory", .expected = ripple::ltDIR_NODE},
@@ -112,7 +112,7 @@ static LedgerEntryTypeParam const kCHAIN_TEST_CASES[] = {
     {.input = "NegativeUNL", .expected = ripple::ltNEGATIVE_UNL}
 };
 
-static LedgerEntryTypeParam const kACCOUNT_OWNED_TEST_CASES[] = {
+static LedgerEntryTypeParam const kAccountOwnedTestCases[] = {
     // Using RPC name with exact match
     {.input = "account", .expected = ripple::ltACCOUNT_ROOT},
     {.input = "check", .expected = ripple::ltCHECK},
@@ -166,14 +166,14 @@ static LedgerEntryTypeParam const kACCOUNT_OWNED_TEST_CASES[] = {
     {.input = "Delegate", .expected = ripple::ltDELEGATE}
 };
 
-static LedgerEntryTypeParam const kCASE_INSENSITIVE_TEST_CASES[] = {
+static LedgerEntryTypeParam const kCaseInsensitiveTestCases[] = {
     // With canonical name in mixedcase
     {.input = "mPtOKenIssuance", .expected = ripple::ltMPTOKEN_ISSUANCE},
     // With canonical name in lowercase
     {.input = "mptokenissuance", .expected = ripple::ltMPTOKEN_ISSUANCE},
 };
 
-static LedgerEntryTypeParam const kINVALID_TEST_CASES[] = {
+static LedgerEntryTypeParam const kInvalidTestCases[] = {
     {.input = "", .expected = ripple::ltANY},
     {.input = "1234", .expected = ripple::ltANY},
     {.input = "unknown", .expected = ripple::ltANY},
@@ -195,16 +195,12 @@ INSTANTIATE_TEST_SUITE_P(
     LedgerEntryTypeFromStrTest,
     ::testing::ValuesIn([]() {
         std::vector<LedgerEntryTypeParam> v;
-        v.insert(v.end(), std::begin(kCHAIN_TEST_CASES), std::end(kCHAIN_TEST_CASES));
+        v.insert(v.end(), std::begin(kChainTestCases), std::end(kChainTestCases));
+        v.insert(v.end(), std::begin(kAccountOwnedTestCases), std::end(kAccountOwnedTestCases));
         v.insert(
-            v.end(), std::begin(kACCOUNT_OWNED_TEST_CASES), std::end(kACCOUNT_OWNED_TEST_CASES)
+            v.end(), std::begin(kCaseInsensitiveTestCases), std::end(kCaseInsensitiveTestCases)
         );
-        v.insert(
-            v.end(),
-            std::begin(kCASE_INSENSITIVE_TEST_CASES),
-            std::end(kCASE_INSENSITIVE_TEST_CASES)
-        );
-        v.insert(v.end(), std::begin(kINVALID_TEST_CASES), std::end(kINVALID_TEST_CASES));
+        v.insert(v.end(), std::begin(kInvalidTestCases), std::end(kInvalidTestCases));
         return v;
     }())
 );
@@ -223,15 +219,11 @@ INSTANTIATE_TEST_SUITE_P(
     AccountOwnedLedgerTypeFromStrTest,
     ::testing::ValuesIn([]() {
         std::vector<LedgerEntryTypeParam> v;
+        v.insert(v.end(), std::begin(kAccountOwnedTestCases), std::end(kAccountOwnedTestCases));
         v.insert(
-            v.end(), std::begin(kACCOUNT_OWNED_TEST_CASES), std::end(kACCOUNT_OWNED_TEST_CASES)
+            v.end(), std::begin(kCaseInsensitiveTestCases), std::end(kCaseInsensitiveTestCases)
         );
-        v.insert(
-            v.end(),
-            std::begin(kCASE_INSENSITIVE_TEST_CASES),
-            std::end(kCASE_INSENSITIVE_TEST_CASES)
-        );
-        v.insert(v.end(), std::begin(kINVALID_TEST_CASES), std::end(kINVALID_TEST_CASES));
+        v.insert(v.end(), std::begin(kInvalidTestCases), std::end(kInvalidTestCases));
         v.push_back({"amendments", ripple::ltANY});  // chain type should return ltANY
         return v;
     }())

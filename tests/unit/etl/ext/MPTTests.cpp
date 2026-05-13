@@ -21,12 +21,12 @@ using namespace testing;
 
 namespace {
 
-constinit auto const kSEQ = 123u;
-constinit auto const kLEDGER_HASH =
+constinit auto const kSeq = 123u;
+constinit auto const kLedgerHash =
     "4BC50C9B0D8515D3EAAE1E74B29A95804346C491EE1A95BF25E4AAB854A6A652";
-constinit auto const kHOLDER_ACCOUNT = "rK1EX542EgA9m948JrJRaEzwLVEhqWvnr9";
+constinit auto const kHolderAccount = "rK1EX542EgA9m948JrJRaEzwLVEhqWvnr9";
 
-constinit auto const kTXN_HEX =
+constinit auto const kTxnHex =
     "120039220000000024002DBD1A201B002DBDA36840000000000000017321EDECF25C029811CAD07AFD616EB75E3803"
     "E44D0D59A6826AC25FE3"
     "4A43626D2D157440244262E760314164843026CE2F100D0BFEB0DD6F75026FEB3F75FCAA943F5C874FF0411BC82A85"
@@ -35,7 +35,7 @@ constinit auto const kTXN_HEX =
     "DE4F9978B8FCD8A50636"
     "30B5737DA605";
 
-constinit auto const kTXN_META =
+constinit auto const kTxnMeta =
     "201C00000002F8E311007F562668E165750018E0AE5808C131BAF4C26441D2BCF76F8628774DFDF098B7250BE88114"
     "CEF330DB51154D8DEE24"
     "9CC3D6DFD04B91F648EE0115002DBD1817E0AF9FDE4F9978B8FCD8A5063630B5737DA605E1E1E511006425002DBD2F"
@@ -50,9 +50,9 @@ constinit auto const kTXN_META =
     "00000024002DBD1B2D00"
     "000002624000000005F5E0FE8114CEF330DB51154D8DEE249CC3D6DFD04B91F648EEE1E1F1031000";
 
-constinit auto const kHASH = "6005B465CBBF7FA8E41AC0C0CD38491026D9411FCB7BA46E2AEBB3AF7654261B";
-constinit auto const kHASH2 = "6005B465CBBF7FA8E41AC0C0CD38491026D9411FCB7BA46E2AEBB3AF7654261C";
-constinit auto const kHASH3 = "6005B465CBBF7FA8E41AC0C0CD38491026D9411FCB7BA46E2AEBB3AF7654261D";
+constinit auto const kHash = "6005B465CBBF7FA8E41AC0C0CD38491026D9411FCB7BA46E2AEBB3AF7654261B";
+constinit auto const kHash2 = "6005B465CBBF7FA8E41AC0C0CD38491026D9411FCB7BA46E2AEBB3AF7654261C";
+constinit auto const kHash3 = "6005B465CBBF7FA8E41AC0C0CD38491026D9411FCB7BA46E2AEBB3AF7654261D";
 
 auto
 createTestData()
@@ -61,14 +61,14 @@ createTestData()
         util::createTransaction(
             ripple::TxType::ttMPTOKEN_ISSUANCE_CREATE
         ),  // not AUTHORIZE so will not be written
-        util::createTransaction(ripple::TxType::ttMPTOKEN_AUTHORIZE, kHASH, kTXN_META, kTXN_HEX),
+        util::createTransaction(ripple::TxType::ttMPTOKEN_AUTHORIZE, kHash, kTxnMeta, kTxnHex),
         util::createTransaction(ripple::TxType::ttAMM_CREATE),  // not MPT - will be filtered
         util::createTransaction(
             ripple::TxType::ttMPTOKEN_ISSUANCE_CREATE
         ),  // not unique - will be filtered
     };
 
-    auto const header = createLedgerHeader(kLEDGER_HASH, kSEQ);
+    auto const header = createLedgerHeader(kLedgerHash, kSeq);
     return etl::model::LedgerData{
         .transactions = std::move(transactions),
         .objects = {},
@@ -76,7 +76,7 @@ createTestData()
         .edgeKeys = {},
         .header = header,
         .rawHeader = {},
-        .seq = kSEQ
+        .seq = kSeq
     };
 }
 
@@ -84,12 +84,12 @@ auto
 createMultipleHoldersTestData()
 {
     auto transactions = std::vector{
-        util::createTransaction(ripple::TxType::ttMPTOKEN_AUTHORIZE, kHASH, kTXN_META, kTXN_HEX),
-        util::createTransaction(ripple::TxType::ttMPTOKEN_AUTHORIZE, kHASH2, kTXN_META, kTXN_HEX),
-        util::createTransaction(ripple::TxType::ttMPTOKEN_AUTHORIZE, kHASH3, kTXN_META, kTXN_HEX)
+        util::createTransaction(ripple::TxType::ttMPTOKEN_AUTHORIZE, kHash, kTxnMeta, kTxnHex),
+        util::createTransaction(ripple::TxType::ttMPTOKEN_AUTHORIZE, kHash2, kTxnMeta, kTxnHex),
+        util::createTransaction(ripple::TxType::ttMPTOKEN_AUTHORIZE, kHash3, kTxnMeta, kTxnHex)
     };
 
-    auto const header = createLedgerHeader(kLEDGER_HASH, kSEQ);
+    auto const header = createLedgerHeader(kLedgerHash, kSeq);
     return etl::model::LedgerData{
         .transactions = std::move(transactions),
         .objects = {},
@@ -97,7 +97,7 @@ createMultipleHoldersTestData()
         .edgeKeys = {},
         .header = header,
         .rawHeader = {},
-        .seq = kSEQ
+        .seq = kSeq
     };
 }
 
@@ -138,7 +138,7 @@ TEST_F(MPTExtTests, OnInitialObjectWritesMPT)
         EXPECT_EQ(holders.size(), 1);
     });
 
-    ext_.onInitialObject(kSEQ, data);
+    ext_.onInitialObject(kSeq, data);
 }
 
 TEST_F(MPTExtTests, OnInitialDataWithMultipleHolders)
@@ -149,7 +149,7 @@ TEST_F(MPTExtTests, OnInitialDataWithMultipleHolders)
         EXPECT_EQ(holders.size(), 3);  // Expect all three AUTHORIZE transactions
 
         auto const expectedAccount =
-            rpc::accountFromStringStrict(kHOLDER_ACCOUNT);  // Expect all three to be the same
+            rpc::accountFromStringStrict(kHolderAccount);  // Expect all three to be the same
         EXPECT_TRUE(std::ranges::all_of(holders, [&expectedAccount](auto const& data) {
             return data.holder == expectedAccount;
         }));

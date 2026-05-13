@@ -19,7 +19,7 @@ namespace data::impl {
 
 using Hash = ripple::uint256;
 using Separator = std::array<char, 16>;
-static constexpr Separator kSEPARATOR = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static constexpr Separator kSeparator = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 namespace {
 
@@ -78,7 +78,7 @@ LedgerCacheFile::write(DataView dataView)
         .deletedSize = dataView.deleted.size()
     };
     file.write(header);
-    file.write(kSEPARATOR);
+    file.write(kSeparator);
 
     for (auto const& [k, v] : dataView.map) {
         file.write(k.data(), decltype(k)::bytes);
@@ -86,7 +86,7 @@ LedgerCacheFile::write(DataView dataView)
         file.write(v.blob.size());
         file.writeRaw(reinterpret_cast<char const*>(v.blob.data()), v.blob.size());
     }
-    file.write(kSEPARATOR);
+    file.write(kSeparator);
 
     for (auto const& [k, v] : dataView.deleted) {
         file.write(k.data(), decltype(k)::bytes);
@@ -94,7 +94,7 @@ LedgerCacheFile::write(DataView dataView)
         file.write(v.blob.size());
         file.writeRaw(reinterpret_cast<char const*>(v.blob.data()), v.blob.size());
     }
-    file.write(kSEPARATOR);
+    file.write(kSeparator);
     auto const hash = file.hash();
     file.write(hash.data(), decltype(hash)::bytes);
 
@@ -129,9 +129,9 @@ LedgerCacheFile::read(uint32_t minLatestSequence)
         if (not file.read(header)) {
             return std::unexpected{"Error reading cache header"};
         }
-        if (header.version != kVERSION) {
+        if (header.version != kVersion) {
             return std::unexpected{fmt::format(
-                "Cache has wrong version: expected {} found {}", kVERSION, header.version
+                "Cache has wrong version: expected {} found {}", kVersion, header.version
             )};
         }
         if (header.latestSeq < minLatestSequence) {

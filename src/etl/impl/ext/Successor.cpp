@@ -86,7 +86,7 @@ SuccessorExt::writeIncludedSuccessor(uint32_t seq, model::BookSuccessor const& s
 {
     auto firstBook = succ.firstBook;
     if (firstBook.empty())
-        firstBook = uint256ToString(data::kLAST_KEY);
+        firstBook = uint256ToString(data::kLastKey);
 
     backend_->writeSuccessor(auto{succ.bookBase}, seq, std::move(firstBook));
 }
@@ -116,10 +116,10 @@ SuccessorExt::updateSuccessorFromCache(uint32_t seq, model::Object const& obj) c
 {
     auto const lb = cache_.get()
                         .getPredecessor(obj.key, seq)
-                        .value_or(data::LedgerObject{.key = data::kFIRST_KEY, .blob = {}});
+                        .value_or(data::LedgerObject{.key = data::kFirstKey, .blob = {}});
     auto const ub = cache_.get()
                         .getSuccessor(obj.key, seq)
-                        .value_or(data::LedgerObject{.key = data::kLAST_KEY, .blob = {}});
+                        .value_or(data::LedgerObject{.key = data::kLastKey, .blob = {}});
 
     auto checkBookBase = false;
     auto const isDeleted = obj.data.empty();
@@ -169,16 +169,16 @@ SuccessorExt::updateBookSuccessor(
             uint256ToString(bookBase), seq, uint256ToString(maybeSuccessor->key)
         );
     } else {
-        backend_->writeSuccessor(uint256ToString(bookBase), seq, uint256ToString(data::kLAST_KEY));
+        backend_->writeSuccessor(uint256ToString(bookBase), seq, uint256ToString(data::kLastKey));
     }
 }
 
 void
 SuccessorExt::writeSuccessors(uint32_t seq) const
 {
-    ripple::uint256 prev = data::kFIRST_KEY;
+    ripple::uint256 prev = data::kFirstKey;
     while (auto cur = cache_.get().getSuccessor(prev, seq)) {
-        if (prev == data::kFIRST_KEY)
+        if (prev == data::kFirstKey)
             backend_->writeSuccessor(uint256ToString(prev), seq, uint256ToString(cur->key));
 
         if (isBookDir(cur->key, cur->blob)) {
@@ -199,7 +199,7 @@ SuccessorExt::writeSuccessors(uint32_t seq) const
         prev = cur->key;
     }
 
-    backend_->writeSuccessor(uint256ToString(prev), seq, uint256ToString(data::kLAST_KEY));
+    backend_->writeSuccessor(uint256ToString(prev), seq, uint256ToString(data::kLastKey));
 }
 
 void

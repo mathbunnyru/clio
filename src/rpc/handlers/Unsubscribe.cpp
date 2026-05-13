@@ -35,7 +35,7 @@ UnsubscribeHandler::UnsubscribeHandler(
 RpcSpecConstRef
 UnsubscribeHandler::spec([[maybe_unused]] uint32_t apiVersion)
 {
-    static auto const kBOOKS_VALIDATOR = validation::CustomValidator{
+    static auto const kBooksValidator = validation::CustomValidator{
         [](boost::json::value const& value, std::string_view key) -> MaybeError {
             if (!value.is_array()) {
                 return Error{
@@ -62,17 +62,17 @@ UnsubscribeHandler::spec([[maybe_unused]] uint32_t apiVersion)
         }
     };
 
-    static auto const kRPC_SPEC = RpcSpec{
+    static auto const kRpcSpec = RpcSpec{
         {JS(streams), validation::CustomValidators::subscribeStreamValidator},
         {JS(accounts), validation::CustomValidators::subscribeAccountsValidator},
         {JS(accounts_proposed), validation::CustomValidators::subscribeAccountsValidator},
-        {JS(books), kBOOKS_VALIDATOR},
+        {JS(books), kBooksValidator},
         {JS(url), check::Deprecated{}},
         {JS(rt_accounts), check::Deprecated{}},
         {"rt_transactions", check::Deprecated{}},
     };
 
-    return kRPC_SPEC;
+    return kRpcSpec;
 }
 
 UnsubscribeHandler::Result

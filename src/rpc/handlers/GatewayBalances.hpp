@@ -128,20 +128,20 @@ public:
             };
         };
 
-        static auto const kSPEC_COMMON = RpcSpec{
+        static auto const kSpecCommon = RpcSpec{
             {JS(account), validation::Required{}, validation::CustomValidators::accountValidator},
             {JS(ledger_hash), validation::CustomValidators::uint256HexStringValidator},
             {JS(ledger_index), validation::CustomValidators::ledgerIndexValidator}
         };
 
-        static auto const kSPEC_V1 = RpcSpec{
-            kSPEC_COMMON, {{JS(hotwallet), getHotWalletValidator(ripple::rpcINVALID_HOTWALLET)}}
+        static auto const kSpecV1 = RpcSpec{
+            kSpecCommon, {{JS(hotwallet), getHotWalletValidator(ripple::rpcINVALID_HOTWALLET)}}
         };
-        static auto const kSPEC_V2 = RpcSpec{
-            kSPEC_COMMON, {{JS(hotwallet), getHotWalletValidator(ripple::rpcINVALID_PARAMS)}}
+        static auto const kSpecV2 = RpcSpec{
+            kSpecCommon, {{JS(hotwallet), getHotWalletValidator(ripple::rpcINVALID_PARAMS)}}
         };
 
-        return apiVersion == 1 ? kSPEC_V1 : kSPEC_V2;
+        return apiVersion == 1 ? kSpecV1 : kSpecV2;
     }
 
     /**

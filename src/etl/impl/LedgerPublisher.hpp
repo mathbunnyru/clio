@@ -167,8 +167,8 @@ public:
 
             // if the ledger closed over MAX_LEDGER_AGE_SECONDS ago, assume we are still catching up
             // and don't publish
-            static constexpr std::uint32_t kMAX_LEDGER_AGE_SECONDS = 600;
-            if (age < kMAX_LEDGER_AGE_SECONDS) {
+            static constexpr std::uint32_t kMaxLedgerAgeSeconds = 600;
+            if (age < kMaxLedgerAgeSeconds) {
                 std::optional<ripple::Fees> fees =
                     data::synchronousAndRetryOnTimeout([&](auto yield) {
                         return backend_->fetchFees(lgrInfo.seq, yield);
@@ -246,9 +246,9 @@ public:
                        std::chrono::system_clock::now().time_since_epoch()
         )
                        .count();
-        if (now < (kRIPPLE_EPOCH_START + closeTime))
+        if (now < (kRippleEpochStart + closeTime))
             return 0;
-        return now - (kRIPPLE_EPOCH_START + closeTime);
+        return now - (kRippleEpochStart + closeTime);
     }
 
     /**

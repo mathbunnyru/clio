@@ -24,8 +24,8 @@ struct TableTransactionsDesc {
     // hash, date, ledger_seq, metadata, transaction
     using Row =
         std::tuple<ripple::uint256, std::uint64_t, std::uint32_t, ripple::Blob, ripple::Blob>;
-    static constexpr char const* kPARTITION_KEY = "hash";
-    static constexpr char const* kTABLE_NAME = "transactions";
+    static constexpr char const* kPartitionKey = "hash";
+    static constexpr char const* kTableName = "transactions";
 };
 
 /**

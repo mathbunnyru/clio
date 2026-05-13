@@ -101,7 +101,7 @@ LedgerDataHandler::process(Input const& input, Context const& ctx) const
         // framework can not handler the check right now, adjust the value here
         auto const limit = std::min(
             input.limit,
-            input.binary ? LedgerDataHandler::kLIMIT_BINARY : LedgerDataHandler::kLIMIT_JSON
+            input.binary ? LedgerDataHandler::kLimitBinary : LedgerDataHandler::kLimitJson
         );
         auto page = sharedPtrBackend_->fetchLedgerPage(
             input.marker, lgrInfo.seq, limit, input.outOfOrder, ctx.yield
@@ -187,7 +187,7 @@ tag_invoke(boost::json::value_to_tag<LedgerDataHandler::Input>, boost::json::val
     if (jsonObject.contains(JS(binary))) {
         input.binary = jsonObject.at(JS(binary)).as_bool();
         input.limit =
-            input.binary ? LedgerDataHandler::kLIMIT_BINARY : LedgerDataHandler::kLIMIT_JSON;
+            input.binary ? LedgerDataHandler::kLimitBinary : LedgerDataHandler::kLimitJson;
     }
 
     if (jsonObject.contains(JS(limit)))

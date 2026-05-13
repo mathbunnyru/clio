@@ -17,7 +17,7 @@ namespace util {
 [[nodiscard]] std::unordered_set<std::string> const&
 getTxTypesInLowercase()
 {
-    static std::unordered_set<std::string> const kTYPES_KEYS_IN_LOWERCASE = []() {
+    static std::unordered_set<std::string> const kTypesKeysInLowercase = []() {
         std::unordered_set<std::string> keys;
         std::transform(
             ripple::TxFormats::getInstance().begin(),
@@ -28,6 +28,6 @@ getTxTypesInLowercase()
         return keys;
     }();
 
-    return kTYPES_KEYS_IN_LOWERCASE;
+    return kTypesKeysInLowercase;
 }
 }  // namespace util

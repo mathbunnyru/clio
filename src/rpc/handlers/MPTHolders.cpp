@@ -45,7 +45,7 @@ MPTHoldersHandler::process(MPTHoldersHandler::Input const& input, Context const&
         return Error{expectedLgrInfo.error()};
 
     auto const& lgrInfo = *expectedLgrInfo;
-    auto const limit = input.limit.value_or(MPTHoldersHandler::kLIMIT_DEFAULT);
+    auto const limit = input.limit.value_or(MPTHoldersHandler::kLimitDefault);
     auto const mptID = ripple::uint192{input.mptID.c_str()};
 
     auto const issuanceLedgerObject = sharedPtrBackend_->fetchLedgerObject(

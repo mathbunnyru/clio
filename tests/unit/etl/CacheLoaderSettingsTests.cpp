@@ -123,15 +123,15 @@ TEST_F(CacheLoaderSettingsTest, NoLoadStyleCorrectlyPropagatedThroughConfig)
 
 TEST_F(CacheLoaderSettingsTest, CacheFilePathCorrectlyPropagatedThroughConfig)
 {
-    static constexpr auto kCACHE_FILE_PATH = "/path/to/cache.dat";
+    static constexpr auto kCacheFilePath = "/path/to/cache.dat";
     auto const jsonStr =
-        fmt::format(R"JSON({{"cache": {{"file": {{"path": "{}"}}}}}})JSON", kCACHE_FILE_PATH);
+        fmt::format(R"JSON({{"cache": {{"file": {{"path": "{}"}}}}}})JSON", kCacheFilePath);
     auto const cfg = getParseCacheConfig(json::parse(jsonStr));
     auto const settings = makeCacheLoaderSettings(cfg);
 
     ASSERT_TRUE(settings.cacheFileSettings.has_value());
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
-    EXPECT_EQ(settings.cacheFileSettings->path, kCACHE_FILE_PATH);
+    EXPECT_EQ(settings.cacheFileSettings->path, kCacheFilePath);
 }
 
 TEST_F(CacheLoaderSettingsTest, CacheFilePathNotSetWhenAbsentFromConfig)

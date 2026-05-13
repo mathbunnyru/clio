@@ -69,7 +69,7 @@ toSpdlogLevel(Severity sev)
 std::string_view
 toString(Severity sev)
 {
-    static constexpr std::array<std::string_view, 6> kLABELS = {
+    static constexpr std::array<std::string_view, 6> kLabels = {
         "TRC",
         "DBG",
         "NFO",
@@ -78,7 +78,7 @@ toString(Severity sev)
         "FTL",
     };
 
-    return kLABELS.at(static_cast<int>(sev));
+    return kLabels.at(static_cast<int>(sev));
 }
 
 }  // namespace
@@ -215,7 +215,7 @@ static std::expected<std::unordered_map<std::string_view, Severity>, std::string
 getMinSeverity(config::ClioConfigDefinition const& config, Severity defaultSeverity)
 {
     std::unordered_map<std::string_view, Severity> minSeverity;
-    for (auto const& channel : Logger::kCHANNELS)
+    for (auto const& channel : Logger::kChannels)
         minSeverity[channel] = defaultSeverity;
 
     auto const overrides = config.getArray("log.channels");
@@ -225,7 +225,7 @@ getMinSeverity(config::ClioConfigDefinition const& config, Severity defaultSever
          ++it) {
         auto const& channelConfig = *it;
         auto const name = channelConfig.get<std::string>("channel");
-        if (not std::ranges::contains(Logger::kCHANNELS, name)) {
+        if (not std::ranges::contains(Logger::kChannels, name)) {
             return std::unexpected{
                 fmt::format("Can't override settings for log channel {}: invalid channel", name)
             };
@@ -258,9 +258,9 @@ LogServiceState::init(
     });
 
     if (isAsync) {
-        static constexpr size_t kQUEUE_SIZE = 8192;
-        static constexpr size_t kTHREAD_COUNT = 1;
-        spdlog::init_thread_pool(kQUEUE_SIZE, kTHREAD_COUNT);
+        static constexpr size_t kQueueSize = 8192;
+        static constexpr size_t kThreadCount = 1;
+        spdlog::init_thread_pool(kQueueSize, kThreadCount);
     }
 }
 
@@ -382,7 +382,7 @@ LogService::init(config::ClioConfigDefinition const& config)
     auto const minSeverity = std::move(maybeMinSeverity).value();
 
     // Create loggers for each channel
-    for (auto const& channel : Logger::kCHANNELS) {
+    for (auto const& channel : Logger::kChannels) {
         auto const it = minSeverity.find(channel);
         auto const severity = (it != minSeverity.end()) ? it->second : defaultSeverity_;
         registerLogger(channel, severity);
@@ -454,14 +454,14 @@ Logger::Logger(std::string_view const channel) : logger_(LogServiceState::regist
 Logger::~Logger()
 {
     // One reference is held by logger_ and the other by spdlog registry
-    static constexpr size_t kLAST_LOGGER_REF_COUNT = 2;
+    static constexpr size_t kLastLoggerRefCount = 2;
 
     if (logger_ == nullptr) {
         return;
     }
 
-    bool const isDynamic = !std::ranges::contains(kCHANNELS, logger_->name());
-    if (isDynamic && logger_.use_count() == kLAST_LOGGER_REF_COUNT) {
+    bool const isDynamic = !std::ranges::contains(kChannels, logger_->name());
+    if (isDynamic && logger_.use_count() == kLastLoggerRefCount) {
         spdlog::drop(logger_->name());
     }
 }

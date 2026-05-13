@@ -130,7 +130,7 @@ class Logger {
     };
 
 public:
-    static constexpr std::array<std::string_view, 8> kCHANNELS = {
+    static constexpr std::array<std::string_view, 8> kChannels = {
         "General",
         "WebServer",
         "Backend",

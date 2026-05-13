@@ -185,7 +185,7 @@ RequestBuilder::doRequestImpl(
 
     request_.method(method);
 
-    if constexpr (StreamDataType::kSSL_ENABLED) {
+    if constexpr (StreamDataType::kSslEnabled) {
         beast::get_lowest_layer(stream).expires_after(timeout_);
         stream.async_handshake(asio::ssl::stream_base::client, yield[errorCode]);
         if (errorCode)

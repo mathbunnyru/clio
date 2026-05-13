@@ -170,7 +170,7 @@ INSTANTIATE_TEST_SUITE_P(
             "https://xrpl.org/docs/references/http-websocket-apis/ and update your request."
         }
     ),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );
 
 TEST_P(WarningCodeTest, WarningToJSON)
@@ -264,5 +264,5 @@ INSTANTIATE_TEST_SUITE_P(
                 "Code: 7003, Error: invalidResponse, Message: Rippled returned an invalid response."
         }
     ),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );

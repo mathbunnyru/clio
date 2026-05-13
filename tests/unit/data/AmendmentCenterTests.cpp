@@ -20,7 +20,7 @@
 
 using namespace data;
 
-constexpr auto kSEQ = 30u;
+constexpr auto kSeq = 30u;
 
 struct AmendmentCenterTest : util::prometheus::WithPrometheus,
                              MockBackendTest,
@@ -70,25 +70,25 @@ TEST_F(AmendmentCenterTest, IsEnabled)
     EXPECT_FALSE(amendmentCenter.isSupported("unknown"));
 
     auto const amendments = createAmendmentsObject({Amendments::fixUniversalNumber});
-    EXPECT_CALL(*backend_, doFetchLedgerObject(ripple::keylet::amendments().key, kSEQ, testing::_))
+    EXPECT_CALL(*backend_, doFetchLedgerObject(ripple::keylet::amendments().key, kSeq, testing::_))
         .WillRepeatedly(testing::Return(amendments.getSerializer().peekData()));
 
-    EXPECT_TRUE(amendmentCenter.isEnabled("fixUniversalNumber", kSEQ));
-    EXPECT_FALSE(amendmentCenter.isEnabled("unknown", kSEQ));
-    EXPECT_FALSE(amendmentCenter.isEnabled("ImmediateOfferKilled", kSEQ));
+    EXPECT_TRUE(amendmentCenter.isEnabled("fixUniversalNumber", kSeq));
+    EXPECT_FALSE(amendmentCenter.isEnabled("unknown", kSeq));
+    EXPECT_FALSE(amendmentCenter.isEnabled("ImmediateOfferKilled", kSeq));
 }
 
 TEST_F(AmendmentCenterTest, IsMultipleEnabled)
 {
     auto const amendments = createAmendmentsObject({Amendments::fixUniversalNumber});
-    EXPECT_CALL(*backend_, doFetchLedgerObject(ripple::keylet::amendments().key, kSEQ, testing::_))
+    EXPECT_CALL(*backend_, doFetchLedgerObject(ripple::keylet::amendments().key, kSeq, testing::_))
         .WillOnce(testing::Return(amendments.getSerializer().peekData()));
 
     runSpawn([this](auto yield) {
         std::vector<data::AmendmentKey> const keys{
             "fixUniversalNumber", "unknown", "ImmediateOfferKilled"
         };
-        auto const result = amendmentCenter.isEnabled(yield, keys, kSEQ);
+        auto const result = amendmentCenter.isEnabled(yield, keys, kSeq);
 
         EXPECT_EQ(result.size(), keys.size());
         EXPECT_TRUE(result.at(0));
@@ -99,34 +99,34 @@ TEST_F(AmendmentCenterTest, IsMultipleEnabled)
 
 TEST_F(AmendmentCenterTest, IsEnabledReturnsFalseWhenAmendmentsLedgerObjectUnavailable)
 {
-    EXPECT_CALL(*backend_, doFetchLedgerObject(ripple::keylet::amendments().key, kSEQ, testing::_))
+    EXPECT_CALL(*backend_, doFetchLedgerObject(ripple::keylet::amendments().key, kSeq, testing::_))
         .WillOnce(testing::Return(std::nullopt));
 
     runSpawn([this](auto yield) {
-        EXPECT_NO_THROW(EXPECT_FALSE(amendmentCenter.isEnabled(yield, "irrelevant", kSEQ)));
+        EXPECT_NO_THROW(EXPECT_FALSE(amendmentCenter.isEnabled(yield, "irrelevant", kSeq)));
     });
 }
 
 TEST_F(AmendmentCenterTest, IsEnabledReturnsFalseWhenNoAmendments)
 {
     auto const amendments = createBrokenAmendmentsObject();
-    EXPECT_CALL(*backend_, doFetchLedgerObject(ripple::keylet::amendments().key, kSEQ, testing::_))
+    EXPECT_CALL(*backend_, doFetchLedgerObject(ripple::keylet::amendments().key, kSeq, testing::_))
         .WillOnce(testing::Return(amendments.getSerializer().peekData()));
 
     runSpawn([this](auto yield) {
-        EXPECT_FALSE(amendmentCenter.isEnabled(yield, "irrelevant", kSEQ));
+        EXPECT_FALSE(amendmentCenter.isEnabled(yield, "irrelevant", kSeq));
     });
 }
 
 TEST_F(AmendmentCenterTest, IsEnabledReturnsVectorOfFalseWhenAmendmentsLedgerObjectUnavailable)
 {
-    EXPECT_CALL(*backend_, doFetchLedgerObject(ripple::keylet::amendments().key, kSEQ, testing::_))
+    EXPECT_CALL(*backend_, doFetchLedgerObject(ripple::keylet::amendments().key, kSeq, testing::_))
         .WillOnce(testing::Return(std::nullopt));
 
     runSpawn([this](auto yield) {
         std::vector<data::AmendmentKey> const keys{"fixUniversalNumber", "ImmediateOfferKilled"};
         std::vector<bool> vec;
-        EXPECT_NO_THROW(vec = amendmentCenter.isEnabled(yield, keys, kSEQ));
+        EXPECT_NO_THROW(vec = amendmentCenter.isEnabled(yield, keys, kSeq));
 
         EXPECT_EQ(vec.size(), keys.size());
         EXPECT_TRUE(std::ranges::all_of(vec, std::logical_not<>{}));
@@ -136,12 +136,12 @@ TEST_F(AmendmentCenterTest, IsEnabledReturnsVectorOfFalseWhenAmendmentsLedgerObj
 TEST_F(AmendmentCenterTest, IsEnabledReturnsVectorOfFalseWhenNoAmendments)
 {
     auto const amendments = createBrokenAmendmentsObject();
-    EXPECT_CALL(*backend_, doFetchLedgerObject(ripple::keylet::amendments().key, kSEQ, testing::_))
+    EXPECT_CALL(*backend_, doFetchLedgerObject(ripple::keylet::amendments().key, kSeq, testing::_))
         .WillOnce(testing::Return(amendments.getSerializer().peekData()));
 
     runSpawn([this](auto yield) {
         std::vector<data::AmendmentKey> const keys{"fixUniversalNumber", "ImmediateOfferKilled"};
-        auto const vec = amendmentCenter.isEnabled(yield, keys, kSEQ);
+        auto const vec = amendmentCenter.isEnabled(yield, keys, kSeq);
 
         EXPECT_EQ(vec.size(), keys.size());
         EXPECT_TRUE(std::ranges::all_of(vec, [](bool val) { return val == false; }));

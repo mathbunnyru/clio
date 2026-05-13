@@ -26,7 +26,7 @@
 namespace data::cassandra::impl {
 
 class Statement : public ManagedObject<CassStatement> {
-    static constexpr auto kDELETER = [](CassStatement* ptr) { cass_statement_free(ptr); };
+    static constexpr auto kDeleter = [](CassStatement* ptr) { cass_statement_free(ptr); };
 
 public:
     /**
@@ -37,7 +37,7 @@ public:
      */
     template <typename... Args>
     explicit Statement(std::string_view query, Args&&... args)
-        : ManagedObject{cass_statement_new_n(query.data(), query.size(), sizeof...(args)), kDELETER}
+        : ManagedObject{cass_statement_new_n(query.data(), query.size(), sizeof...(args)), kDeleter}
     {
         // TODO: figure out how to set consistency level in config
         // NOTE: Keyspace doesn't support QUORUM at write level
@@ -46,7 +46,7 @@ public:
         bind<Args...>(std::forward<Args>(args)...);
     }
 
-    /* implicit */ Statement(CassStatement* ptr) : ManagedObject{ptr, kDELETER}
+    /* implicit */ Statement(CassStatement* ptr) : ManagedObject{ptr, kDeleter}
     {
         // cass_statement_set_consistency(*this, CASS_CONSISTENCY_LOCAL_QUORUM);
         cass_statement_set_is_idempotent(*this, cass_true);
@@ -157,10 +157,10 @@ public:
  * This is used to produce Statement objects that can be executed.
  */
 class PreparedStatement : public ManagedObject<CassPrepared const> {
-    static constexpr auto kDELETER = [](CassPrepared const* ptr) { cass_prepared_free(ptr); };
+    static constexpr auto kDeleter = [](CassPrepared const* ptr) { cass_prepared_free(ptr); };
 
 public:
-    /* implicit */ PreparedStatement(CassPrepared const* ptr) : ManagedObject{ptr, kDELETER}
+    /* implicit */ PreparedStatement(CassPrepared const* ptr) : ManagedObject{ptr, kDeleter}
     {
     }
 

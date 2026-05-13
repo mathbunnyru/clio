@@ -16,9 +16,9 @@ using namespace web::ng;
 namespace http = boost::beast::http;
 
 struct RequestTest : public ::testing::Test {
-    static Request::HttpHeaders const kHEADERS;
+    static Request::HttpHeaders const kHeaders;
 };
-Request::HttpHeaders const RequestTest::kHEADERS = {};
+Request::HttpHeaders const RequestTest::kHeaders = {};
 
 struct RequestMethodTestBundle {
     std::string testName;
@@ -49,7 +49,7 @@ INSTANTIATE_TEST_SUITE_P(
         },
         RequestMethodTestBundle{
             .testName = "WebSocket",
-            .request = Request{"websocket message", RequestTest::kHEADERS},
+            .request = Request{"websocket message", RequestTest::kHeaders},
             .expectedMethod = Request::Method::Websocket,
         },
         RequestMethodTestBundle{
@@ -58,7 +58,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expectedMethod = Request::Method::Unsupported,
         }
     ),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );
 
 struct RequestIsHttpTestBundle {
@@ -85,11 +85,11 @@ INSTANTIATE_TEST_SUITE_P(
         },
         RequestIsHttpTestBundle{
             .testName = "WebSocketRequest",
-            .request = Request{"websocket message", RequestTest::kHEADERS},
+            .request = Request{"websocket message", RequestTest::kHeaders},
             .expectedIsHttp = false,
         }
     ),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );
 
 struct RequestAsHttpRequestTest : RequestTest {};
@@ -109,7 +109,7 @@ TEST_F(RequestAsHttpRequestTest, HttpRequest)
 
 TEST_F(RequestAsHttpRequestTest, WebSocketRequest)
 {
-    Request const request{"websocket message", RequestTest::kHEADERS};
+    Request const request{"websocket message", RequestTest::kHeaders};
     auto const maybeHttpRequest = request.asHttpRequest();
     EXPECT_FALSE(maybeHttpRequest.has_value());
 }
@@ -127,7 +127,7 @@ TEST_F(RequestMessageTest, HttpRequest)
 TEST_F(RequestMessageTest, WebSocketRequest)
 {
     std::string const message = "websocket message";
-    Request const request{message, RequestTest::kHEADERS};
+    Request const request{message, RequestTest::kHeaders};
     EXPECT_EQ(request.message(), message);
 }
 
@@ -156,11 +156,11 @@ INSTANTIATE_TEST_SUITE_P(
         },
         RequestTargetTestBundle{
             .testName = "WebSocketRequest",
-            .request = Request{"websocket message", RequestTest::kHEADERS},
+            .request = Request{"websocket message", RequestTest::kHeaders},
             .expectedTarget = std::nullopt,
         }
     ),
-    tests::util::kNAME_GENERATOR
+    tests::util::kNameGenerator
 );
 
 struct RequestHttpHeadersTest : RequestTest {

@@ -31,7 +31,7 @@ namespace etl::model {
 template <ripple::TxType... Types>
     requires(util::hasNoDuplicates(Types...))
 struct Spec {
-    static constexpr bool kSPEC_TAG = true;
+    static constexpr bool kSpecTag = true;
 
     /**
      * @brief Checks if the transaction type was requested.

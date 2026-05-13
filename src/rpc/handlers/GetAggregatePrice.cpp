@@ -178,11 +178,11 @@ GetAggregatePriceHandler::process(
     auto const median = [&, size = out.extireStats.size]() {
         auto const middle = size / 2;
         if ((size % 2) == 0) {
-            static ripple::STAmount const kTWO{ripple::noIssue(), 2, 0};
+            static ripple::STAmount const kTwo{ripple::noIssue(), 2, 0};
             auto it = itAdvance(timestampPricesBiMap.right.begin(), middle - 1);
             auto const& a1 = it->first;
             auto const& a2 = (++it)->first;
-            return divide(a1 + a2, kTWO, ripple::noIssue());
+            return divide(a1 + a2, kTwo, ripple::noIssue());
         }
         return itAdvance(timestampPricesBiMap.right.begin(), middle)->first;
     }();
@@ -198,7 +198,7 @@ GetAggregatePriceHandler::tracebackOracleObject(
     std::function<bool(ripple::STObject const&)> const& callback
 ) const
 {
-    static constexpr auto kHISTORY_MAX = 3;
+    static constexpr auto kHistoryMax = 3;
 
     std::optional<ripple::STObject> optOracleObject = oracleObject;
     std::optional<ripple::STObject> optCurrentObject = optOracleObject;
@@ -216,7 +216,7 @@ GetAggregatePriceHandler::tracebackOracleObject(
         if (callback(*optOracleObject) or isNew)
             return;
 
-        if (++history > kHISTORY_MAX)
+        if (++history > kHistoryMax)
             return;
 
         auto const prevTxIndex = optCurrentObject->getFieldH256(ripple::sfPreviousTxnID);

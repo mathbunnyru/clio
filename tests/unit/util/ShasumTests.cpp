@@ -10,9 +10,9 @@
 using namespace util;
 
 struct ShasumTest : testing::Test {
-    static constexpr auto kEMPTY_HASH =
+    static constexpr auto kEmptyHash =
         "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855";
-    static constexpr auto kHELLO_WORLD_HASH =
+    static constexpr auto kHelloWorldHash =
         "B94D27B9934D3E08A52E52D7DA7DABFAC484EFE37A5380EE9088F7ACE2EFCDE9";
 };
 
@@ -20,17 +20,17 @@ TEST_F(ShasumTest, sha256sum)
 {
     ripple::uint256 expected;
 
-    ASSERT_TRUE(expected.parseHex(kEMPTY_HASH));
+    ASSERT_TRUE(expected.parseHex(kEmptyHash));
     EXPECT_EQ(sha256sum(""), expected);
 
-    ASSERT_TRUE(expected.parseHex(kHELLO_WORLD_HASH));
+    ASSERT_TRUE(expected.parseHex(kHelloWorldHash));
     EXPECT_EQ(sha256sum("hello world"), expected);
 }
 
 TEST_F(ShasumTest, sha256sumString)
 {
-    EXPECT_EQ(sha256sumString(""), kEMPTY_HASH);
-    EXPECT_EQ(sha256sumString("hello world"), kHELLO_WORLD_HASH);
+    EXPECT_EQ(sha256sumString(""), kEmptyHash);
+    EXPECT_EQ(sha256sumString("hello world"), kHelloWorldHash);
 }
 
 TEST_F(ShasumTest, Sha256sumStreamingEmpty)
@@ -39,7 +39,7 @@ TEST_F(ShasumTest, Sha256sumStreamingEmpty)
     auto result = std::move(hasher).finalize();
 
     ripple::uint256 expected;
-    ASSERT_TRUE(expected.parseHex(kEMPTY_HASH));
+    ASSERT_TRUE(expected.parseHex(kEmptyHash));
     EXPECT_EQ(result, expected);
 }
 
@@ -51,7 +51,7 @@ TEST_F(ShasumTest, Sha256sumStreamingSingleUpdate)
     auto result = std::move(hasher).finalize();
 
     ripple::uint256 expected;
-    ASSERT_TRUE(expected.parseHex(kHELLO_WORLD_HASH));
+    ASSERT_TRUE(expected.parseHex(kHelloWorldHash));
     EXPECT_EQ(result, expected);
 }
 
@@ -64,7 +64,7 @@ TEST_F(ShasumTest, Sha256sumStreamingMultipleUpdates)
     auto result = std::move(hasher).finalize();
 
     ripple::uint256 expected;
-    ASSERT_TRUE(expected.parseHex(kHELLO_WORLD_HASH));
+    ASSERT_TRUE(expected.parseHex(kHelloWorldHash));
     EXPECT_EQ(result, expected);
 }
 

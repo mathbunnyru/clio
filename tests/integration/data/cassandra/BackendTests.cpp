@@ -66,17 +66,17 @@ using namespace data::cassandra;
 
 class BackendCassandraTestBase : public SyncAsioContextTest, public WithPrometheus {
 protected:
-    static constexpr auto kCASSANDRA = "cassandra";
+    static constexpr auto kCassandra = "cassandra";
 
     ClioConfigDefinition cfg_{
-        {"database.type", ConfigValue{ConfigType::String}.defaultValue(kCASSANDRA)},
+        {"database.type", ConfigValue{ConfigType::String}.defaultValue(kCassandra)},
         {"database.cassandra.contact_points",
          ConfigValue{ConfigType::String}.defaultValue(TestGlobals::instance().backendHost)},
         {"database.cassandra.secure_connect_bundle", ConfigValue{ConfigType::String}.optional()},
         {"database.cassandra.port", ConfigValue{ConfigType::Integer}.optional()},
         {"database.cassandra.keyspace",
          ConfigValue{ConfigType::String}.defaultValue(TestGlobals::instance().backendKeyspace)},
-        {"database.cassandra.provider", ConfigValue{ConfigType::String}.defaultValue(kCASSANDRA)},
+        {"database.cassandra.provider", ConfigValue{ConfigType::String}.defaultValue(kCassandra)},
         {"database.cassandra.replication_factor", ConfigValue{ConfigType::Integer}.defaultValue(1)},
         {"database.cassandra.table_prefix", ConfigValue{ConfigType::String}.optional()},
         {"database.cassandra.max_write_requests_outstanding",
@@ -102,7 +102,7 @@ protected:
         {"read_only", ConfigValue{ConfigType::Boolean}.defaultValue(false)}
     };
 
-    static constexpr auto kRAWHEADER =
+    static constexpr auto kRawheader =
         "03C3141A01633CD656F91B4EBB5EB89B791BD34DBC8A04BB6F407C5335BC54351E"
         "DD733898497E809E04074D14D271E4832D7888754F9230800761563A292FA2315A"
         "6DB6FE30CC5909B285080FCD6773CC883F9FE0EE4D439340AC592AADB973ED3CF5"
@@ -153,7 +153,7 @@ TEST_F(BackendCassandraTest, Basic)
 
         backend_->writeLedger(lgrInfo, std::move(rawHeaderBlob));
         backend_->writeSuccessor(
-            uint256ToString(data::kFIRST_KEY), lgrInfo.seq, uint256ToString(data::kLAST_KEY)
+            uint256ToString(data::kFirstKey), lgrInfo.seq, uint256ToString(data::kLastKey)
         );
         ASSERT_TRUE(backend_->finishWrites(lgrInfo.seq));
         {
@@ -451,10 +451,10 @@ TEST_F(BackendCassandraTest, Basic)
                 std::string{accountIndexBlob}, lgrInfoNext.seq, std::string{accountBlob}
             );
             backend_->writeSuccessor(
-                uint256ToString(data::kFIRST_KEY), lgrInfoNext.seq, std::string{accountIndexBlob}
+                uint256ToString(data::kFirstKey), lgrInfoNext.seq, std::string{accountIndexBlob}
             );
             backend_->writeSuccessor(
-                std::string{accountIndexBlob}, lgrInfoNext.seq, uint256ToString(data::kLAST_KEY)
+                std::string{accountIndexBlob}, lgrInfoNext.seq, uint256ToString(data::kLastKey)
             );
 
             ASSERT_TRUE(backend_->finishWrites(lgrInfoNext.seq));
@@ -575,7 +575,7 @@ TEST_F(BackendCassandraTest, Basic)
                 std::string{accountIndexBlob}, lgrInfoNext.seq, std::string{}
             );
             backend_->writeSuccessor(
-                uint256ToString(data::kFIRST_KEY), lgrInfoNext.seq, uint256ToString(data::kLAST_KEY)
+                uint256ToString(data::kFirstKey), lgrInfoNext.seq, uint256ToString(data::kLastKey)
             );
 
             ASSERT_TRUE(backend_->finishWrites(lgrInfoNext.seq));
@@ -710,9 +710,7 @@ TEST_F(BackendCassandraTest, Basic)
                         );
                     } else {
                         backend_->writeSuccessor(
-                            std::string{objs[i].first},
-                            lgrInfo.seq,
-                            uint256ToString(data::kLAST_KEY)
+                            std::string{objs[i].first}, lgrInfo.seq, uint256ToString(data::kLastKey)
                         );
                     }
                 }
@@ -724,7 +722,7 @@ TEST_F(BackendCassandraTest, Basic)
                     );
                 } else {
                     backend_->writeSuccessor(
-                        uint256ToString(data::kFIRST_KEY), lgrInfo.seq, std::string{objs[0].first}
+                        uint256ToString(data::kFirstKey), lgrInfo.seq, std::string{objs[0].first}
                     );
                 }
             }
@@ -975,7 +973,7 @@ TEST_F(BackendCassandraTest, CacheIntegration)
         std::string const accountIndexHex =
             "E0311EB450B6177F969B94DBDDA83E99B7A0576ACD9079573876F16C0C004F06";
 
-        std::string rawHeaderBlob = hexStringToBinaryString(kRAWHEADER);
+        std::string rawHeaderBlob = hexStringToBinaryString(kRawheader);
         std::string accountBlob = hexStringToBinaryString(accountHex);
         std::string const accountIndexBlob = hexStringToBinaryString(accountIndexHex);
         ripple::LedgerHeader const lgrInfo =
@@ -984,7 +982,7 @@ TEST_F(BackendCassandraTest, CacheIntegration)
         backend_->startWrites();
         backend_->writeLedger(lgrInfo, std::move(rawHeaderBlob));
         backend_->writeSuccessor(
-            uint256ToString(data::kFIRST_KEY), lgrInfo.seq, uint256ToString(data::kLAST_KEY)
+            uint256ToString(data::kFirstKey), lgrInfo.seq, uint256ToString(data::kLastKey)
         );
         ASSERT_TRUE(backend_->finishWrites(lgrInfo.seq));
         {
@@ -1064,10 +1062,10 @@ TEST_F(BackendCassandraTest, CacheIntegration)
                 {{.key = *key, .blob = {accountBlob.begin(), accountBlob.end()}}}, lgrInfoNext.seq
             );
             backend_->writeSuccessor(
-                uint256ToString(data::kFIRST_KEY), lgrInfoNext.seq, std::string{accountIndexBlob}
+                uint256ToString(data::kFirstKey), lgrInfoNext.seq, std::string{accountIndexBlob}
             );
             backend_->writeSuccessor(
-                std::string{accountIndexBlob}, lgrInfoNext.seq, uint256ToString(data::kLAST_KEY)
+                std::string{accountIndexBlob}, lgrInfoNext.seq, uint256ToString(data::kLastKey)
             );
 
             ASSERT_TRUE(backend_->finishWrites(lgrInfoNext.seq));
@@ -1164,7 +1162,7 @@ TEST_F(BackendCassandraTest, CacheIntegration)
                 std::string{accountIndexBlob}, lgrInfoNext.seq, std::string{}
             );
             backend_->writeSuccessor(
-                uint256ToString(data::kFIRST_KEY), lgrInfoNext.seq, uint256ToString(data::kLAST_KEY)
+                uint256ToString(data::kFirstKey), lgrInfoNext.seq, uint256ToString(data::kLastKey)
             );
 
             ASSERT_TRUE(backend_->finishWrites(lgrInfoNext.seq));
@@ -1247,9 +1245,7 @@ TEST_F(BackendCassandraTest, CacheIntegration)
                         );
                     } else {
                         backend_->writeSuccessor(
-                            std::string{objs[i].first},
-                            lgrInfo.seq,
-                            uint256ToString(data::kLAST_KEY)
+                            std::string{objs[i].first}, lgrInfo.seq, uint256ToString(data::kLastKey)
                         );
                     }
                 }
@@ -1261,7 +1257,7 @@ TEST_F(BackendCassandraTest, CacheIntegration)
                     );
                 } else {
                     backend_->writeSuccessor(
-                        uint256ToString(data::kFIRST_KEY), lgrInfo.seq, std::string{objs[0].first}
+                        uint256ToString(data::kFirstKey), lgrInfo.seq, std::string{objs[0].first}
                     );
                 }
             }
@@ -1423,7 +1419,7 @@ public:
 TEST_F(CacheBackendCassandraTest, CacheFetchLedgerBySeq)
 {
     runSpawn([&](boost::asio::yield_context yield) {
-        auto rawHeaderBlob = hexStringToBinaryString(kRAWHEADER);
+        auto rawHeaderBlob = hexStringToBinaryString(kRawheader);
         ripple::LedgerHeader const lgrInfo =
             util::deserializeHeader(ripple::makeSlice(rawHeaderBlob));
 
@@ -1471,31 +1467,31 @@ struct BackendCassandraNodeMessageTest : BackendCassandraTest {
 
 TEST_F(BackendCassandraNodeMessageTest, UpdateFetch)
 {
-    static boost::uuids::uuid const kUUID = generateUuid();
-    static std::string const kMESSAGE = "some message";
+    static boost::uuids::uuid const kUuid = generateUuid();
+    static std::string const kMessage = "some message";
 
-    EXPECT_NO_THROW({ backend_->writeNodeMessage(kUUID, kMESSAGE); });
+    EXPECT_NO_THROW({ backend_->writeNodeMessage(kUuid, kMessage); });
 
     runSpawn([&](boost::asio::yield_context yield) {
         auto const readResult = backend_->fetchClioNodesData(yield);
         ASSERT_TRUE(readResult) << readResult.error();
         ASSERT_EQ(readResult->size(), 1);
         auto const& [uuid, message] = (*readResult)[0];
-        EXPECT_EQ(uuid, kUUID);
-        EXPECT_EQ(message, kMESSAGE);
+        EXPECT_EQ(uuid, kUuid);
+        EXPECT_EQ(message, kMessage);
     });
 }
 
 TEST_F(BackendCassandraNodeMessageTest, UpdateFetchMultipleMessages)
 {
-    std::unordered_map<boost::uuids::uuid, std::string> kDATA = {
+    std::unordered_map<boost::uuids::uuid, std::string> kData = {
         {generateUuid(), std::string{"some message"}},
         {generateUuid(), std::string{"other message"}},
         {generateUuid(), std::string{"message 3"}}
     };
 
     EXPECT_NO_THROW({
-        for (auto const& [uuid, message] : kDATA) {
+        for (auto const& [uuid, message] : kData) {
             backend_->writeNodeMessage(uuid, message);
         }
     });
@@ -1503,12 +1499,12 @@ TEST_F(BackendCassandraNodeMessageTest, UpdateFetchMultipleMessages)
     runSpawn([&](boost::asio::yield_context yield) {
         auto const readResult = backend_->fetchClioNodesData(yield);
         ASSERT_TRUE(readResult) << readResult.error();
-        ASSERT_EQ(readResult->size(), kDATA.size());
+        ASSERT_EQ(readResult->size(), kData.size());
 
         for (size_t i = 0; i < readResult->size(); ++i) {
             auto const& [uuid, message] = (*readResult)[i];
-            auto const it = kDATA.find(uuid);
-            ASSERT_NE(it, kDATA.end()) << uuid << " not found";
+            auto const it = kData.find(uuid);
+            ASSERT_NE(it, kData.end()) << uuid << " not found";
             EXPECT_EQ(it->second, message);
         }
     });
@@ -1531,13 +1527,13 @@ TEST_F(BackendCassandraNodeMessageTest, UpdatingMessageKeepsItAlive)
 #if defined(__APPLE__)
     GTEST_SKIP() << "Skipping test on Apple platform due to slow DB";
 #else
-    static boost::uuids::uuid const kUUID = generateUuid();
-    static std::string const kUPDATED_MESSAGE = "updated message";
+    static boost::uuids::uuid const kUuid = generateUuid();
+    static std::string const kUpdatedMessage = "updated message";
 
-    EXPECT_NO_THROW({ backend_->writeNodeMessage(kUUID, "some message"); });
+    EXPECT_NO_THROW({ backend_->writeNodeMessage(kUuid, "some message"); });
     std::this_thread::sleep_for(std::chrono::milliseconds{1000});
 
-    EXPECT_NO_THROW({ backend_->writeNodeMessage(kUUID, kUPDATED_MESSAGE); });
+    EXPECT_NO_THROW({ backend_->writeNodeMessage(kUuid, kUpdatedMessage); });
     std::this_thread::sleep_for(std::chrono::milliseconds{1005});
 
     runSpawn([&](boost::asio::yield_context yield) {
@@ -1545,8 +1541,8 @@ TEST_F(BackendCassandraNodeMessageTest, UpdatingMessageKeepsItAlive)
         ASSERT_TRUE(readResult) << readResult.error();
         ASSERT_EQ(readResult->size(), 1);
         auto const& [uuid, message] = (*readResult)[0];
-        EXPECT_EQ(uuid, kUUID);
-        EXPECT_EQ(message, kUPDATED_MESSAGE);
+        EXPECT_EQ(uuid, kUuid);
+        EXPECT_EQ(message, kUpdatedMessage);
     });
 #endif
 }

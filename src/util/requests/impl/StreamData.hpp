@@ -20,7 +20,7 @@ namespace util::requests::impl {
 
 template <typename StreamType>
 struct PlainStreamData {
-    static constexpr bool kSSL_ENABLED = false;
+    static constexpr bool kSslEnabled = false;
 
     explicit PlainStreamData(boost::asio::yield_context yield)
         : stream(boost::asio::get_associated_executor(yield))
@@ -38,7 +38,7 @@ class SslStreamData {
     boost::asio::ssl::context sslContext_;
 
 public:
-    static constexpr bool kSSL_ENABLED = true;
+    static constexpr bool kSslEnabled = true;
 
     static std::expected<SslStreamData, RequestError>
     create(boost::asio::yield_context yield)

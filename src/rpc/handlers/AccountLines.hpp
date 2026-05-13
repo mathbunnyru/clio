@@ -36,9 +36,9 @@ class AccountLinesHandler {
     std::shared_ptr<BackendInterface> const sharedPtrBackend_;
 
 public:
-    static constexpr auto kLIMIT_MIN = 10;
-    static constexpr auto kLIMIT_MAX = 400;
-    static constexpr auto kLIMIT_DEFAULT = 200;
+    static constexpr auto kLimitMin = 10;
+    static constexpr auto kLimitMax = 400;
+    static constexpr auto kLimitDefault = 200;
 
     /**
      * @brief A struct to hold data for one line response
@@ -84,7 +84,7 @@ public:
         std::optional<std::string> peer;
         bool ignoreDefault = false;  // TODO: document
                                      // https://github.com/XRPLF/xrpl-dev-portal/issues/1839
-        uint32_t limit = kLIMIT_DEFAULT;
+        uint32_t limit = kLimitDefault;
         std::optional<std::string> marker;
     };
 
@@ -109,7 +109,7 @@ public:
     static RpcSpecConstRef
     spec([[maybe_unused]] uint32_t apiVersion)
     {
-        static auto const kRPC_SPEC = RpcSpec{
+        static auto const kRpcSpec = RpcSpec{
             {JS(account),
              validation::Required{},
              meta::WithCustomError{
@@ -126,14 +126,14 @@ public:
             {JS(limit),
              validation::Type<uint32_t>{},
              validation::Min(1u),
-             modifiers::Clamp<int32_t>{kLIMIT_MIN, kLIMIT_MAX}},
+             modifiers::Clamp<int32_t>{kLimitMin, kLimitMax}},
             {JS(ledger_index), validation::CustomValidators::ledgerIndexValidator},
             {JS(marker), validation::CustomValidators::accountMarkerValidator},
             {JS(ledger), check::Deprecated{}},
             {"peer_index", check::Deprecated{}},
         };
 
-        return kRPC_SPEC;
+        return kRpcSpec;
     }
 
     /**
