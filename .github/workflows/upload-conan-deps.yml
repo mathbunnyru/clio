@@ -101,12 +101,12 @@ jobs:
           force_conan_source_build: ${{ github.event_name == 'schedule' || github.event.inputs.force_source_build == 'true' }}
           build_type: ${{ matrix.build_type }}
 
-      - name: Login to Conan
-        if: ${{ github.repository_owner == 'XRPLF' && github.event_name != 'pull_request' }}
+      - name: Log into Conan remote
+        if: ${{ github.repository == 'XRPLF/clio' && github.event_name != 'pull_request' }}
         run: conan remote login -p ${{ secrets.CONAN_PASSWORD }} xrplf ${{ secrets.CONAN_USERNAME }}
 
       - name: Upload Conan packages
-        if: ${{ github.repository_owner == 'XRPLF' && github.event_name != 'pull_request' && github.event_name != 'schedule' }}
+        if: ${{ github.repository == 'XRPLF/clio' && github.event_name != 'pull_request' && github.event_name != 'schedule' }}
         env:
           FORCE_OPTION: ${{ github.event.inputs.force_upload == 'true' && '--force' || '' }}
         run: conan upload "*" -r=xrplf --confirm ${FORCE_OPTION}

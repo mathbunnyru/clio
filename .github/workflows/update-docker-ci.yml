@@ -74,7 +74,7 @@ jobs:
           images: |
             ${{ needs.repo.outputs.GHCR_REPO }}/clio-gcc
             ${{ github.repository_owner == 'XRPLF' && 'rippleci/clio_gcc' || '' }}
-          push_image: ${{ github.event_name != 'pull_request' }}
+          push_image: ${{ github.repository == 'XRPLF/clio' && github.event_name != 'pull_request' }}
           directory: docker/compilers/gcc
           tags: |
             type=raw,value=amd64-latest
@@ -112,7 +112,7 @@ jobs:
           images: |
             ${{ needs.repo.outputs.GHCR_REPO }}/clio-gcc
             ${{ github.repository_owner == 'XRPLF' && 'rippleci/clio_gcc' || '' }}
-          push_image: ${{ github.event_name != 'pull_request' }}
+          push_image: ${{ github.repository == 'XRPLF/clio' && github.event_name != 'pull_request' }}
           directory: docker/compilers/gcc
           tags: |
             type=raw,value=arm64-latest
@@ -201,7 +201,7 @@ jobs:
           images: |
             ${{ needs.repo.outputs.GHCR_REPO }}/clio-clang
             ${{ github.repository_owner == 'XRPLF' && 'rippleci/clio_clang' || '' }}
-          push_image: ${{ github.event_name != 'pull_request' }}
+          push_image: ${{ github.repository == 'XRPLF/clio' && github.event_name != 'pull_request' }}
           directory: docker/compilers/clang
           tags: |
             type=raw,value=latest
@@ -234,7 +234,7 @@ jobs:
         with:
           images: |
             ${{ needs.repo.outputs.GHCR_REPO }}/clio-tools
-          push_image: ${{ github.event_name != 'pull_request' }}
+          push_image: ${{ github.repository == 'XRPLF/clio' && github.event_name != 'pull_request' }}
           directory: docker/tools
           tags: |
             type=raw,value=amd64-latest
@@ -265,7 +265,7 @@ jobs:
         with:
           images: |
             ${{ needs.repo.outputs.GHCR_REPO }}/clio-tools
-          push_image: ${{ github.event_name != 'pull_request' }}
+          push_image: ${{ github.repository == 'XRPLF/clio' && github.event_name != 'pull_request' }}
           directory: docker/tools
           tags: |
             type=raw,value=arm64-latest
@@ -323,7 +323,7 @@ jobs:
         with:
           images: |
             ${{ needs.repo.outputs.GHCR_REPO }}/clio-pre-commit
-          push_image: ${{ github.event_name != 'pull_request' }}
+          push_image: ${{ github.repository == 'XRPLF/clio' && github.event_name != 'pull_request' }}
           directory: docker/pre-commit
           tags: |
             type=raw,value=latest
@@ -348,7 +348,7 @@ jobs:
           images: |
             ${{ needs.repo.outputs.GHCR_REPO }}/clio-ci
             ${{ github.repository_owner == 'XRPLF' && 'rippleci/clio_ci' || '' }}
-          push_image: ${{ github.event_name != 'pull_request' }}
+          push_image: ${{ github.repository == 'XRPLF/clio' && github.event_name != 'pull_request' }}
           directory: docker/ci
           tags: |
             type=raw,value=latest

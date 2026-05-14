@@ -14,9 +14,9 @@ on:
         type: boolean
         description: Whether to strip clio binary
         default: true
-      publish_image:
+      push_image:
         type: boolean
-        description: Whether to publish docker image
+        description: Whether to push docker image
         required: true
 
   workflow_dispatch:
@@ -43,7 +43,7 @@ defaults:
     shell: bash
 
 jobs:
-  build_and_publish_image:
+  build_and_push_image:
     name: Build and publish image
     runs-on: ubuntu-latest
 
@@ -102,7 +102,7 @@ jobs:
           images: |
             ghcr.io/${{ steps.set-ghcr-repo.outputs.GHCR_REPO }}/clio
             ${{ github.repository_owner == 'XRPLF' && 'rippleci/clio' || '' }}
-          push_image: ${{ inputs.publish_image }}
+          push_image: ${{ inputs.push_image }}
           directory: docker/clio
           tags: ${{ inputs.tags }}
           platforms: linux/amd64
