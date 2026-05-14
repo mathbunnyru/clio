@@ -55,6 +55,7 @@ jobs:
           name: docs-develop
 
   deploy:
+    if: ${{ github.repository == 'XRPLF/clio' && github.event_name == 'push' }}
     needs: build
     permissions:
       pages: write

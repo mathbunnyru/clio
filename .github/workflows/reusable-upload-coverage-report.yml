@@ -27,7 +27,7 @@ jobs:
           path: build
 
       - name: Upload coverage report
-        if: ${{ hashFiles('build/coverage_report.xml') != '' }}
+        if: ${{ github.repository == 'XRPLF/clio' && hashFiles('build/coverage_report.xml') != '' }}
         uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
         with:
           files: build/coverage_report.xml
