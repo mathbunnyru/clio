@@ -35,10 +35,10 @@ AccountMPTokensHandler::addMPToken(std::vector<MPTokenResponse>& mpts, ripple::S
     MPTokenResponse token{};
     auto const flags = sle.getFieldU32(ripple::sfFlags);
 
-    token.MPTokenID = ripple::strHex(sle.key());
+    token.mpTokenId = ripple::strHex(sle.key());
     token.account = ripple::to_string(sle.getAccountID(ripple::sfAccount));
-    token.MPTokenIssuanceID = ripple::strHex(sle.getFieldH192(ripple::sfMPTokenIssuanceID));
-    token.MPTAmount = sle.getFieldU64(ripple::sfMPTAmount);
+    token.mpTokenIssuanceId = ripple::strHex(sle.getFieldH192(ripple::sfMPTokenIssuanceID));
+    token.mptAmount = sle.getFieldU64(ripple::sfMPTAmount);
 
     if (sle.isFieldPresent(ripple::sfLockedAmount))
         token.lockedAmount = sle.getFieldU64(ripple::sfLockedAmount);
@@ -177,10 +177,10 @@ tag_invoke(
 )
 {
     auto obj = boost::json::object{
-        {"mpt_id", mptoken.MPTokenID},
+        {"mpt_id", mptoken.mpTokenId},
         {JS(account), mptoken.account},
-        {JS(mpt_issuance_id), mptoken.MPTokenIssuanceID},
-        {JS(mpt_amount), mptoken.MPTAmount},
+        {JS(mpt_issuance_id), mptoken.mpTokenIssuanceId},
+        {JS(mpt_amount), mptoken.mptAmount},
     };
 
     auto const setIfPresent = [&](boost::json::string_view field, auto const& value) {

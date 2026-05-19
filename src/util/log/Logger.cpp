@@ -119,7 +119,7 @@ getSeverityLevel(std::string_view logLevel)
 class NonCriticalFormatter : public spdlog::formatter {
 public:
     NonCriticalFormatter(std::unique_ptr<spdlog::formatter> wrappedFormatter)
-        : wrapped_formatter_(std::move(wrappedFormatter))
+        : wrappedFormatter_(std::move(wrappedFormatter))
     {
     }
 
@@ -128,18 +128,18 @@ public:
     {
         // Only format messages with severity less than critical
         if (msg.level != spdlog::level::critical) {
-            wrapped_formatter_->format(msg, dest);
+            wrappedFormatter_->format(msg, dest);
         }
     }
 
     [[nodiscard]] std::unique_ptr<formatter>
     clone() const override
     {
-        return std::make_unique<NonCriticalFormatter>(wrapped_formatter_->clone());
+        return std::make_unique<NonCriticalFormatter>(wrappedFormatter_->clone());
     }
 
 private:
-    std::unique_ptr<spdlog::formatter> wrapped_formatter_;
+    std::unique_ptr<spdlog::formatter> wrappedFormatter_;
 };
 
 /**
