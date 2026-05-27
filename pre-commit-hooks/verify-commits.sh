@@ -1,51 +1,53 @@
 #!/bin/bash
 
-# git for-each-ref refs/tags  # see which tags are annotated and which are lightweight. Annotated tags are "tag" objects.
-# # Set these so your commits and tags are always signed
-# git config commit.gpgsign true
-# git config tag.gpgsign true
+# Annotated tags have object type "tag"; lightweight tags have type "commit".
+# To inspect tags: git for-each-ref refs/tags
+#
+# To always sign commits and tags, configure:
+#   git config --global commit.gpgsign true
+#   git config --global tag.gpgsign true
 
 verify_commit_signed() {
     if git verify-commit HEAD &>/dev/null; then
-        :
-        # echo "HEAD commit seems signed..."
+        echo "HEAD commit is signed."
     else
-        echo "HEAD commit isn't signed!"
+        echo "HEAD commit is not signed!"
         exit 1
     fi
 }
 
-verify_tag() {
-    if git describe --exact-match --tags HEAD &>/dev/null; then
-        : # You might be ok to push
-        # echo "Tag is annotated."
-        return 0
+verify_tag_annotated() {
+    local version="$1"
+    if [[ -z "$version" ]]; then
+        echo "No tag found at HEAD!"
+        exit 1
+    fi
+    # git cat-file -t returns "tag" for annotated tags, "commit" for lightweight.
+    if [[ "$(git cat-file -t "$version")" == "tag" ]]; then
+        echo "Tag '$version' is annotated."
     else
-        echo "Tag for [$version] not an annotated tag."
+        echo "Tag '$version' is not annotated!"
+        echo "Re-create it with: git tag -a -s -m \"$version\" \"$version\""
         exit 1
     fi
 }
 
 verify_tag_signed() {
     if git verify-tag "$version" &>/dev/null; then
-        : # ok, I guess we'll let you push
-        # echo "Tag appears signed"
-        return 0
+        echo "Tag '$version' is signed."
     else
-        echo "$version tag isn't signed"
-        echo "Sign it with [git tag -ams\"$version\" $version]"
+        echo "Tag '$version' is not signed!"
+        echo "Sign it with: git tag -a -s -m \"$version\" \"$version\""
         exit 1
     fi
 }
 
-# Check some things if we're pushing a branch called "release/"
-if echo "$PRE_COMMIT_REMOTE_BRANCH" | grep ^refs\/heads\/release\/ &>/dev/null; then
+# Enforce signing and annotated tags when pushing to a release branch.
+if echo "$PRE_COMMIT_REMOTE_BRANCH" | grep -q "^refs/heads/release/"; then
     version=$(git tag --points-at HEAD)
-    echo "Looks like you're trying to push a $version release..."
-    echo "Making sure you've signed and tagged it."
-    if verify_commit_signed && verify_tag && verify_tag_signed; then
-        : # Ok, I guess you can push
-    else
-        exit 1
-    fi
+    echo "Looks like you're trying to push a '${version:-<untagged>}' release..."
+    echo "Verifying the commit is signed and the tag is annotated and signed."
+    verify_commit_signed
+    verify_tag_annotated "$version"
+    verify_tag_signed
 fi
