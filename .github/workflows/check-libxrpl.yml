@@ -98,7 +98,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Create an issue
-        uses: XRPLF/actions/create-issue@fbcc16eb7f20dc3199eaf1aed0d3523a5ba9008c
+        uses: XRPLF/actions/create-issue@2b8bc36af85b88bca0dd7bfac2e2dc05f94ad712
         with:
           title: "Proposed libXRPL check failed"
           body: >

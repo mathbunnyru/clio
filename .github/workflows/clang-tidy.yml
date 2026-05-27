@@ -44,7 +44,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     permissions:
       contents: read
-    uses: XRPLF/actions/.github/workflows/determine-tidy-files.yml@12f5dbc98a2260259a66970e57fa4d26fb7f285c
+    uses: XRPLF/actions/.github/workflows/determine-tidy-files.yml@224f3c48d3014d082a1129237b8291ff0b0a331f
 
   run-clang-tidy:
     name: Run clang tidy
@@ -180,7 +180,7 @@ jobs:
 
       - name: Create issue
         if: ${{ steps.run_clang_tidy.outcome != 'success' && github.event_name != 'pull_request' }}
-        uses: XRPLF/actions/create-issue@fbcc16eb7f20dc3199eaf1aed0d3523a5ba9008c
+        uses: XRPLF/actions/create-issue@2b8bc36af85b88bca0dd7bfac2e2dc05f94ad712
         with:
           title: "Clang-tidy check failed"
           body_file: ${{ env.ISSUE_FILE }}
