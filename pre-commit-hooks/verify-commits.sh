@@ -18,10 +18,6 @@ verify_commit_signed() {
 
 verify_tag_annotated() {
     local version="$1"
-    if [[ -z "$version" ]]; then
-        echo "No tag found at HEAD!"
-        exit 1
-    fi
     # git cat-file -t returns "tag" for annotated tags, "commit" for lightweight.
     if [[ "$(git cat-file -t "$version")" == "tag" ]]; then
         echo "Tag '$version' is annotated."
@@ -33,6 +29,7 @@ verify_tag_annotated() {
 }
 
 verify_tag_signed() {
+    local version="$1"
     if git verify-tag "$version" &>/dev/null; then
         echo "Tag '$version' is signed."
     else
@@ -44,10 +41,16 @@ verify_tag_signed() {
 
 # Enforce signing and annotated tags when pushing to a release branch.
 if echo "$PRE_COMMIT_REMOTE_BRANCH" | grep -q "^refs/heads/release/"; then
-    version=$(git tag --points-at HEAD)
-    echo "Looks like you're trying to push a '${version:-<untagged>}' release..."
+    # git describe --exact-match guarantees a single tag; git tag --points-at HEAD
+    # can return multiple newline-separated values, which breaks downstream commands.
+    version=$(git describe --exact-match --tags HEAD 2>/dev/null)
+    if [[ -z "$version" ]]; then
+        echo "No tag found at HEAD — cannot push an untagged release commit!"
+        exit 1
+    fi
+    echo "Looks like you're trying to push a '$version' release..."
     echo "Verifying the commit is signed and the tag is annotated and signed."
     verify_commit_signed
     verify_tag_annotated "$version"
-    verify_tag_signed
+    verify_tag_signed "$version"
 fi
