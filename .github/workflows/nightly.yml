@@ -37,7 +37,7 @@ jobs:
       - name: Get current date
         id: get_date
         run: |
-          echo "date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+          echo "date=$(date +'%Y%m%d')" >>$GITHUB_OUTPUT
 
   build-and-test:
     name: Build and Test

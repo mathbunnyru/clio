@@ -65,8 +65,8 @@ jobs:
         run: |
           wget "${BINARY_URL}" -P ./docker/clio/artifact/
           if [ "$(sha256sum ./docker/clio/clio_server | awk '{print $1}')" != "${BINARY_SHA256}" ]; then
-            echo "Binary sha256 sum doesn't match"
-            exit 1
+              echo "Binary sha256 sum doesn't match"
+              exit 1
           fi
       - name: Unpack binary
         run: |
@@ -74,9 +74,9 @@ jobs:
           cd docker/clio/artifact
           artifact=$(find . -type f)
           if [[ $artifact == *.zip ]]; then
-            unzip $artifact
+              unzip $artifact
           elif [[ $artifact == *.tar.gz ]]; then
-            tar -xvf $artifact
+              tar -xvf $artifact
           fi
           chmod +x ./clio_server
           mv ./clio_server ../
@@ -90,7 +90,7 @@ jobs:
       - name: Set GHCR_REPO
         id: set-ghcr-repo
         run: |
-          echo "GHCR_REPO=$(echo ghcr.io/${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> ${GITHUB_OUTPUT}
+          echo "GHCR_REPO=$(echo ghcr.io/${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >>${GITHUB_OUTPUT}
 
       - name: Build Docker image
         uses: ./.github/actions/build-docker-image

@@ -56,7 +56,7 @@ jobs:
 
       - name: Calculate conan matrix
         id: set-matrix
-        run: .github/scripts/conan/generate_matrix.py >> "${GITHUB_OUTPUT}"
+        run: .github/scripts/conan/generate_matrix.py >>"${GITHUB_OUTPUT}"
 
   upload-conan-deps:
     name: Build ${{ matrix.compiler }}${{ matrix.sanitizer_ext }} ${{ matrix.build_type }}

@@ -38,4 +38,4 @@ runs:
         CODE_COVERAGE: ${{ inputs.code_coverage == 'true' && '-code_coverage' || '' }}
         CONAN_PROFILE: ${{ inputs.conan_profile }}
       run: |
-        echo "key=clio-ccache-${RUNNER_OS}-${BUILD_TYPE}${CODE_COVERAGE}-${CONAN_PROFILE}-develop" >> "${GITHUB_OUTPUT}"
+        echo "key=clio-ccache-${RUNNER_OS}-${BUILD_TYPE}${CODE_COVERAGE}-${CONAN_PROFILE}-develop" >>"${GITHUB_OUTPUT}"
