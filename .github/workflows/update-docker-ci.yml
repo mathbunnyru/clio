@@ -152,7 +152,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to DockerHub
-        if: ${{ github.repository_owner == 'XRPLF' && github.event_name != 'pull_request' }}
+        if: ${{ github.repository == 'XRPLF/clio' && github.event_name != 'pull_request' }}
         uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
@@ -173,7 +173,7 @@ jobs:
                 $image:amd64-latest
           }
           push_image ${{ needs.repo.outputs.GHCR_REPO }}/clio-gcc
-          if [[ ${{ github.repository_owner }} == 'XRPLF' ]]; then
+          if [[ ${{ github.repository }} == 'XRPLF/clio' ]]; then
             push_image rippleci/clio_clang
           fi
 
