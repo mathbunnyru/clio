@@ -76,16 +76,16 @@ runs:
         FORCE_CLIO_VERSION: ${{ inputs.version }}
       run: |
         cmake \
-          -B "${BUILD_DIR}" \
-          -S . \
-          -G Ninja \
-          -DCMAKE_TOOLCHAIN_FILE:FILEPATH=build/generators/conan_toolchain.cmake \
-          -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
-          "${SANITIZER_OPTION}" \
-          -Dtests=ON \
-          -Dintegration_tests="${INTEGRATION_TESTS}" \
-          -Dbenchmark="${BENCHMARK}" \
-          -Dcoverage="${COVERAGE}" \
-          -Dstatic="${STATIC}" \
-          -Dtime_trace="${TIME_TRACE}" \
-          -Dpackage="${PACKAGE}"
+            -B "${BUILD_DIR}" \
+            -S . \
+            -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE:FILEPATH=build/generators/conan_toolchain.cmake \
+            -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+            "${SANITIZER_OPTION}" \
+            -Dtests=ON \
+            -Dintegration_tests="${INTEGRATION_TESTS}" \
+            -Dbenchmark="${BENCHMARK}" \
+            -Dcoverage="${COVERAGE}" \
+            -Dstatic="${STATIC}" \
+            -Dtime_trace="${TIME_TRACE}" \
+            -Dpackage="${PACKAGE}"

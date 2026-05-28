@@ -48,7 +48,7 @@ jobs:
       - name: Set GHCR_REPO
         id: set-ghcr-repo
         run: |
-          echo "GHCR_REPO=$(echo ghcr.io/${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> ${GITHUB_OUTPUT}
+          echo "GHCR_REPO=$(echo ghcr.io/${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >>${GITHUB_OUTPUT}
 
   gcc-amd64:
     name: Build and push GCC docker image (amd64)
@@ -162,19 +162,19 @@ jobs:
         if: ${{ github.event_name != 'pull_request' && steps.changed-files.outputs.any_changed == 'true' }}
         run: |
           push_image() {
-            image=$1
+              image=$1
 
-            docker buildx imagetools create \
-                -t $image:latest \
-                -t $image:${{ env.GCC_MAJOR_VERSION }} \
-                -t $image:${{ env.GCC_VERSION }} \
-                -t $image:${{ github.sha }} \
-                $image:arm64-latest \
-                $image:amd64-latest
+              docker buildx imagetools create \
+                  -t $image:latest \
+                  -t $image:${{ env.GCC_MAJOR_VERSION }} \
+                  -t $image:${{ env.GCC_VERSION }} \
+                  -t $image:${{ github.sha }} \
+                  $image:arm64-latest \
+                  $image:amd64-latest
           }
           push_image ${{ needs.repo.outputs.GHCR_REPO }}/clio-gcc
           if [[ ${{ github.repository }} == 'XRPLF/clio' ]]; then
-            push_image rippleci/clio_clang
+              push_image rippleci/clio_clang
           fi
 
   clang:
@@ -305,10 +305,10 @@ jobs:
         run: |
           image=${{ needs.repo.outputs.GHCR_REPO }}/clio-tools
           docker buildx imagetools create \
-            -t $image:latest \
-            -t $image:${{ github.sha }} \
-            $image:arm64-latest \
-            $image:amd64-latest
+              -t $image:latest \
+              -t $image:${{ github.sha }} \
+              $image:arm64-latest \
+              $image:amd64-latest
 
   pre-commit:
     name: Build and push pre-commit docker image

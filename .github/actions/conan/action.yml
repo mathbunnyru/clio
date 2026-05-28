@@ -30,8 +30,8 @@ runs:
         CONAN_PROFILE: "${{ inputs.conan_profile }}"
       run: |
         conan \
-          install . \
-          -of "${BUILD_DIR}" \
-          -b "${CONAN_BUILD_OPTION}" \
-          -s "build_type=${BUILD_TYPE}" \
-          --profile:all "${CONAN_PROFILE}"
+            install . \
+            -of "${BUILD_DIR}" \
+            -b "${CONAN_BUILD_OPTION}" \
+            -s "build_type=${BUILD_TYPE}" \
+            --profile:all "${CONAN_PROFILE}"

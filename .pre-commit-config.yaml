@@ -67,7 +67,7 @@ repos:
     rev: 05c1426671b9237fb5e1444dd63aa5731bec0dfb # frozen: v3.13.1-1
     hooks:
       - id: shfmt
-        args: ["-i", "4", "--write"]
+        args: [--write, --indent=4, --case-indent=true]
 
   # Running some C++ hooks before clang-format
   # to ensure that the style is consistent.

@@ -149,7 +149,7 @@ jobs:
         if: ${{ inputs.analyze_build_time }}
         run: |
           ClangBuildAnalyzer --all build/ build_time_report.bin
-          ClangBuildAnalyzer --analyze build_time_report.bin > build_time_report.txt
+          ClangBuildAnalyzer --analyze build_time_report.bin >build_time_report.txt
           cat build_time_report.txt
 
       - name: Upload build time analyze report
@@ -227,13 +227,13 @@ jobs:
           set -e
           EXPECTED_VERSION="clio-${INPUT_VERSION}"
           if [[ "${BUILD_TYPE}" == "Debug" ]]; then
-            EXPECTED_VERSION="${EXPECTED_VERSION}+DEBUG"
+              EXPECTED_VERSION="${EXPECTED_VERSION}+DEBUG"
           fi
 
           actual_version=$(./build/clio_server --version | head -n 1)
           if [[ "${actual_version}" != "${EXPECTED_VERSION}" ]]; then
-            echo "Expected version '${EXPECTED_VERSION}', but got '${actual_version}'"
-            exit 1
+              echo "Expected version '${EXPECTED_VERSION}', but got '${actual_version}'"
+              exit 1
           fi
 
   # `codecov/codecov-action` will rerun `gcov` if it's available and build directory is present
