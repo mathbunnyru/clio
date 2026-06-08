@@ -59,7 +59,7 @@ jobs:
         run: .github/scripts/conan/generate_matrix.py >>"${GITHUB_OUTPUT}"
 
   upload-conan-deps:
-    name: Build ${{ matrix.compiler }}${{ matrix.sanitizer_ext }} ${{ matrix.build_type }}
+    name: Build ${{ matrix.compiler }} ${{ matrix.sanitizer }} ${{ matrix.build_type }}
 
     needs: generate-matrix
 
@@ -70,9 +70,6 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container != '' && fromJson(matrix.container) || null }}
-
-    env:
-      CONAN_PROFILE: ${{ matrix.compiler }}${{ matrix.sanitizer_ext }}
 
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -85,17 +82,24 @@ jobs:
       - name: Print build environment
         uses: XRPLF/actions/print-build-env@59dec886e4afb05a1724443af08baccbc045b574
 
-      - name: Setup conan on macOS
-        if: ${{ runner.os == 'macOS' }}
-        run: ./.github/scripts/conan/init.sh
+      - name: Set compiler environment
+        if: ${{ runner.os == 'Linux' }}
+        uses: ./.github/actions/set-compiler-env
+        with:
+          compiler: ${{ matrix.compiler }}
+
+      - name: Setup conan
+        run: conan/init.sh
 
       - name: Show conan profile
-        run: conan profile show --profile:all ${{ env.CONAN_PROFILE }}
+        env:
+          SANITIZERS: ${{ matrix.sanitizer }}
+        run: conan profile show --profile:all ci
 
       - name: Run conan
         uses: ./.github/actions/conan
         with:
-          conan_profile: ${{ env.CONAN_PROFILE }}
+          sanitizers: ${{ matrix.sanitizer }}
           # We check that everything builds fine from source on scheduled runs
           # But we do build and upload packages with build=missing by default
           force_conan_source_build: ${{ github.event_name == 'schedule' || github.event.inputs.force_source_build == 'true' }}

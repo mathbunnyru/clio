@@ -13,10 +13,16 @@ on:
         required: true
         type: string
 
-      conan_profile:
-        description: Conan profile to use
+      compiler:
+        description: 'Compiler to build with ("gcc", "clang" or "apple-clang")'
         required: true
         type: string
+
+      sanitizer:
+        description: 'Sanitizer to enable ("address", "thread", "undefinedbehavior" or empty)'
+        required: false
+        type: string
+        default: ""
 
       build_type:
         description: Build type
@@ -81,7 +87,8 @@ jobs:
     with:
       runs_on: ${{ inputs.runs_on }}
       container: ${{ inputs.container }}
-      conan_profile: ${{ inputs.conan_profile }}
+      compiler: ${{ inputs.compiler }}
+      sanitizer: ${{ inputs.sanitizer }}
       build_type: ${{ inputs.build_type }}
       download_ccache: ${{ inputs.download_ccache }}
       upload_ccache: ${{ inputs.upload_ccache }}
@@ -99,7 +106,8 @@ jobs:
     with:
       runs_on: ${{ inputs.runs_on }}
       container: ${{ inputs.container }}
-      conan_profile: ${{ inputs.conan_profile }}
+      compiler: ${{ inputs.compiler }}
+      sanitizer: ${{ inputs.sanitizer }}
       build_type: ${{ inputs.build_type }}
       run_unit_tests: ${{ inputs.run_unit_tests }}
       run_integration_tests: ${{ inputs.run_integration_tests }}
