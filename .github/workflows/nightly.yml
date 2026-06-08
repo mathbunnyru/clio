@@ -48,30 +48,32 @@ jobs:
       matrix:
         include:
           - os: macos15
-            conan_profile: apple-clang
+            compiler: apple-clang
             build_type: Release
             static: false
           - os: heavy
-            conan_profile: gcc
+            compiler: gcc
             build_type: Release
             static: true
-            container: '{ "image": "ghcr.io/xrplf/clio-ci:14342e087ceb8b593027198bf9ef06a43833c696" }'
+            container: '{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-577d745" }'
           - os: heavy
-            conan_profile: gcc
+            compiler: gcc
             build_type: Debug
             static: true
-            container: '{ "image": "ghcr.io/xrplf/clio-ci:14342e087ceb8b593027198bf9ef06a43833c696" }'
+            container: '{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-577d745" }'
           - os: heavy
-            conan_profile: gcc.ubsan
+            compiler: gcc
+            sanitizer: undefinedbehavior
             build_type: Release
             static: false
-            container: '{ "image": "ghcr.io/xrplf/clio-ci:14342e087ceb8b593027198bf9ef06a43833c696" }'
+            container: '{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-577d745" }'
 
     uses: ./.github/workflows/reusable-build-test.yml
     with:
       runs_on: ${{ matrix.os }}
       container: ${{ matrix.container }}
-      conan_profile: ${{ matrix.conan_profile }}
+      compiler: ${{ matrix.compiler }}
+      sanitizer: ${{ matrix.sanitizer }}
       build_type: ${{ matrix.build_type }}
       static: ${{ matrix.static }}
       run_unit_tests: true
@@ -88,8 +90,8 @@ jobs:
     uses: ./.github/workflows/reusable-build.yml
     with:
       runs_on: heavy
-      container: '{ "image": "ghcr.io/xrplf/clio-ci:14342e087ceb8b593027198bf9ef06a43833c696" }'
-      conan_profile: gcc
+      container: '{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-577d745" }'
+      compiler: gcc
       build_type: Release
       download_ccache: false
       upload_ccache: false
@@ -110,18 +112,18 @@ jobs:
       matrix:
         include:
           - os: heavy
-            conan_profile: clang
-            container: '{ "image": "ghcr.io/xrplf/clio-ci:14342e087ceb8b593027198bf9ef06a43833c696" }'
+            compiler: clang
+            container: '{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-577d745" }'
             static: true
           - os: macos15
-            conan_profile: apple-clang
+            compiler: apple-clang
             container: ""
             static: false
     uses: ./.github/workflows/reusable-build.yml
     with:
       runs_on: ${{ matrix.os }}
       container: ${{ matrix.container }}
-      conan_profile: ${{ matrix.conan_profile }}
+      compiler: ${{ matrix.compiler }}
       build_type: Release
       download_ccache: false
       upload_ccache: false
