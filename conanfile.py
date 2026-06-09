@@ -1,5 +1,6 @@
-from conan import ConanFile
 from conan.tools.cmake import CMake, CMakeToolchain, cmake_layout
+
+from conan import ConanFile
 
 
 class ClioConan(ConanFile):
@@ -44,7 +45,7 @@ class ClioConan(ConanFile):
     def requirements(self):
         self.requires("boost/1.83.0", force=True)
         self.requires("gtest/1.17.0")
-        self.requires("benchmark/1.9.4")
+        self.requires("benchmark/1.9.5")
 
     def configure(self):
         if self.settings.compiler == "apple-clang":
