@@ -19,7 +19,7 @@ on:
       - conanfile.py
       - conan.lock
       - "cmake/**"
-      # We don't run sanitizer on code change, because it takes too long
+      # We don't run sanitizers on code change, because it takes too long
       # - "src/**"
       # - "tests/**"
 
@@ -36,7 +36,7 @@ jobs:
       fail-fast: false
       matrix:
         compiler: [gcc, clang]
-        sanitizer: [address, thread, undefinedbehavior]
+        sanitizers: [address, thread, undefinedbehavior]
         build_type: [Release, Debug]
 
     uses: ./.github/workflows/reusable-build-test.yml
@@ -46,7 +46,7 @@ jobs:
       download_ccache: false
       upload_ccache: false
       compiler: ${{ matrix.compiler }}
-      sanitizer: ${{ matrix.sanitizer }}
+      sanitizers: ${{ matrix.sanitizers }}
       build_type: ${{ matrix.build_type }}
       static: false
       run_unit_tests: true

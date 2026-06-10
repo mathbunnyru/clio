@@ -25,11 +25,6 @@ option(
 )
 
 # ========================================================================== #
-set(san "" CACHE STRING "Add sanitizer instrumentation")
-set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
-set_property(CACHE san PROPERTY STRINGS ";undefined;memory;address;thread")
-# ========================================================================== #
-
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 # Include required modules
@@ -68,27 +63,26 @@ if(benchmark)
     add_subdirectory(benchmarks)
 endif()
 
-# Enable selected sanitizer if enabled via `san`
-if(san)
-    set(SUPPORTED_SANITIZERS "address" "thread" "memory" "undefined")
-    if(NOT san IN_LIST SUPPORTED_SANITIZERS)
-        message(
-            FATAL_ERROR
-            "Error: Unsupported sanitizer '${san}'. Supported values are: ${SUPPORTED_SANITIZERS}."
-        )
-    endif()
-
-    # Sanitizers recommend minimum of -O1 for reasonable performance so we enable it for debug builds
-    set(SAN_OPTIMIZATION_FLAG "")
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(SAN_OPTIMIZATION_FLAG -O1)
-    endif()
-    target_compile_options(
-        clio_options
-        INTERFACE ${SAN_OPTIMIZATION_FLAG} ${SAN_FLAG} -fno-omit-frame-pointer
+if(DEFINED SANITIZERS)
+    # Flags arrive as space-separated strings; split into CMake lists before use
+    separate_arguments(
+        sanitizers_compiler_flags
+        UNIX_COMMAND
+        "${SANITIZERS_COMPILER_FLAGS}"
+    )
+    separate_arguments(
+        sanitizers_linker_flags
+        UNIX_COMMAND
+        "${SANITIZERS_LINKER_FLAGS}"
     )
 
-    target_link_libraries(clio_options INTERFACE ${SAN_FLAG} ${SAN_LIB})
+    target_compile_options(
+        clio_options
+        INTERFACE
+            $<$<COMPILE_LANGUAGE:CXX>:${sanitizers_compiler_flags}>
+            $<$<COMPILE_LANGUAGE:C>:${sanitizers_compiler_flags}>
+    )
+    target_link_options(clio_options INTERFACE ${sanitizers_linker_flags})
 endif()
 
 # Generate `docs` target for doxygen documentation if enabled Note: use `make docs` to generate the documentation

@@ -63,7 +63,7 @@ jobs:
             container: '{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-577d745" }'
           - os: heavy
             compiler: gcc
-            sanitizer: undefinedbehavior
+            sanitizers: undefinedbehavior
             build_type: Release
             static: false
             container: '{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-577d745" }'
@@ -73,7 +73,7 @@ jobs:
       runs_on: ${{ matrix.os }}
       container: ${{ matrix.container }}
       compiler: ${{ matrix.compiler }}
-      sanitizer: ${{ matrix.sanitizer }}
+      sanitizers: ${{ matrix.sanitizers }}
       build_type: ${{ matrix.build_type }}
       static: ${{ matrix.static }}
       run_unit_tests: true
