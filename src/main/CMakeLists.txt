@@ -4,7 +4,7 @@ target_sources(clio_server PRIVATE Main.cpp)
 target_link_libraries(clio_server PRIVATE clio_app)
 
 if(static)
-    if(san)
+    if(SANITIZERS_ENABLED)
         message(FATAL_ERROR "Static linkage not allowed when using sanitizers")
     elseif(is_appleclang)
         message(FATAL_ERROR "Static linkage not supported on AppleClang")

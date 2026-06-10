@@ -37,6 +37,10 @@ add_library(clio_options INTERFACE)
 target_compile_features(clio_options INTERFACE cxx_std_23) # Clio needs c++23 but deps can remain c++20 for now
 target_include_directories(clio_options INTERFACE ${CMAKE_SOURCE_DIR}/src)
 
+# Apply sanitizer instrumentation if requested and define SANITIZERS_ENABLED.
+# Must come before the modules and subdirectories below that key off it.
+include(Sanitizers)
+
 if(verbose)
     set(CMAKE_VERBOSE_MAKEFILE TRUE)
 endif()
@@ -61,28 +65,6 @@ add_subdirectory(tests)
 
 if(benchmark)
     add_subdirectory(benchmarks)
-endif()
-
-if(DEFINED SANITIZERS)
-    # Flags arrive as space-separated strings; split into CMake lists before use
-    separate_arguments(
-        sanitizers_compiler_flags
-        UNIX_COMMAND
-        "${SANITIZERS_COMPILER_FLAGS}"
-    )
-    separate_arguments(
-        sanitizers_linker_flags
-        UNIX_COMMAND
-        "${SANITIZERS_LINKER_FLAGS}"
-    )
-
-    target_compile_options(
-        clio_options
-        INTERFACE
-            $<$<COMPILE_LANGUAGE:CXX>:${sanitizers_compiler_flags}>
-            $<$<COMPILE_LANGUAGE:C>:${sanitizers_compiler_flags}>
-    )
-    target_link_options(clio_options INTERFACE ${sanitizers_linker_flags})
 endif()
 
 # Generate `docs` target for doxygen documentation if enabled Note: use `make docs` to generate the documentation
