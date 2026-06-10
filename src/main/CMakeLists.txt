@@ -21,3 +21,5 @@ set_target_properties(
     clio_server
     PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )
+
+clio_patch_binary(clio_server)
