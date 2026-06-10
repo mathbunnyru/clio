@@ -18,7 +18,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/xrplf/xrpld/nix-ubuntu:sha-577d745
+      image: ghcr.io/xrplf/xrpld/nix-ubuntu:sha-dd0b675
 
     steps:
       - name: Checkout
