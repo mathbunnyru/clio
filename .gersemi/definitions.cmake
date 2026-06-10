@@ -18,5 +18,5 @@ endfunction()
 function(append_coverage_compiler_flags_to_target name mode)
 endfunction()
 
-function(clio_patch_binary target)
+function(patch_nix_binary target)
 endfunction()

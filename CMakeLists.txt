@@ -49,7 +49,7 @@ endif()
 include(CheckCompiler)
 include(Settings)
 include(SourceLocation)
-include(PatchBinary)
+include(PatchNixBinary)
 
 # Clio deps
 include(deps/libxrpl)
