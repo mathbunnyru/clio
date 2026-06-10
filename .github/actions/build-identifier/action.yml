@@ -42,9 +42,9 @@ runs:
       run: |
         BUILD_IDENTIFIER="${RUNNER_OS}-${COMPILER}-${BUILD_TYPE}"
         if [ "${CODE_COVERAGE}" == "true" ]; then
-          BUILD_IDENTIFIER+="-code_coverage"
+            BUILD_IDENTIFIER+="-code_coverage"
         fi
         if [ -n "${SANITIZERS}" ]; then
-          BUILD_IDENTIFIER+="-${SANITIZERS}"
+            BUILD_IDENTIFIER+="-${SANITIZERS}"
         fi
         echo "build_identifier=${BUILD_IDENTIFIER}" >>"${GITHUB_OUTPUT}"
