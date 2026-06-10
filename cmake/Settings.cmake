@@ -40,7 +40,7 @@ if(is_appleclang)
     list(APPEND COMPILER_FLAGS -Wreorder-init-list)
 endif()
 
-if(san)
+if(SANITIZERS_ENABLED)
     # When building with sanitizers some compilers will actually produce extra warnings/errors. We don't want this yet,
     # at least not until we have fixed all runtime issues reported by the sanitizers. Once that is done we can start
     # removing some of these and trying to fix it in our codebase. We can never remove all of below because most of them
