@@ -1,5 +1,5 @@
-name: Cache key
-description: Generate cache key for ccache
+name: Build identifier
+description: Generate a unique build identifier and the ccache key derived from it
 
 inputs:
   build_type:
@@ -17,14 +17,11 @@ inputs:
 
 outputs:
   build_identifier:
-    description: Unique identifier for the build configuration
+    description: Unique identifier for the build configuration (without commit)
     value: ${{ steps.build_identifier.outputs.build_identifier }}
-  key:
-    description: Generated cache key for ccache
+  cache_key:
+    description: ccache key, the build identifier suffixed with the common ancestor commit
     value: ${{ steps.build_identifier.outputs.build_identifier }}-${{ steps.git_common_ancestor.outputs.commit }}
-  restore_keys:
-    description: Cache restore keys for fallback
-    value: ${{ steps.build_identifier.outputs.build_identifier }}
 
 runs:
   using: composite
@@ -51,4 +48,3 @@ runs:
           BUILD_IDENTIFIER+="-${SANITIZERS}"
         fi
         echo "build_identifier=${BUILD_IDENTIFIER}" >>"${GITHUB_OUTPUT}"
-        echo "key=clio-ccache-${{ steps.build_identifier.outputs.build_identifier }}-develop" >>"${GITHUB_OUTPUT}"
