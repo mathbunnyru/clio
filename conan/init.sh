@@ -17,7 +17,7 @@ cp "$CURRENT_DIR/global.conf" "$CONAN_DIR/global.conf"
 mkdir -p "$PROFILES_DIR"
 
 # The compiler is selected via the `CC`/`CXX` environment variables (see
-# `.github/actions/set-compiler-env`) and the sanitizer via the `SANITIZERS`
+# `.github/actions/set-compiler-env`) and the sanitizers via the `SANITIZERS`
 # environment variable. Builds always use the `ci` profile, which includes
 # `sanitizers` and `default`.
 cp "$PROFILES_SRC_DIR/ci" "$PROFILES_DIR/ci"

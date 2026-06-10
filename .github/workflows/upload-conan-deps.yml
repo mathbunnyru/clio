@@ -59,7 +59,7 @@ jobs:
         run: .github/scripts/conan/generate_matrix.py >>"${GITHUB_OUTPUT}"
 
   upload-conan-deps:
-    name: Build ${{ matrix.compiler }} ${{ matrix.sanitizer }} ${{ matrix.build_type }}
+    name: Build ${{ matrix.compiler }} ${{ matrix.sanitizers }} ${{ matrix.build_type }}
 
     needs: generate-matrix
 
@@ -93,13 +93,13 @@ jobs:
 
       - name: Show conan profile
         env:
-          SANITIZERS: ${{ matrix.sanitizer }}
+          SANITIZERS: ${{ matrix.sanitizers }}
         run: conan profile show --profile:all ci
 
       - name: Run conan
         uses: ./.github/actions/conan
         with:
-          sanitizers: ${{ matrix.sanitizer }}
+          sanitizers: ${{ matrix.sanitizers }}
           # We check that everything builds fine from source on scheduled runs
           # But we do build and upload packages with build=missing by default
           force_conan_source_build: ${{ github.event_name == 'schedule' || github.event.inputs.force_source_build == 'true' }}

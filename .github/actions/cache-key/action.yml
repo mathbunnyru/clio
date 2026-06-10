@@ -2,25 +2,29 @@ name: Cache key
 description: Generate cache key for ccache
 
 inputs:
-  conan_profile:
-    description: Conan profile name
-    required: true
   build_type:
     description: Current build type (e.g. Release, Debug)
     required: true
-    default: Release
+  compiler:
+    description: Compiler used for the build (e.g. gcc, clang)
+    required: true
   code_coverage:
     description: Whether code coverage is on
     required: true
-    default: "false"
+  sanitizers:
+    description: Sanitizer to enable, read by the 'sanitizers' conan profile (e.g. 'address', 'thread', 'undefinedbehavior')
+    required: true
 
 outputs:
+  build_identifier:
+    description: Unique identifier for the build configuration
+    value: ${{ steps.build_identifier.outputs.build_identifier }}
   key:
     description: Generated cache key for ccache
-    value: ${{ steps.key_without_commit.outputs.key }}-${{ steps.git_common_ancestor.outputs.commit }}
+    value: ${{ steps.build_identifier.outputs.build_identifier }}-${{ steps.git_common_ancestor.outputs.commit }}
   restore_keys:
     description: Cache restore keys for fallback
-    value: ${{ steps.key_without_commit.outputs.key }}
+    value: ${{ steps.build_identifier.outputs.build_identifier }}
 
 runs:
   using: composite
@@ -29,13 +33,22 @@ runs:
       id: git_common_ancestor
       uses: ./.github/actions/git-common-ancestor
 
-    - name: Set cache key without commit
-      id: key_without_commit
+    - name: Build identifier
+      id: build_identifier
       shell: bash
       env:
         RUNNER_OS: ${{ runner.os }}
         BUILD_TYPE: ${{ inputs.build_type }}
-        CODE_COVERAGE: ${{ inputs.code_coverage == 'true' && '-code_coverage' || '' }}
-        CONAN_PROFILE: ${{ inputs.conan_profile }}
+        COMPILER: ${{ inputs.compiler }}
+        CODE_COVERAGE: ${{ inputs.code_coverage }}
+        SANITIZERS: ${{ inputs.sanitizers }}
       run: |
-        echo "key=clio-ccache-${RUNNER_OS}-${BUILD_TYPE}${CODE_COVERAGE}-${CONAN_PROFILE}-develop" >>"${GITHUB_OUTPUT}"
+        BUILD_IDENTIFIER="${RUNNER_OS}-${COMPILER}-${BUILD_TYPE}"
+        if [ "${CODE_COVERAGE}" == "true" ]; then
+          BUILD_IDENTIFIER+="-code_coverage"
+        fi
+        if [ -n "${SANITIZERS}" ]; then
+          BUILD_IDENTIFIER+="-${SANITIZERS}"
+        fi
+        echo "build_identifier=${BUILD_IDENTIFIER}" >>"${GITHUB_OUTPUT}"
+        echo "key=clio-ccache-${{ steps.build_identifier.outputs.build_identifier }}-develop" >>"${GITHUB_OUTPUT}"

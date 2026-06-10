@@ -18,8 +18,8 @@ on:
         required: true
         type: string
 
-      sanitizer:
-        description: 'Sanitizer to enable ("address", "thread", "undefinedbehavior" or empty)'
+      sanitizers:
+        description: 'Sanitizers to enable ("address", "thread", "undefinedbehavior" or empty)'
         required: false
         type: string
         default: ""
@@ -117,25 +117,14 @@ jobs:
       - name: Setup conan
         run: conan/init.sh
 
-      - name: Compute conan profile name
-        id: conan_profile
-        env:
-          COMPILER: ${{ inputs.compiler }}
-          SANITIZER: ${{ inputs.sanitizer }}
-        run: |
-          name="${COMPILER}"
-          if [[ -n "${SANITIZER}" ]]; then
-              name="${name}.${SANITIZER}"
-          fi
-          echo "name=${name}" >>"${GITHUB_OUTPUT}"
-
       - name: Generate cache key
         uses: ./.github/actions/cache-key
         id: cache_key
         with:
-          conan_profile: ${{ steps.conan_profile.outputs.name }}
           build_type: ${{ inputs.build_type }}
+          compiler: ${{ inputs.compiler }}
           code_coverage: ${{ inputs.code_coverage }}
+          sanitizers: ${{ inputs.sanitizers }}
 
       - name: Restore ccache cache
         if: ${{ inputs.download_ccache && github.ref != 'refs/heads/develop' }}
@@ -150,7 +139,7 @@ jobs:
         uses: ./.github/actions/conan
         with:
           build_type: ${{ inputs.build_type }}
-          sanitizers: ${{ inputs.sanitizer }}
+          sanitizers: ${{ inputs.sanitizers }}
 
       - name: Run CMake
         uses: ./.github/actions/cmake
@@ -178,7 +167,7 @@ jobs:
         if: ${{ inputs.analyze_build_time }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: build_time_report_${{ runner.os }}_${{ inputs.build_type }}_${{ steps.conan_profile.outputs.name }}
+          name: build_time_report_${{ steps.cache_key.outputs.build_identifier }}
           path: build_time_report.txt
 
       - name: Show ccache's statistics and zero it
@@ -195,39 +184,39 @@ jobs:
           key: ${{ steps.cache_key.outputs.key }}
 
       - name: Strip unit_tests
-        if: ${{ inputs.sanitizer == '' && !inputs.code_coverage && !inputs.analyze_build_time }}
+        if: ${{ inputs.sanitizers == '' && !inputs.code_coverage && !inputs.analyze_build_time }}
         run: strip build/clio_tests
 
       - name: Strip integration_tests
-        if: ${{ inputs.sanitizer == '' && !inputs.code_coverage && !inputs.analyze_build_time }}
+        if: ${{ inputs.sanitizers == '' && !inputs.code_coverage && !inputs.analyze_build_time }}
         run: strip build/clio_integration_tests
 
       - name: Upload clio_server
         if: ${{ inputs.upload_clio_server && !inputs.code_coverage && !inputs.analyze_build_time }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: clio_server_${{ runner.os }}_${{ inputs.build_type }}_${{ steps.conan_profile.outputs.name }}
+          name: clio_server_${{ steps.cache_key.outputs.build_identifier }}
           path: build/clio_server
 
       - name: Upload clio_tests
         if: ${{ !inputs.code_coverage && !inputs.analyze_build_time && !inputs.package }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: clio_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ steps.conan_profile.outputs.name }}
+          name: clio_tests_${{ steps.cache_key.outputs.build_identifier }}
           path: build/clio_tests
 
       - name: Upload clio_integration_tests
         if: ${{ !inputs.code_coverage && !inputs.analyze_build_time && !inputs.package }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: clio_integration_tests_${{ runner.os }}_${{ inputs.build_type }}_${{ steps.conan_profile.outputs.name }}
+          name: clio_integration_tests_${{ steps.cache_key.outputs.build_identifier }}
           path: build/clio_integration_tests
 
       - name: Upload Clio Linux package
         if: ${{ inputs.package }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: clio_deb_package_${{ runner.os }}_${{ inputs.build_type }}_${{ steps.conan_profile.outputs.name }}
+          name: clio_deb_package_${{ steps.cache_key.outputs.build_identifier }}
           path: build/*.deb
 
       # This is run as part of the build job, because it requires the following:

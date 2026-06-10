@@ -13,7 +13,7 @@ MACOS_COMPILERS = ["apple-clang"]
 BUILD_TYPES = ["Release", "Debug"]
 
 # Values of the `SANITIZERS` environment variable read by the `sanitizers` conan
-# profile. An empty string builds without any sanitizer.
+# profile. An empty string builds without any sanitizers.
 SANITIZERS = ["address", "thread", "undefinedbehavior", ""]
 
 
@@ -24,13 +24,13 @@ def generate_matrix():
         itertools.product(LINUX_OS, LINUX_CONTAINERS, LINUX_COMPILERS),
         itertools.product(MACOS_OS, MACOS_CONTAINERS, MACOS_COMPILERS),
     ):
-        for sanitizer, build_type in itertools.product(SANITIZERS, BUILD_TYPES):
+        for sanitizers, build_type in itertools.product(SANITIZERS, BUILD_TYPES):
             configurations.append(
                 {
                     "os": os,
                     "container": container,
                     "compiler": compiler,
-                    "sanitizer": sanitizer,
+                    "sanitizers": sanitizers,
                     "build_type": build_type,
                 }
             )
