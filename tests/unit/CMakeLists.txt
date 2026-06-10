@@ -239,6 +239,8 @@ set_target_properties(
     PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
+clio_patch_binary(clio_tests)
+
 # Generate `coverage_report` target if coverage is enabled
 if(coverage)
     if(DEFINED CODE_COVERAGE_REPORT_FORMAT)
