@@ -12,6 +12,18 @@
 
 namespace util::async::impl {
 
+// Wraps std::any so it isn't a direct value type of std::expected. std::any's greedy
+// constrained converting constructor + std::expected's __cons_from_expected constraint
+// form a self-referential constraint cycle that Clang rejects ("satisfaction of constraint
+// depends on itself") while GCC accepts. Known Clang bug, not ours:
+//   https://github.com/llvm/llvm-project/issues/62096
+//   https://github.com/llvm/llvm-project/issues/134880
+struct AnyValue {
+    std::any value;
+};
+
+using AnyOperation = std::expected<AnyValue, ExecutionError>;
+
 class ErasedOperation {
 public:
     template <SomeOperation OpType>
@@ -37,7 +49,7 @@ public:
         pimpl_->wait();
     }
 
-    std::expected<std::any, ExecutionError>
+    AnyOperation
     get()
     {
         return pimpl_->get();
@@ -64,7 +76,7 @@ private:
 
         virtual void
         wait() noexcept = 0;
-        virtual std::expected<std::any, ExecutionError>
+        virtual AnyOperation
         get() = 0;
         virtual void
         abort() = 0;
@@ -93,7 +105,7 @@ private:
             }
         }
 
-        std::expected<std::any, ExecutionError>
+        AnyOperation
         get() override
         {
             if constexpr (not SomeOperationWithData<OpType>) {
@@ -102,7 +114,7 @@ private:
             } else {
                 // Note: return type of the operation was already wrapped to std::any by
                 // AnyExecutionContext
-                return operation.get();
+                return AnyValue{.value = operation.get()};
             }
         }
 

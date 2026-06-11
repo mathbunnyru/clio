@@ -2,6 +2,7 @@
 #include "util/MockOperation.hpp"
 #include "util/async/AnyOperation.hpp"
 #include "util/async/Error.hpp"
+#include "util/async/impl/ErasedOperation.hpp"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -15,10 +16,10 @@ using namespace util::async;
 using namespace ::testing;
 
 struct AnyOperationTests : virtual Test {
-    using OperationType = MockOperation<std::expected<std::any, ExecutionError>>;
-    using StoppableOperationType = MockStoppableOperation<std::expected<std::any, ExecutionError>>;
-    using ScheduledOperationType = MockScheduledOperation<std::expected<std::any, ExecutionError>>;
-    using RepeatingOperationType = MockRepeatingOperation<std::expected<std::any, ExecutionError>>;
+    using OperationType = MockOperation<impl::AnyOperation>;
+    using StoppableOperationType = MockStoppableOperation<impl::AnyOperation>;
+    using ScheduledOperationType = MockScheduledOperation<impl::AnyOperation>;
+    using RepeatingOperationType = MockRepeatingOperation<impl::AnyOperation>;
 
     NaggyMock<OperationType> mockOp;
     NaggyMock<StoppableOperationType> mockStoppableOp;
@@ -40,7 +41,7 @@ struct AnyOperationTests : virtual Test {
 
 TEST_F(AnyOperationTests, Move)
 {
-    EXPECT_CALL(mockOp, get()).WillOnce(Return(std::any{}));
+    EXPECT_CALL(mockOp, get()).WillOnce(Return(impl::AnyValue{}));
     auto yoink = std::move(voidOp);
     auto res = yoink.get();
     ASSERT_TRUE(res);
@@ -48,14 +49,14 @@ TEST_F(AnyOperationTests, Move)
 
 TEST_F(AnyOperationTests, VoidDataYieldsNoError)
 {
-    EXPECT_CALL(mockOp, get()).WillOnce(Return(std::any{}));
+    EXPECT_CALL(mockOp, get()).WillOnce(Return(impl::AnyValue{}));
     auto res = voidOp.get();
     ASSERT_TRUE(res);
 }
 
 TEST_F(AnyOperationTests, GetIntData)
 {
-    EXPECT_CALL(mockOp, get()).WillOnce(Return(std::make_any<int>(42)));
+    EXPECT_CALL(mockOp, get()).WillOnce(Return(impl::AnyValue(42)));
     auto res = intOp.get();
     EXPECT_EQ(res.value(), 42);
 }
@@ -95,7 +96,7 @@ TEST_F(AnyOperationTests, GetPropagatesError)
 
 TEST_F(AnyOperationTests, GetIncorrectDataReturnsError)
 {
-    EXPECT_CALL(mockOp, get()).WillOnce(Return(std::make_any<double>(4.2)));
+    EXPECT_CALL(mockOp, get()).WillOnce(Return(impl::AnyValue(4.2)));
     auto res = intOp.get();
 
     ASSERT_FALSE(res);

@@ -3,13 +3,9 @@
 #include <fmt/format.h>
 #include <fmt/std.h>
 
+#include <expected>
 #include <string>
 #include <utility>
-
-// for the static_assert at the bottom which fixes clang compilation:
-// see: https://godbolt.org/z/fzTjMd7G1 vs https://godbolt.org/z/jhKG7deen
-#include <any>
-#include <expected>
 
 namespace util::async {
 
@@ -48,8 +44,5 @@ struct ExecutionError {
 
     std::string message;
 };
-
-// these are not the droids you are looking for...
-static_assert(std::is_copy_constructible_v<std::expected<std::any, ExecutionError>>);
 
 }  // namespace util::async
