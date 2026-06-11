@@ -48,14 +48,12 @@ jobs:
         compiler: [gcc, clang]
         build_type: [Release, Debug]
         container: ['{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-dd0b675" }']
-        static: [true]
 
         include:
           - os: macos15
             compiler: apple-clang
             build_type: Release
             container: ""
-            static: false
 
     uses: ./.github/workflows/reusable-build-test.yml
     with:
@@ -65,7 +63,6 @@ jobs:
       build_type: ${{ matrix.build_type }}
       download_ccache: true
       upload_ccache: true
-      static: ${{ matrix.static }}
       run_unit_tests: true
       run_integration_tests: false
       upload_clio_server: true
@@ -82,7 +79,6 @@ jobs:
       download_ccache: true
       upload_ccache: true
       code_coverage: true
-      static: true
       upload_clio_server: false
       targets: all
       analyze_build_time: false

@@ -50,22 +50,18 @@ jobs:
           - os: macos15
             compiler: apple-clang
             build_type: Release
-            static: false
           - os: heavy
             compiler: gcc
             build_type: Release
-            static: true
             container: '{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-dd0b675" }'
           - os: heavy
             compiler: gcc
             build_type: Debug
-            static: true
             container: '{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-dd0b675" }'
           - os: heavy
             compiler: gcc
             sanitizers: undefinedbehavior
             build_type: Release
-            static: false
             container: '{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-dd0b675" }'
 
     uses: ./.github/workflows/reusable-build-test.yml
@@ -75,7 +71,6 @@ jobs:
       compiler: ${{ matrix.compiler }}
       sanitizers: ${{ matrix.sanitizers }}
       build_type: ${{ matrix.build_type }}
-      static: ${{ matrix.static }}
       run_unit_tests: true
       run_integration_tests: true
       upload_clio_server: true
@@ -96,7 +91,6 @@ jobs:
       download_ccache: false
       upload_ccache: false
       code_coverage: false
-      static: true
       upload_clio_server: false
       package: true
       version: nightly-${{ needs.get_date.outputs.date }}
@@ -114,11 +108,9 @@ jobs:
           - os: heavy
             compiler: clang
             container: '{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-dd0b675" }'
-            static: true
           - os: macos15
             compiler: apple-clang
             container: ""
-            static: false
     uses: ./.github/workflows/reusable-build.yml
     with:
       runs_on: ${{ matrix.os }}
@@ -128,7 +120,6 @@ jobs:
       download_ccache: false
       upload_ccache: false
       code_coverage: false
-      static: ${{ matrix.static }}
       upload_clio_server: false
       targets: all
       analyze_build_time: true

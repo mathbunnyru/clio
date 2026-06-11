@@ -41,12 +41,6 @@ on:
         type: boolean
         default: false
 
-      static:
-        description: Whether to build static binaries
-        required: true
-        type: boolean
-        default: true
-
       run_unit_tests:
         description: Whether to run unit tests
         required: true
@@ -93,7 +87,6 @@ jobs:
       download_ccache: ${{ inputs.download_ccache }}
       upload_ccache: ${{ inputs.upload_ccache }}
       code_coverage: false
-      static: ${{ inputs.static }}
       upload_clio_server: ${{ inputs.upload_clio_server }}
       targets: ${{ inputs.targets }}
       analyze_build_time: false

@@ -46,11 +46,6 @@ on:
         required: true
         type: boolean
 
-      static:
-        description: Whether to build static binaries
-        required: true
-        type: boolean
-
       upload_clio_server:
         description: Whether to upload clio_server
         required: true
@@ -146,7 +141,6 @@ jobs:
         with:
           build_type: ${{ inputs.build_type }}
           code_coverage: ${{ inputs.code_coverage }}
-          static: ${{ inputs.static }}
           time_trace: ${{ inputs.analyze_build_time }}
           package: ${{ inputs.package }}
           version: ${{ inputs.version }}

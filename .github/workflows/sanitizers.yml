@@ -48,7 +48,6 @@ jobs:
       compiler: ${{ matrix.compiler }}
       sanitizers: ${{ matrix.sanitizers }}
       build_type: ${{ matrix.build_type }}
-      static: false
       run_unit_tests: true
       run_integration_tests: false
       upload_clio_server: false

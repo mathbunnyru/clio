@@ -16,7 +16,6 @@ option(docs "Generate doxygen docs" FALSE)
 option(coverage "Build test coverage report" FALSE)
 option(package "Create distribution packages" FALSE)
 option(lint "Run clang-tidy checks during compilation" FALSE)
-option(static "Statically linked Clio" FALSE)
 option(snapshot "Build snapshot tool" FALSE)
 option(
     time_trace
@@ -36,6 +35,14 @@ include(Linker)
 add_library(clio_options INTERFACE)
 target_compile_features(clio_options INTERFACE cxx_std_23) # Clio needs c++23 but deps can remain c++20 for now
 target_include_directories(clio_options INTERFACE ${CMAKE_SOURCE_DIR}/src)
+
+if(
+    CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
+    OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
+)
+    # Note: -static-libstdc++ can statically link both libstdc++ and libc++
+    target_link_libraries(clio_options PUBLIC -static-libstdc++ -static-libgcc)
+endif()
 
 # Apply sanitizer instrumentation if requested and define SANITIZERS_ENABLED.
 # Must come before the modules and subdirectories below that key off it.
