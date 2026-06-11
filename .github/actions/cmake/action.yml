@@ -22,10 +22,6 @@ inputs:
     description: Whether to enable code coverage
     required: true
     default: "false"
-  static:
-    description: Whether Clio is to be statically linked
-    required: true
-    default: "false"
   time_trace:
     description: Whether to enable compiler trace reports
     required: true
@@ -50,7 +46,6 @@ runs:
         INTEGRATION_TESTS: "${{ inputs.integration_tests == 'true' && 'ON' || 'OFF' }}"
         BENCHMARK: "${{ inputs.benchmark == 'true' && 'ON' || 'OFF' }}"
         COVERAGE: "${{ inputs.code_coverage == 'true' && 'ON' || 'OFF' }}"
-        STATIC: "${{ inputs.static == 'true' && 'ON' || 'OFF' }}"
         TIME_TRACE: "${{ inputs.time_trace == 'true' && 'ON' || 'OFF' }}"
         PACKAGE: "${{ inputs.package == 'true' && 'ON' || 'OFF' }}"
         # GitHub creates a merge commit for a PR
@@ -77,6 +72,5 @@ runs:
             -Dintegration_tests="${INTEGRATION_TESTS}" \
             -Dbenchmark="${BENCHMARK}" \
             -Dcoverage="${COVERAGE}" \
-            -Dstatic="${STATIC}" \
             -Dtime_trace="${TIME_TRACE}" \
             -Dpackage="${PACKAGE}"
