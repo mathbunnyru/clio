@@ -41,7 +41,10 @@ if(
     OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
 )
     # Note: -static-libstdc++ can statically link both libstdc++ and libc++
-    target_link_libraries(clio_options PUBLIC -static-libstdc++ -static-libgcc)
+    target_link_libraries(
+        clio_options
+        INTERFACE -static-libstdc++ -static-libgcc
+    )
 endif()
 
 # Apply sanitizer instrumentation if requested and define SANITIZERS_ENABLED.
