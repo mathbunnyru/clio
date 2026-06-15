@@ -40,11 +40,14 @@ runs:
         CODE_COVERAGE: ${{ inputs.code_coverage }}
         SANITIZERS: ${{ inputs.sanitizers }}
       run: |
-        BUILD_IDENTIFIER="${RUNNER_OS}-${COMPILER}-${BUILD_TYPE}"
+        # Keep the legacy "<os>_<build_type>_<compiler>" layout so standard artifact
+        # names (e.g. clio_server_Linux_Release_gcc) stay backwards compatible.
+        # Sanitizer/coverage builds get extra suffixes and may differ from old names.
+        BUILD_IDENTIFIER="${RUNNER_OS}_${BUILD_TYPE}_${COMPILER}"
         if [ "${CODE_COVERAGE}" == "true" ]; then
-            BUILD_IDENTIFIER+="-code_coverage"
+            BUILD_IDENTIFIER+="_code_coverage"
         fi
         if [ -n "${SANITIZERS}" ]; then
-            BUILD_IDENTIFIER+="-${SANITIZERS}"
+            BUILD_IDENTIFIER+="_${SANITIZERS}"
         fi
         echo "build_identifier=${BUILD_IDENTIFIER}" >>"${GITHUB_OUTPUT}"
