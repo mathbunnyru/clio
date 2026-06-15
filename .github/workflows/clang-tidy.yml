@@ -51,7 +51,7 @@ jobs:
     if: ${{ always() && !cancelled() && (github.event_name != 'pull_request' || needs.determine-files.outputs.cpp_changed_files != '' || needs.determine-files.outputs.clang_tidy_config_changed == 'true') }}
     runs-on: heavy
     container:
-      image: ghcr.io/xrplf/xrpld/nix-ubuntu:sha-dd0b675
+      image: ghcr.io/xrplf/xrpld/nix-ubuntu:sha-fe4c8ae
 
     permissions:
       contents: write

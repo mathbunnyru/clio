@@ -27,7 +27,7 @@ jobs:
           - os: heavy
             compiler: gcc
             build_type: Release
-            container: '{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-dd0b675" }'
+            container: '{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-fe4c8ae" }'
 
     uses: ./.github/workflows/reusable-build-test.yml
     with:
@@ -48,7 +48,7 @@ jobs:
     uses: ./.github/workflows/reusable-build.yml
     with:
       runs_on: heavy
-      container: '{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-dd0b675" }'
+      container: '{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-fe4c8ae" }'
       compiler: gcc
       build_type: Release
       download_ccache: false
