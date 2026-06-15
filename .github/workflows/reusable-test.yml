@@ -137,6 +137,12 @@ jobs:
           colima delete --force
           colima start
 
+      - name: Remove leftover scylladb container (macOS)
+        # A previous run that didn't clean up (e.g. a cancelled job) can leave the
+        # container behind, otherwise the name is still taken on the persistent runner.
+        if: ${{ runner.os == 'macOS' }}
+        run: docker rm --force scylladb || true
+
       - name: Spin up scylladb (macOS)
         if: ${{ runner.os == 'macOS' }}
         timeout-minutes: 1
