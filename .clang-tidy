@@ -155,6 +155,7 @@ Checks: "-*,
   readability-use-std-min-max
   "
 
+# This is a comment to force clang-tidy to run on all files, even if they are not modified.
 CheckOptions:
   bugprone-unsafe-functions.ReportMoreUnsafeFunctions: true
   bugprone-unused-return-value.CheckedReturnTypes: ::std::error_code;::std::error_condition;::std::errc
