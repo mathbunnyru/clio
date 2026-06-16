@@ -28,9 +28,9 @@ env:
   BUILD_DIR: build
   BUILD_TYPE: Debug # Debug so that ASSERTS and such participate in clang-tidy check
 
-  OUTPUT_FILE: clang-tidy-output.txt
-  DIFF_FILE: clang-tidy-git-diff.txt
-  ISSUE_FILE: clang-tidy-issue.md
+  OUTPUT_FILE: /tmp/clang-tidy-output.txt
+  DIFF_FILE: /tmp/clang-tidy-git-diff.txt
+  ISSUE_FILE: /tmp/clang-tidy-issue.md
 
   COMPILER: clang
 
@@ -184,6 +184,7 @@ jobs:
           EOF
 
       - name: Create issue
+        id: create_issue
         if: ${{ steps.run_clang_tidy.outcome != 'success' && github.event_name != 'pull_request' }}
         uses: XRPLF/actions/create-issue@2b8bc36af85b88bca0dd7bfac2e2dc05f94ad712
         with:
@@ -212,7 +213,7 @@ jobs:
           branch: "clang_tidy/autofix"
           branch-suffix: timestamp
           delete-branch: true
-          title: "style: clang-tidy auto fixes"
+          title: "style: Apply clang-tidy auto fixes"
           body: >
             Fixes #${{ steps.create_issue.outputs.issue_number }}.
 
