@@ -104,6 +104,29 @@ struct MockBackend : public BackendInterface {
     );
 
     MOCK_METHOD(
+        data::TransactionsAndCursor,
+        fetchMPTokenIssuanceTransactions,
+        (ripple::uint192 const&,
+         std::uint32_t,
+         bool,
+         std::optional<data::TransactionsCursor> const&,
+         boost::asio::yield_context),
+        (const, override)
+    );
+
+    MOCK_METHOD(
+        data::TransactionsAndCursor,
+        fetchAccountMPTokenIssuanceTransactions,
+        (ripple::uint192 const&,
+         ripple::AccountID const&,
+         std::uint32_t,
+         bool,
+         std::optional<data::TransactionsCursor> const&,
+         boost::asio::yield_context),
+        (const, override)
+    );
+
+    MOCK_METHOD(
         data::NFTsAndCursor,
         fetchNFTsByIssuer,
         (ripple::AccountID const& issuer,
@@ -203,6 +226,20 @@ struct MockBackend : public BackendInterface {
     MOCK_METHOD(void, writeAccountTransaction, (AccountTransactionsData), (override));
 
     MOCK_METHOD(void, writeNFTTransactions, (std::vector<NFTTransactionsData> const&), (override));
+
+    MOCK_METHOD(
+        void,
+        writeMPTokenIssuanceTransactions,
+        (std::vector<MPTokenIssuanceTransactionsData> const&),
+        (override)
+    );
+
+    MOCK_METHOD(
+        void,
+        writeAccountMPTokenIssuanceTransactions,
+        (std::vector<MPTokenIssuanceTransactionsData> const&),
+        (override)
+    );
 
     MOCK_METHOD(
         void,

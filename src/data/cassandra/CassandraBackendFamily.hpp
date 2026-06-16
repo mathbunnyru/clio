@@ -77,6 +77,13 @@ protected:
     // TODO: move to interface level
     mutable FetchLedgerCacheType ledgerCache_{};
 
+    static constexpr std::size_t kTransactionCursorBindIndex = 1;
+    static constexpr std::size_t kTransactionLimitBindIndex = 2;
+    static constexpr std::size_t kMPTokenIssuanceTxCursorBindIndex = 1;
+    static constexpr std::size_t kMPTokenIssuanceTxLimitBindIndex = 2;
+    static constexpr std::size_t kAccountMPTokenIssuanceTxCursorBindIndex = 2;
+    static constexpr std::size_t kAccountMPTokenIssuanceTxLimitBindIndex = 3;
+
 public:
     /**
      * @brief Create a new cassandra/scylla backend instance.
@@ -154,14 +161,16 @@ public:
 
         auto cursor = txnCursor;
         if (cursor) {
-            statement.bindAt(1, cursor->asTuple());
+            statement.bindAt(kTransactionCursorBindIndex, cursor->asTuple());
             LOG(log_.debug()) << "account = " << ripple::strHex(account)
                               << " tuple = " << cursor->ledgerSequence << cursor->transactionIndex;
         } else {
             auto const seq = forward ? rng->minSequence : rng->maxSequence;
             auto const placeHolder = forward ? 0u : std::numeric_limits<std::uint32_t>::max();
 
-            statement.bindAt(1, std::make_tuple(placeHolder, placeHolder));
+            statement.bindAt(
+                kTransactionCursorBindIndex, std::make_tuple(placeHolder, placeHolder)
+            );
             LOG(log_.debug()) << "account = " << ripple::strHex(account) << " idx = " << seq
                               << " tuple = " << placeHolder;
         }
@@ -169,7 +178,7 @@ public:
         // FIXME: Limit is a hack to support uint32_t properly for the time
         // being. Should be removed later and schema updated to use proper
         // types.
-        statement.bindAt(2, Limit{limit});
+        statement.bindAt(kTransactionLimitBindIndex, Limit{limit});
         auto const res = executor_.read(yield, statement);
         auto const& results = res.value();
         if (not results.hasRows()) {
@@ -435,19 +444,21 @@ public:
 
         auto cursor = cursorIn;
         if (cursor) {
-            statement.bindAt(1, cursor->asTuple());
+            statement.bindAt(kTransactionCursorBindIndex, cursor->asTuple());
             LOG(log_.debug()) << "token_id = " << ripple::strHex(tokenID)
                               << " tuple = " << cursor->ledgerSequence << cursor->transactionIndex;
         } else {
             auto const seq = forward ? rng->minSequence : rng->maxSequence;
             auto const placeHolder = forward ? 0 : std::numeric_limits<std::uint32_t>::max();
 
-            statement.bindAt(1, std::make_tuple(placeHolder, placeHolder));
+            statement.bindAt(
+                kTransactionCursorBindIndex, std::make_tuple(placeHolder, placeHolder)
+            );
             LOG(log_.debug()) << "token_id = " << ripple::strHex(tokenID) << " idx = " << seq
                               << " tuple = " << placeHolder;
         }
 
-        statement.bindAt(2, Limit{limit});
+        statement.bindAt(kTransactionLimitBindIndex, Limit{limit});
 
         auto const res = executor_.read(yield, statement);
         auto const& results = res.value();
@@ -483,6 +494,59 @@ public:
         }
 
         return {txns, {}};
+    }
+
+    TransactionsAndCursor
+    fetchMPTokenIssuanceTransactions(
+        ripple::uint192 const& mptIssuanceID,
+        std::uint32_t const limit,
+        bool const forward,
+        std::optional<TransactionsCursor> const& cursorIn,
+        boost::asio::yield_context yield
+    ) const override
+    {
+        auto const statement = [this, forward, &mptIssuanceID]() {
+            if (forward)
+                return schema_->selectMPTokenIssuanceTxForward.bind(mptIssuanceID);
+
+            return schema_->selectMPTokenIssuanceTx.bind(mptIssuanceID);
+        }();
+        return fetchMPTokenIssuanceTransactionsImpl(
+            statement,
+            kMPTokenIssuanceTxCursorBindIndex,
+            kMPTokenIssuanceTxLimitBindIndex,
+            limit,
+            forward,
+            cursorIn,
+            yield
+        );
+    }
+
+    TransactionsAndCursor
+    fetchAccountMPTokenIssuanceTransactions(
+        ripple::uint192 const& mptIssuanceID,
+        ripple::AccountID const& account,
+        std::uint32_t const limit,
+        bool const forward,
+        std::optional<TransactionsCursor> const& cursorIn,
+        boost::asio::yield_context yield
+    ) const override
+    {
+        auto const statement = [this, forward, &mptIssuanceID, &account]() {
+            if (forward)
+                return schema_->selectAccountMPTokenIssuanceTxForward.bind(mptIssuanceID, account);
+
+            return schema_->selectAccountMPTokenIssuanceTx.bind(mptIssuanceID, account);
+        }();
+        return fetchMPTokenIssuanceTransactionsImpl(
+            statement,
+            kAccountMPTokenIssuanceTxCursorBindIndex,
+            kAccountMPTokenIssuanceTxLimitBindIndex,
+            limit,
+            forward,
+            cursorIn,
+            yield
+        );
     }
 
     MPTHoldersAndCursor
@@ -878,6 +942,55 @@ public:
     }
 
     void
+    writeMPTokenIssuanceTransactions(
+        std::vector<MPTokenIssuanceTransactionsData> const& data
+    ) override
+    {
+        std::vector<Statement> statements;
+        statements.reserve(data.size());
+
+        std::ranges::transform(data, std::back_inserter(statements), [this](auto const& record) {
+            return schema_->insertMPTokenIssuanceTx.bind(
+                record.mptIssuanceID,
+                std::make_tuple(record.ledgerSequence, record.transactionIndex),
+                record.txHash
+            );
+        });
+
+        executor_.write(std::move(statements));
+    }
+
+    void
+    writeAccountMPTokenIssuanceTransactions(
+        std::vector<MPTokenIssuanceTransactionsData> const& data
+    ) override
+    {
+        std::size_t numStatements = 0u;
+        for (auto const& record : data)
+            numStatements += record.accounts.size();
+
+        std::vector<Statement> statements;
+        statements.reserve(numStatements);
+
+        for (auto const& record : data) {
+            std::ranges::transform(
+                record.accounts,
+                std::back_inserter(statements),
+                [this, &record](auto const& account) {
+                    return schema_->insertAccountMPTokenIssuanceTx.bind(
+                        record.mptIssuanceID,
+                        account,
+                        std::make_tuple(record.ledgerSequence, record.transactionIndex),
+                        record.txHash
+                    );
+                }
+            );
+        }
+
+        executor_.write(std::move(statements));
+    }
+
+    void
     writeTransaction(
         std::string&& hash,
         std::uint32_t const seq,
@@ -1015,6 +1128,86 @@ protected:
         }
 
         return true;
+    }
+
+    /**
+     * @brief Shared implementation of the two MPTokenIssuance transaction-index fetchers.
+     *
+     * @note The forward path queries with an inclusive seq_idx >=,
+     * so the returned cursor's transaction index is advanced
+     * by one to avoid re-reading the last row on the next page.
+     *
+     * @param statement The statement already bound with the partition-key columns.
+     * @param cursorIdx The bind index for the `seq_idx` cursor tuple.
+     * @param limitIdx The bind index for the `LIMIT`.
+     * @param limit The maximum number of transactions per result page.
+     * @param forward Whether the page is fetched forwards or backwards.
+     * @param cursorIn The cursor to resume fetching from.
+     * @param yield The coroutine context.
+     * @return Results and a cursor to resume from.
+     */
+    TransactionsAndCursor
+    fetchMPTokenIssuanceTransactionsImpl(
+        Statement const& statement,
+        std::size_t const cursorIdx,
+        std::size_t const limitIdx,
+        std::uint32_t const limit,
+        bool const forward,
+        std::optional<TransactionsCursor> const& cursorIn,
+        boost::asio::yield_context yield
+    ) const
+    {
+        auto rng = fetchLedgerRange();
+        if (!rng)
+            return {.txns = {}, .cursor = {}};
+
+        auto cursor = cursorIn;
+        if (cursor.has_value()) {
+            statement.bindAt(cursorIdx, cursor->asTuple());
+        } else {
+            // Forward uses the nft_history-style inclusive lower bound; reverse starts just past
+            // the latest validated ledger so its exclusive `<` query includes that ledger's rows.
+            auto const ledgerSequence = forward ? rng->minSequence : rng->maxSequence;
+            auto const transactionIndex = forward ? 0u : std::numeric_limits<std::uint32_t>::max();
+            statement.bindAt(cursorIdx, std::make_tuple(ledgerSequence, transactionIndex));
+        }
+
+        statement.bindAt(limitIdx, Limit{limit});
+
+        auto const res = executor_.read(yield, statement);
+        auto const& results = res.value();
+        if (not results.hasRows()) {
+            LOG(log_.debug()) << "No rows returned";
+            return {};
+        }
+
+        std::vector<ripple::uint256> hashes = {};
+        auto numRows = results.numRows();
+
+        for (auto const& [hash, data] :
+             extract<ripple::uint256, std::tuple<uint32_t, uint32_t>>(results)) {
+            hashes.push_back(hash);
+
+            if (--numRows == 0) {
+                LOG(log_.debug()) << "Setting cursor";
+                cursor = data;
+
+                // forward queries by ledger/tx sequence `>=`
+                // so we have to advance the index by one
+                if (forward)
+                    ++cursor->transactionIndex;
+            }
+        }
+
+        auto txns = fetchTransactions(hashes, yield);
+        LOG(log_.debug()) << "MPTokenIssuance Txns = " << txns.size();
+
+        if (txns.size() == limit) {
+            LOG(log_.debug()) << "Returning cursor";
+            return {std::move(txns), cursor};
+        }
+
+        return {std::move(txns), {}};
     }
 };
 

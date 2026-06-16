@@ -33,6 +33,7 @@
 #include <xrpl/basics/base_uint.h>
 #include <xrpl/basics/strHex.h>
 #include <xrpl/protocol/AccountID.h>
+#include <xrpl/protocol/Indexes.h>
 #include <xrpl/protocol/LedgerHeader.h>
 #include <xrpl/protocol/STTx.h>
 #include <xrpl/protocol/Serializer.h>
@@ -48,6 +49,7 @@
 #include <memory>
 #include <optional>
 #include <random>
+#include <set>
 #include <string>
 #include <string_view>
 #include <thread>
@@ -1461,8 +1463,403 @@ TEST_F(CacheBackendCassandraTest, CacheFetchLedgerBySeq)
     });
 }
 
+struct BackendCassandraMPTokenIssuanceTest : BackendCassandraTest {
+    static ripple::uint192
+    makeMptIssuanceId()
+    {
+        return ripple::makeMptID(1, makeAccount(0x01));
+    }
+
+    static ripple::AccountID
+    makeAccount(std::uint8_t seed)
+    {
+        return ripple::AccountID{seed};
+    }
+
+    static ripple::uint256
+    makeHash(std::uint8_t seed)
+    {
+        return ripple::uint256{seed};
+    }
+
+    // Writes a single ledger so that fetchLedgerRange() is populated, which the fetchers
+    // require before reading any index rows.
+    void
+    setupLedgerRange(std::uint32_t seq)
+    {
+        std::string rawHeaderBlob = hexStringToBinaryString(kRawheader);
+        ripple::LedgerHeader lgrInfo = util::deserializeHeader(ripple::makeSlice(rawHeaderBlob));
+        lgrInfo.seq = seq;
+        backend_->writeLedger(lgrInfo, std::move(rawHeaderBlob));
+        backend_->writeSuccessor(
+            uint256ToString(data::kFirstKey), lgrInfo.seq, uint256ToString(data::kLastKey)
+        );
+        ASSERT_TRUE(backend_->finishWrites(lgrInfo.seq));
+        auto const rng = backend_->fetchLedgerRange();
+        ASSERT_TRUE(rng.has_value());
+    }
+
+    void
+    writeTxBlob(ripple::uint256 const& hash, std::uint32_t seq)
+    {
+        backend_->writeTransaction(
+            uint256ToString(hash),
+            seq,
+            0,
+            "tx_" + ripple::strHex(hash),
+            "meta_" + ripple::strHex(hash)
+        );
+    }
+};
+
+TEST_F(BackendCassandraMPTokenIssuanceTest, RoundTripIssuanceAndAccountIndexes)
+{
+    runSpawn([this](boost::asio::yield_context yield) {
+        auto const mptIssuanceId = makeMptIssuanceId();
+        auto const account = makeAccount(0x42);
+        auto const secondAccount = makeAccount(0x43);
+        std::uint32_t const seq = 100;
+
+        setupLedgerRange(seq);
+
+        auto const hash = makeHash(0x01);
+        writeTxBlob(hash, seq);
+        auto const expectedTxBlob = "tx_" + ripple::strHex(hash);
+        auto const expectedMetaBlob = "meta_" + ripple::strHex(hash);
+
+        auto expectFetchedSingle = [&](auto const& txns) {
+            ASSERT_EQ(txns.size(), 1);
+            EXPECT_EQ(
+                std::string(txns[0].transaction.begin(), txns[0].transaction.end()), expectedTxBlob
+            );
+            EXPECT_EQ(
+                std::string(txns[0].metadata.begin(), txns[0].metadata.end()), expectedMetaBlob
+            );
+            EXPECT_EQ(txns[0].ledgerSequence, seq);
+        };
+
+        MPTokenIssuanceTransactionsData const record{
+            .mptIssuanceID = mptIssuanceId,
+            .accounts = {account, secondAccount},
+            .ledgerSequence = seq,
+            .transactionIndex = 1,
+            .txHash = hash
+        };
+        backend_->writeMPTokenIssuanceTransactions({record});
+        backend_->writeAccountMPTokenIssuanceTransactions({record});
+        backend_->waitForWritesToFinish();
+
+        {
+            auto [txns, cursor] =
+                backend_->fetchMPTokenIssuanceTransactions(mptIssuanceId, 100, false, {}, yield);
+            expectFetchedSingle(txns);
+            EXPECT_FALSE(cursor);
+        }
+        {
+            auto [txns, cursor] = backend_->fetchAccountMPTokenIssuanceTransactions(
+                mptIssuanceId, account, 100, false, {}, yield
+            );
+            expectFetchedSingle(txns);
+            EXPECT_FALSE(cursor);
+        }
+        // Both affected accounts are indexed: one row was written per account.
+        {
+            auto [txns, cursor] = backend_->fetchAccountMPTokenIssuanceTransactions(
+                mptIssuanceId, secondAccount, 100, false, {}, yield
+            );
+            expectFetchedSingle(txns);
+            EXPECT_FALSE(cursor);
+        }
+        {
+            auto [txns, cursor] = backend_->fetchAccountMPTokenIssuanceTransactions(
+                mptIssuanceId, makeAccount(0x99), 100, false, {}, yield
+            );
+            EXPECT_EQ(txns.size(), 0);
+        }
+        {
+            auto const secondHash = makeHash(0x02);
+            writeTxBlob(secondHash, seq);
+            auto const expectedSecondTxBlob = "tx_" + ripple::strHex(secondHash);
+            auto const expectedSecondMetaBlob = "meta_" + ripple::strHex(secondHash);
+            auto expectFetchedSecond = [&](auto const& txns) {
+                ASSERT_EQ(txns.size(), 1);
+                EXPECT_EQ(
+                    std::string(txns[0].transaction.begin(), txns[0].transaction.end()),
+                    expectedSecondTxBlob
+                );
+                EXPECT_EQ(
+                    std::string(txns[0].metadata.begin(), txns[0].metadata.end()),
+                    expectedSecondMetaBlob
+                );
+                EXPECT_EQ(txns[0].ledgerSequence, seq);
+            };
+            MPTokenIssuanceTransactionsData const secondRecord{
+                .mptIssuanceID = mptIssuanceId,
+                .accounts = {account},
+                .ledgerSequence = seq,
+                .transactionIndex = 2,
+                .txHash = secondHash
+            };
+            backend_->writeMPTokenIssuanceTransactions({secondRecord});
+            backend_->writeAccountMPTokenIssuanceTransactions({secondRecord});
+            backend_->waitForWritesToFinish();
+
+            {
+                auto [txns, cursor] =
+                    backend_->fetchMPTokenIssuanceTransactions(mptIssuanceId, 1, false, {}, yield);
+                expectFetchedSecond(txns);
+                EXPECT_TRUE(cursor);
+            }
+            {
+                auto [txns, cursor] = backend_->fetchAccountMPTokenIssuanceTransactions(
+                    mptIssuanceId, account, 1, false, {}, yield
+                );
+                expectFetchedSecond(txns);
+                EXPECT_TRUE(cursor);
+            }
+        }
+    });
+}
+
+TEST_F(BackendCassandraMPTokenIssuanceTest, DescendingOrderForwardAndReverse)
+{
+    runSpawn([this](boost::asio::yield_context yield) {
+        auto const mptIssuanceId = makeMptIssuanceId();
+        std::uint32_t const baseSeq = 200;
+
+        // Three txns in three different ledgers, so ordering is checked across ledgers,
+        // not just by transaction index within one ledger.
+        std::vector<ripple::uint256> hashes;
+        std::vector<std::uint32_t> seqs;
+        for (std::uint8_t i = 1; i <= 3; ++i) {
+            auto const seq = baseSeq + i;
+            seqs.push_back(seq);
+            setupLedgerRange(seq);
+            auto const hash = makeHash(i);
+            hashes.push_back(hash);
+            writeTxBlob(hash, seq);
+            MPTokenIssuanceTransactionsData const record{
+                .mptIssuanceID = mptIssuanceId,
+                .accounts = {},
+                .ledgerSequence = seq,
+                .transactionIndex = i,
+                .txHash = hash
+            };
+            backend_->writeMPTokenIssuanceTransactions({record});
+        }
+        backend_->waitForWritesToFinish();
+
+        auto txBlobToString = [](data::TransactionAndMetadata const& tx) {
+            return std::string(tx.transaction.begin(), tx.transaction.end());
+        };
+        auto expectedBlob = [&](std::uint8_t i) { return "tx_" + ripple::strHex(makeHash(i)); };
+
+        // Reverse (forward=false): newest first -> rows 3, 2, 1.
+        {
+            auto [txns, cursor] =
+                backend_->fetchMPTokenIssuanceTransactions(mptIssuanceId, 100, false, {}, yield);
+            ASSERT_EQ(txns.size(), 3);
+            EXPECT_FALSE(cursor);
+            EXPECT_EQ(txBlobToString(txns[0]), expectedBlob(3));
+            EXPECT_EQ(txBlobToString(txns[1]), expectedBlob(2));
+            EXPECT_EQ(txBlobToString(txns[2]), expectedBlob(1));
+        }
+        // Forward (forward=true): oldest first -> rows 1, 2, 3 (the reverse order).
+        {
+            auto [txns, cursor] =
+                backend_->fetchMPTokenIssuanceTransactions(mptIssuanceId, 100, true, {}, yield);
+            ASSERT_EQ(txns.size(), 3);
+            EXPECT_FALSE(cursor);
+            EXPECT_EQ(txBlobToString(txns[0]), expectedBlob(1));
+            EXPECT_EQ(txBlobToString(txns[1]), expectedBlob(2));
+            EXPECT_EQ(txBlobToString(txns[2]), expectedBlob(3));
+        }
+    });
+}
+
+TEST_F(BackendCassandraMPTokenIssuanceTest, MarkerPaginationRoundTrip)
+{
+    runSpawn([this](boost::asio::yield_context yield) {
+        auto const mptIssuanceId = makeMptIssuanceId();
+        std::uint32_t const baseSeq = 300;
+
+        enum class ExpectedPaginationEnd { PartialPage, EmptyPage };
+
+        auto txBlobToString = [](data::TransactionAndMetadata const& tx) {
+            return std::string(tx.transaction.begin(), tx.transaction.end());
+        };
+        auto expectedBlob = [&](std::uint8_t i) { return "tx_" + ripple::strHex(makeHash(i)); };
+        auto expectSeenInOrder = [](std::vector<std::string> const& seen,
+                                    bool forward,
+                                    std::set<std::string> const& expected) {
+            std::vector<std::string> expectedOrder(expected.begin(), expected.end());
+            if (not forward)
+                std::ranges::reverse(expectedOrder);
+
+            EXPECT_EQ(seen, expectedOrder)
+                << "pagination returned rows out of order for forward=" << forward;
+        };
+
+        // Writes `total` rows, each in its own ledger and at a distinct transaction index,
+        // so paging covers ordering across both.
+        auto setup =
+            [&](ripple::uint192 const& issuanceId, std::uint8_t total, std::uint32_t firstSeq) {
+                std::set<std::string> expected;
+                for (std::uint8_t i = 1; i <= total; ++i) {
+                    auto const seq = firstSeq + i - 1;
+                    setupLedgerRange(seq);
+                    auto const hash = makeHash(i);
+                    writeTxBlob(hash, seq);
+                    MPTokenIssuanceTransactionsData const record{
+                        .mptIssuanceID = issuanceId,
+                        .accounts = {},
+                        .ledgerSequence = seq,
+                        .transactionIndex = i,
+                        .txHash = hash
+                    };
+                    backend_->writeMPTokenIssuanceTransactions({record});
+                    expected.insert(expectedBlob(i));
+                }
+                backend_->waitForWritesToFinish();
+                return expected;
+            };
+
+        // Page through every row; assert page order plus that the union of pages equals `expected`
+        // exactly: every row seen exactly once (no duplicates from a repeated cursor row, no gaps
+        // from a dropped row). Each full page (one that returns a cursor) must be exactly `limit`.
+        auto pageThrough = [&](ripple::uint192 const& issuanceId,
+                               bool forward,
+                               std::uint32_t limit,
+                               std::set<std::string> const& expected,
+                               ExpectedPaginationEnd expectedEnd) {
+            ASSERT_NE(limit, 0u);
+            auto const limitSize = static_cast<std::size_t>(limit);
+
+            std::vector<std::string> seen;
+            std::optional<data::TransactionsCursor> cursor;
+            std::size_t pages = 0;
+            auto const maxPages = (expected.size() / limitSize) + 2;
+            bool sawEmptyTerminator = false;
+            do {
+                auto [txns, retCursor] = backend_->fetchMPTokenIssuanceTransactions(
+                    issuanceId, limit, forward, cursor, yield
+                );
+                ++pages;
+                // Guard against an infinite loop from a non-advancing cursor.
+                ASSERT_LE(pages, maxPages)
+                    << "pagination did not terminate cleanly for forward=" << forward;
+                if (txns.empty()) {
+                    sawEmptyTerminator = true;
+                    EXPECT_FALSE(retCursor);
+                } else {
+                    EXPECT_LE(txns.size(), limitSize);
+                    if (retCursor)
+                        EXPECT_EQ(txns.size(), limitSize);
+                }
+                for (auto const& tx : txns)
+                    seen.push_back(txBlobToString(tx));
+                cursor = retCursor;
+            } while (cursor);
+
+            if (expectedEnd == ExpectedPaginationEnd::EmptyPage) {
+                EXPECT_TRUE(sawEmptyTerminator)
+                    << "expected a trailing empty page after the last full page's cursor";
+            } else {
+                EXPECT_FALSE(sawEmptyTerminator)
+                    << "did not expect a trailing empty pagination page";
+            }
+
+            // No duplicates.
+            std::set<std::string> const seenSet(seen.begin(), seen.end());
+            EXPECT_EQ(seen.size(), seenSet.size()) << "pagination returned duplicate rows";
+            // No gaps: union equals the full expected set.
+            EXPECT_EQ(seenSet, expected) << "pagination dropped or repeated rows";
+            EXPECT_EQ(seen.size(), expected.size());
+            expectSeenInOrder(seen, forward, expected);
+        };
+
+        // Case A: total not a multiple of the limit (25 rows, limit 10 -> 10,10,5).
+        {
+            auto const expected = setup(mptIssuanceId, 25, baseSeq + 1);
+            pageThrough(mptIssuanceId, false, 10, expected, ExpectedPaginationEnd::PartialPage);
+            pageThrough(mptIssuanceId, true, 10, expected, ExpectedPaginationEnd::PartialPage);
+        }
+
+        // Case B: total is an exact multiple of the limit (20 rows, limit 10).
+        // The last full page still returns a cursor, so the next fetch must return an empty page
+        // and end the loop -- no infinite loop and no spurious trailing duplicate.
+        {
+            // Use a dedicated issuance id so rows from case A do not bleed in.
+            ripple::uint192 mptIssuanceIdB;
+            EXPECT_TRUE(
+                mptIssuanceIdB.parseHex("00000002BE223A7216F1B07AE9C36F107879B6E9D3A3C1B0")
+            );
+            // Continue the ledger sequence contiguously after case A (which ended at
+            // baseSeq + 25); the backend's finishWrites enforces contiguous ledgers.
+            auto const expectedB = setup(mptIssuanceIdB, 20, baseSeq + 26);
+
+            pageThrough(mptIssuanceIdB, false, 10, expectedB, ExpectedPaginationEnd::EmptyPage);
+            pageThrough(mptIssuanceIdB, true, 10, expectedB, ExpectedPaginationEnd::EmptyPage);
+        }
+    });
+}
+
+TEST_F(BackendCassandraMPTokenIssuanceTest, MissingBlobYieldsInPositionEmptyRecord)
+{
+    runSpawn([this](boost::asio::yield_context yield) {
+        auto const mptIssuanceId = makeMptIssuanceId();
+        std::uint32_t const seq = 400;
+        setupLedgerRange(seq);
+
+        // hash 1 and 3 have a Transactions row; hash 2 does NOT (missing blob).
+        auto const h1 = makeHash(1);
+        auto const h2 = makeHash(2);
+        auto const h3 = makeHash(3);
+        writeTxBlob(h1, seq);
+        writeTxBlob(h3, seq);
+
+        backend_->writeMPTokenIssuanceTransactions({MPTokenIssuanceTransactionsData{
+            .mptIssuanceID = mptIssuanceId,
+            .accounts = {},
+            .ledgerSequence = seq,
+            .transactionIndex = 1,
+            .txHash = h1
+        }});
+        backend_->writeMPTokenIssuanceTransactions({MPTokenIssuanceTransactionsData{
+            .mptIssuanceID = mptIssuanceId,
+            .accounts = {},
+            .ledgerSequence = seq,
+            .transactionIndex = 2,
+            .txHash = h2
+        }});
+        backend_->writeMPTokenIssuanceTransactions({MPTokenIssuanceTransactionsData{
+            .mptIssuanceID = mptIssuanceId,
+            .accounts = {},
+            .ledgerSequence = seq,
+            .transactionIndex = 3,
+            .txHash = h3
+        }});
+        backend_->waitForWritesToFinish();
+
+        auto [txns, cursor] =
+            backend_->fetchMPTokenIssuanceTransactions(mptIssuanceId, 100, false, {}, yield);
+        // The page is NOT shortened: the missing blob yields an in-position empty record.
+        ASSERT_EQ(txns.size(), 3);
+        EXPECT_FALSE(cursor);
+
+        // Reverse order is newest-first: index 3, 2, 1. Middle entry (index 2) is empty.
+        EXPECT_EQ(txns[1], data::TransactionAndMetadata{});
+        EXPECT_NE(txns[0], data::TransactionAndMetadata{});
+        EXPECT_NE(txns[2], data::TransactionAndMetadata{});
+    });
+}
+
 struct BackendCassandraNodeMessageTest : BackendCassandraTest {
-    boost::uuids::random_generator generateUuid{};
+    static boost::uuids::uuid
+    generateUuid()
+    {
+        return boost::uuids::random_generator{}();
+    }
 };
 
 TEST_F(BackendCassandraNodeMessageTest, UpdateFetch)

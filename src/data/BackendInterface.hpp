@@ -409,6 +409,60 @@ public:
     ) const = 0;
 
     /**
+     * @brief Fetches transactions for a particular MPTokenIssuance ID.
+     *
+     * Returns one page of transactions for this issuance, newest-first (or oldest-first when
+     * @p forward is set). Each row of the mptoken_issuance_transactions table holds only a
+     * transaction hash and its ledger position, not the transaction itself or its type. So the
+     * query cannot filter by type. When a type filter is requested, the handler looks up each full
+     * transaction by hash and drops rows whose type does not match, the same way account_tx does.
+     *
+     * @param mptIssuanceID The 24-byte MPTokenIssuance ID.
+     * @param limit The maximum number of transactions per result page.
+     * @param forward Whether to fetch the page forwards or backwards from the given cursor.
+     * @param cursorIn The cursor to resume fetching from.
+     * @param yield The coroutine context.
+     * @return Results and a cursor to resume from.
+     */
+    virtual TransactionsAndCursor
+    fetchMPTokenIssuanceTransactions(
+        ripple::uint192 const& mptIssuanceID,
+        std::uint32_t limit,
+        bool forward,
+        std::optional<TransactionsCursor> const& cursorIn,
+        boost::asio::yield_context yield
+    ) const = 0;
+
+    /**
+     * @brief Fetches transactions for a particular MPTokenIssuance ID involving a particular
+     * account.
+     *
+     * Returns one page of transactions for this issuance and account, newest-first (or oldest-first
+     * when @p forward is set). Each row of the account_mptoken_issuance_transactions table holds
+     * only a transaction hash and its ledger position, not the transaction itself or its type. So
+     * the query cannot filter by type. When a type filter is requested, the handler looks up each
+     * full transaction by hash and drops rows whose type does not match, the same way account_tx
+     * does.
+     *
+     * @param mptIssuanceID The 24-byte MPTokenIssuance ID.
+     * @param account The account that must be affected by the transaction.
+     * @param limit The maximum number of transactions per result page.
+     * @param forward Whether to fetch the page forwards or backwards from the given cursor.
+     * @param cursorIn The cursor to resume fetching from.
+     * @param yield The coroutine context.
+     * @return Results and a cursor to resume from.
+     */
+    virtual TransactionsAndCursor
+    fetchAccountMPTokenIssuanceTransactions(
+        ripple::uint192 const& mptIssuanceID,
+        ripple::AccountID const& account,
+        std::uint32_t limit,
+        bool forward,
+        std::optional<TransactionsCursor> const& cursorIn,
+        boost::asio::yield_context yield
+    ) const = 0;
+
+    /**
      * @brief Fetches a specific ledger object.
      *
      * Currently the real fetch happens in doFetchLedgerObject and fetchLedgerObject attempts to
@@ -724,6 +778,28 @@ public:
      */
     virtual void
     writeNFTTransactions(std::vector<NFTTransactionsData> const& data) = 0;
+
+    /**
+     * @brief Write MPTokenIssuance transaction index rows to the `mptoken_issuance_transactions`
+     * table.
+     *
+     * @param data A vector of MPTokenIssuanceTransactionsData objects.
+     */
+    virtual void
+    writeMPTokenIssuanceTransactions(std::vector<MPTokenIssuanceTransactionsData> const& data) = 0;
+
+    /**
+     * @brief Write MPTokenIssuance transaction index rows to the
+     * `account_mptoken_issuance_transactions` table.
+     *
+     * One row is written per affected account in each record.
+     *
+     * @param data A vector of MPTokenIssuanceTransactionsData objects.
+     */
+    virtual void
+    writeAccountMPTokenIssuanceTransactions(
+        std::vector<MPTokenIssuanceTransactionsData> const& data
+    ) = 0;
 
     /**
      * @brief Write accounts that started holding onto a MPT.
