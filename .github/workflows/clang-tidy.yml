@@ -32,8 +32,7 @@ env:
   DIFF_FILE: clang-tidy-git-diff.txt
   ISSUE_FILE: clang-tidy-issue.md
 
-  CONAN_PROFILE: clang
-  LLVM_TOOLS_VERSION: 21
+  COMPILER: clang
 
 defaults:
   run:
@@ -52,7 +51,7 @@ jobs:
     if: ${{ always() && !cancelled() && (github.event_name != 'pull_request' || needs.determine-files.outputs.cpp_changed_files != '' || needs.determine-files.outputs.clang_tidy_config_changed == 'true') }}
     runs-on: heavy
     container:
-      image: ghcr.io/xrplf/clio-ci:f174b47f4909ae41b80406d836ab52adc39eacc6
+      image: ghcr.io/xrplf/xrpld/nix-ubuntu:sha-7b9d553
 
     permissions:
       contents: write
@@ -70,18 +69,24 @@ jobs:
       - name: Print build environment
         uses: XRPLF/actions/print-build-env@59dec886e4afb05a1724443af08baccbc045b574
 
+      - name: Set compiler environment
+        uses: ./.github/actions/set-compiler-env
+        with:
+          compiler: ${{ env.COMPILER }}
+
+      - name: Setup conan
+        run: conan/init.sh
+
       - name: Run conan
         uses: ./.github/actions/conan
         with:
           build_dir: ${{ env.BUILD_DIR }}
-          conan_profile: ${{ env.CONAN_PROFILE }}
           build_type: ${{ env.BUILD_TYPE }}
 
       - name: Run CMake
         uses: ./.github/actions/cmake
         with:
           build_dir: ${{ env.BUILD_DIR }}
-          conan_profile: ${{ env.CONAN_PROFILE }}
           build_type: ${{ env.BUILD_TYPE }}
 
       - name: Get number of processors
@@ -95,7 +100,7 @@ jobs:
           TARGETS: ${{ (needs.determine-files.outputs.clang_tidy_config_changed != 'true' && github.event_name == 'pull_request') && needs.determine-files.outputs.cpp_changed_files || 'benchmarks src tests' }}
         run: |
           set -o pipefail
-          run-clang-tidy-${{ env.LLVM_TOOLS_VERSION }} -j ${{ steps.nproc.outputs.nproc }} -p "${BUILD_DIR}" -quiet -fix -allow-no-checks ${TARGETS} 2>&1 | tee "${OUTPUT_FILE}"
+          run-clang-tidy -j ${{ steps.nproc.outputs.nproc }} -p "${BUILD_DIR}" -quiet -fix -allow-no-checks ${TARGETS} 2>&1 | tee "${OUTPUT_FILE}"
 
       - name: Print errors
         if: ${{ steps.run_clang_tidy.outcome != 'success' }}

@@ -45,7 +45,7 @@ target_sources(
 )
 
 # This must be above the target_link_libraries call otherwise backtrace doesn't work
-if("${san}" STREQUAL "")
+if(NOT SANITIZERS_ENABLED)
     target_link_libraries(clio_util PUBLIC Boost::stacktrace_backtrace)
 endif()
 

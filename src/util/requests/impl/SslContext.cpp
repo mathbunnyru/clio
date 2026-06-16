@@ -13,6 +13,7 @@
 
 #include <array>
 #include <cstddef>
+#include <cstdlib>
 #include <expected>
 #include <filesystem>
 #include <fstream>
@@ -43,18 +44,36 @@ constexpr std::array kCertFilePaths{
     "/system/etc/security/cacerts",  // Android
 };
 
+std::optional<std::string>
+readCertificateFile(std::filesystem::path const& path)
+{
+    if (not std::filesystem::exists(path)) {
+        return std::nullopt;
+    }
+    std::ifstream const fileStream{path, std::ios::in};
+    if (not fileStream.is_open()) {
+        return std::nullopt;
+    }
+    std::stringstream buffer;
+    buffer << fileStream.rdbuf();
+    return std::move(buffer).str();
+}
+
 std::expected<std::string, RequestError>
 getRootCertificate()
 {
+    // Honor the OpenSSL-standard SSL_CERT_FILE environment variable first. Some
+    // environments (e.g. the Nix-based CI/runtime image) point it at their CA
+    // bundle instead of installing certificates at the well-known system paths.
+    if (char const* const certFile = std::getenv("SSL_CERT_FILE"); certFile != nullptr) {
+        if (auto contents = readCertificateFile(certFile); contents.has_value()) {
+            return *std::move(contents);
+        }
+    }
+
     for (auto const& path : kCertFilePaths) {
-        if (std::filesystem::exists(path)) {
-            std::ifstream const fileStream{path, std::ios::in};
-            if (not fileStream.is_open()) {
-                continue;
-            }
-            std::stringstream buffer;
-            buffer << fileStream.rdbuf();
-            return std::move(buffer).str();
+        if (auto contents = readCertificateFile(path); contents.has_value()) {
+            return *std::move(contents);
         }
     }
     return std::unexpected{RequestError{"SSL setup failed: could not find root certificate"}};

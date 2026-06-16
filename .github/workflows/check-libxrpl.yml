@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CONAN_PROFILE: gcc
+  COMPILER: gcc
 
 defaults:
   run:
@@ -21,7 +21,7 @@ jobs:
     name: Build Clio / `libXRPL ${{ github.event.client_payload.version }}`
     runs-on: heavy
     container:
-      image: ghcr.io/xrplf/clio-ci:14342e087ceb8b593027198bf9ef06a43833c696
+      image: ghcr.io/xrplf/xrpld/nix-ubuntu:sha-7b9d553
 
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -36,6 +36,14 @@ jobs:
       - name: Print build environment
         uses: XRPLF/actions/print-build-env@59dec886e4afb05a1724443af08baccbc045b574
 
+      - name: Set compiler environment
+        uses: ./.github/actions/set-compiler-env
+        with:
+          compiler: ${{ env.COMPILER }}
+
+      - name: Setup conan
+        run: conan/init.sh
+
       - name: Update libXRPL version requirement
         run: |
           sed -i.bak -E "s|'xrpl/[a-zA-Z0-9\\.\\-]+'|'xrpl/${{ github.event.client_payload.conan_ref }}'|g" conanfile.py
@@ -43,17 +51,13 @@ jobs:
 
       - name: Update conan lockfile
         run: |
-          conan lock create . --profile:all ${{ env.CONAN_PROFILE }}
+          conan lock create . --profile:all ci
 
       - name: Run conan
         uses: ./.github/actions/conan
-        with:
-          conan_profile: ${{ env.CONAN_PROFILE }}
 
       - name: Run CMake
         uses: ./.github/actions/cmake
-        with:
-          conan_profile: ${{ env.CONAN_PROFILE }}
 
       - name: Build Clio
         uses: ./.github/actions/build-clio
@@ -72,7 +76,7 @@ jobs:
     needs: build
     runs-on: heavy
     container:
-      image: ghcr.io/xrplf/clio-ci:14342e087ceb8b593027198bf9ef06a43833c696
+      image: ghcr.io/xrplf/xrpld/nix-ubuntu:sha-7b9d553
 
     steps:
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1

@@ -45,30 +45,24 @@ jobs:
       fail-fast: false
       matrix:
         os: [heavy]
-        conan_profile: [gcc, clang]
+        compiler: [gcc, clang]
         build_type: [Release, Debug]
-        container:
-          [
-            '{ "image": "ghcr.io/xrplf/clio-ci:14342e087ceb8b593027198bf9ef06a43833c696" }',
-          ]
-        static: [true]
+        container: ['{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-7b9d553" }']
 
         include:
           - os: macos15
-            conan_profile: apple-clang
+            compiler: apple-clang
             build_type: Release
             container: ""
-            static: false
 
     uses: ./.github/workflows/reusable-build-test.yml
     with:
       runs_on: ${{ matrix.os }}
       container: ${{ matrix.container }}
-      conan_profile: ${{ matrix.conan_profile }}
+      compiler: ${{ matrix.compiler }}
       build_type: ${{ matrix.build_type }}
       download_ccache: true
       upload_ccache: true
-      static: ${{ matrix.static }}
       run_unit_tests: true
       run_integration_tests: false
       upload_clio_server: true
@@ -79,13 +73,12 @@ jobs:
     uses: ./.github/workflows/reusable-build.yml
     with:
       runs_on: heavy
-      container: '{ "image": "ghcr.io/xrplf/clio-ci:14342e087ceb8b593027198bf9ef06a43833c696" }'
-      conan_profile: gcc
+      container: '{ "image": "ghcr.io/xrplf/xrpld/nix-ubuntu:sha-7b9d553" }'
+      compiler: gcc
       build_type: Debug
       download_ccache: true
       upload_ccache: true
       code_coverage: true
-      static: true
       upload_clio_server: false
       targets: all
       analyze_build_time: false
@@ -97,7 +90,7 @@ jobs:
     needs: build-and-test
     runs-on: heavy
     container:
-      image: ghcr.io/xrplf/clio-ci:14342e087ceb8b593027198bf9ef06a43833c696
+      image: ghcr.io/xrplf/xrpld/nix-ubuntu:sha-7b9d553
 
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
