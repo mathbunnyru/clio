@@ -200,6 +200,20 @@ struct MPTHolderData {
 };
 
 /**
+ * @brief Represents a transaction link for an MPTokenIssuance.
+ *
+ * @note Writing one of these records inserts into two tables:
+ * mptoken_issuance_transactions and account_mptoken_issuance_transactions.
+ */
+struct MPTokenIssuanceTransactionsData {
+    ripple::uint192 mptIssuanceID;
+    boost::container::flat_set<ripple::AccountID> accounts;
+    std::uint32_t ledgerSequence{};
+    std::uint32_t transactionIndex{};
+    ripple::uint256 txHash;
+};
+
+/**
  * @brief Check whether the supplied object is a dir node.
  *
  * @param object The object to check
