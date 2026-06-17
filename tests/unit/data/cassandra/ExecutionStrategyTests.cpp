@@ -472,7 +472,7 @@ TEST_F(BackendCassandraExecutionStrategyTest, StatsCallsCountersReport)
 {
     auto strat = makeStrategy();
     EXPECT_CALL(*counters_, report());
-    strat.stats();
+    [[maybe_unused]] auto _ = strat.stats();
 }
 
 TEST_F(BackendCassandraExecutionStrategyTest, WriteEachAndCallSyncSucceeds)
