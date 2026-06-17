@@ -52,7 +52,7 @@ jobs:
     if: ${{ always() && !cancelled() && (github.event_name != 'pull_request' || needs.determine-files.outputs.cpp_changed_files != '' || needs.determine-files.outputs.clang_tidy_config_changed == 'true') }}
     runs-on: heavy
     container:
-      image: ghcr.io/xrplf/xrpld/nix-ubuntu:sha-45ddc1d
+      image: ghcr.io/xrplf/xrpld/nix-ubuntu:sha-cb2642b
 
     permissions:
       contents: write
