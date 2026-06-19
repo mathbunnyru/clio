@@ -1,3 +1,4 @@
+#pragma once
 #include "data/cassandra/Error.hpp"
 #include "data/cassandra/impl/AsyncExecutor.hpp"
 
