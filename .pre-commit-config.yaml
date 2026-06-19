@@ -93,6 +93,12 @@ repos:
         types: [c++]
         language: script
 
+      - id: fix-pragma-once
+        name: fix missing '#pragma once' declarations in header files
+        language: python
+        entry: ./pre-commit-hooks/fix_pragma_once.py
+        files: \.(h|hpp)$
+
   - repo: https://github.com/pre-commit/mirrors-clang-format
     rev: dd18dad857d6133e90bbe478f4f2f22ec0030269 # frozen: v22.1.5
     hooks:

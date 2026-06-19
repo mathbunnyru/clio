@@ -1,3 +1,5 @@
+#pragma once
+
 #include "util/MockMigrationBackend.hpp"
 #include "util/config/ObjectView.hpp"
 
