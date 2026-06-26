@@ -90,7 +90,7 @@ core.upload:parallel={{os.cpu_count()}}
 Make sure artifactory is setup with Conan.
 
 ```sh
-conan remote add --index 0 xrplf https://conan.ripplex.io
+conan remote add --index 0 xrplf https://conan.xrplf.org/repository/conan/
 ```
 
 Now you should be able to download the prebuilt dependencies (including `xrpl` package) on supported platforms.

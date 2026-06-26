@@ -10,7 +10,7 @@ PROFILES_DIR="$CONAN_DIR/profiles"
 
 rm -rf "$CONAN_DIR"
 
-conan remote add --index 0 --force xrplf https://conan.ripplex.io
+conan remote add --index 0 --force xrplf https://conan.xrplf.org/repository/conan/
 
 cp "$CURRENT_DIR/global.conf" "$CONAN_DIR/global.conf"
 
