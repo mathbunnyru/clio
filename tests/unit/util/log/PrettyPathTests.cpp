@@ -1,5 +1,4 @@
 #include "util/MockAssert.hpp"
-#include "util/SourceLocation.hpp"
 #include "util/log/PrettyPath.hpp"
 
 #include <gtest/gtest.h>
@@ -10,7 +9,7 @@ using namespace util;
 
 TEST(PrettyPath, CurrentFile)
 {
-    auto loc = CURRENT_SRC_LOCATION;
+    auto loc = std::source_location::current();
     auto pretty = prettyPath(loc.file_name());
     EXPECT_EQ(pretty, "util/log/PrettyPathTests.cpp");
 }
