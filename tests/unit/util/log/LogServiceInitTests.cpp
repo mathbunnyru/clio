@@ -70,12 +70,6 @@ protected:
 
         {"log.tag_style", ConfigValue{ConfigType::String}.defaultValue("none")},
     };
-
-    std::string
-    getLoggerString()
-    {
-        return buffer_.getStrAndReset();
-    }
 };
 
 TEST_F(LogServiceInitTests, DefaultLogLevel)
