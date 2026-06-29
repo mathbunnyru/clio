@@ -1,4 +1,3 @@
-#include "util/LoggerBuffer.hpp"
 #include "util/LoggerFixtures.hpp"
 #include "util/config/Array.hpp"
 #include "util/config/ConfigConstraints.hpp"
