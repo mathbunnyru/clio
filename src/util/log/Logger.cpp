@@ -28,6 +28,7 @@
 #include <filesystem>
 #include <memory>
 #include <optional>
+#include <source_location>
 #include <stdexcept>
 #include <string>
 #include <string_view>

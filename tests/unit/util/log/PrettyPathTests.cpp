@@ -3,6 +3,7 @@
 
 #include <gtest/gtest.h>
 
+#include <source_location>
 #include <string_view>
 
 using namespace util;
