@@ -22,10 +22,10 @@ on:
 
       - .github/actions/conan/action.yml
       - ".github/scripts/conan/**"
-      - "!.github/scripts/conan/regenerate_lockfile.sh"
 
       - conanfile.py
       - conan.lock
+      - conan/profiles/**
   push:
     branches: [develop]
     paths:
@@ -33,10 +33,10 @@ on:
 
       - .github/actions/conan/action.yml
       - ".github/scripts/conan/**"
-      - "!.github/scripts/conan/regenerate_lockfile.sh"
 
       - conanfile.py
       - conan.lock
+      - conan/profiles/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
