@@ -22,7 +22,6 @@ on:
 
       - .github/actions/conan/action.yml
       - ".github/scripts/conan/**"
-      - "!.github/scripts/conan/regenerate_lockfile.sh"
 
       - conanfile.py
       - conan.lock
@@ -34,7 +33,6 @@ on:
 
       - .github/actions/conan/action.yml
       - ".github/scripts/conan/**"
-      - "!.github/scripts/conan/regenerate_lockfile.sh"
 
       - conanfile.py
       - conan.lock
