@@ -72,7 +72,6 @@ endif()
 # Clio tweaks and checks
 include(CheckCompiler)
 include(Settings)
-include(SourceLocation)
 include(PatchNixBinary)
 
 # Clio deps

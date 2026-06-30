@@ -18,11 +18,3 @@ compiler.runtime=static
 {% else %}
 compiler.libcxx={{detect_api.detect_libcxx(compiler, version, compiler_exe)}}
 {% endif %}
-
-[conf]
-{% if compiler == "gcc" and compiler_version < 13 %}
-tools.build:cxxflags+=['-Wno-restrict']
-{% endif %}
-{% if compiler == "clang" %}
-grpc/1.50.1:tools.build:cxxflags+=['-Wno-missing-template-arg-list-after-template-kw']
-{% endif %}

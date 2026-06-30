@@ -4,8 +4,5 @@ build_type=Release
 compiler=apple-clang
 compiler.cppstd=20
 compiler.libcxx=libc++
-compiler.version=17.0
+compiler.version=21.0
 os=Macos
-
-[conf]
-grpc/1.50.1:tools.build:cxxflags+=["-Wno-missing-template-arg-list-after-template-kw"]
